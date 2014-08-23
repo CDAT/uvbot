@@ -161,19 +161,13 @@ def start_test(item, oldTest=None):
 
 
 def notify(item, status):
+    '''
+    Do something to notify people, not sure what.
+    '''
     pass
 
 
-def main():
-    cfg = config()
-    cl = MongoClient(
-        host=cfg['mongo-host'],
-        port=cfg['mongo-port'],
-    )
-    db = cl[cfg['mongo-database']]
-    queue = db['queue']
-    results = db['results']
-
+def nightly(queue, results):
     for item in queue.find():
         oldTest = results.find_one({'commit': item['commit']})
         status = start_test(item, oldTest)
@@ -185,6 +179,40 @@ def main():
             results.insert(result)
         queue.remove(item)
         notify(item, status)
+
+
+def continuous(sha, branch, user, queue, results):
+    oldTest = results.find_one({'commit': sha})
+    item = {
+        'commit': sha,
+        'user': user,
+        'branch': branch,
+        'time': datetime.now()
+    }
+    status = start_test(item, oldTest)
+    if not oldTest:
+        result = dict(item)
+        result['time'] = datetime.now()
+        result['status'] = status
+        results.insert(result)
+    notify(item, status)
+    return status
+
+
+def main(*args):
+    cfg = config()
+    cl = MongoClient(
+        host=cfg['mongo-host'],
+        port=cfg['mongo-port'],
+    )
+    db = cl[cfg['mongo-database']]
+    queue = db['queue']
+    results = db['results']
+
+    if not len(args) or args[0] == 'nightly':
+        nightly(queue, results)
+    else:
+        return continuous(*args[:3], queue=queue, results=results)
 
 
 if __name__ == '__main__':
