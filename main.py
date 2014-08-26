@@ -76,22 +76,15 @@ def add_push(obj):
 
     # queue the commit for testing
     queue = db['queue']
-
-    # look for an existing queue item that matches the commit
-    # to avoid duplicates
-    result = queue.find_one({'commit': commit})
     context = branch + '/geojs_dashboard'
-    if result is None:
-        result = {}
-
-    result = {
+    item = {
         'branch': branch,
         'commit': commit,
         'user': user,
         'time': timestamp,
         'context': context
     }
-    queue.update({'branch': branch}, result, upsert=True)
+    queue.update({'context': context}, item, upsert=True)
 
     # set the status of the tip of the push to pending
     url = '/'.join((
