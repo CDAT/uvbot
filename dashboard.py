@@ -5,6 +5,7 @@ import shutil
 import socket
 from datetime import datetime
 import subprocess as sp
+import json
 
 from pymongo import MongoClient
 
@@ -34,35 +35,49 @@ endif()
 _host = socket.gethostname().split('.')[0]
 
 
-def _communicate(*arg, **kw):
-    kw['stderr'] = sp.STDOUT
-    kw['stdout'] = sp.PIPE
-    kw['shell'] = True
-    p = sp.Popen(
-        *arg,
-        **kw
-    )
-    out, err = p.communicate()
-    return p.returncode, out
-
-
 def config():
     return {
         'mongo-host': 'lusitania',
         'mongo-port': 27017,
         'mongo-database': 'geojs_dashboard',
         'test-dir': '~/geojs-testing',
-        'repo': 'https://github.com/OpenGeoscience/geojs.git'
+        'repo': 'https://github.com/OpenGeoscience/geojs.git',
+        'kill-server': '/Users/jbeezley/bin/killtestserver',
+        'add-path': '/usr/local/bin',
+        'cmake': '/usr/local/bin/cmake',
+        'ctest': '/usr/local/bin/ctest',
+        'git': '/usr/local/bin/git'
     }
+
+
+def _communicate(cmd, **kw):
+    cfg = config()
+    pth = os.environ.get('PATH', '')
+    if cfg.get('add-path'):
+        pth = cfg['add-path'] + ':' + pth
+    kw['stderr'] = sp.STDOUT
+    kw['stdout'] = sp.PIPE
+    kw['shell'] = True
+    p = sp.Popen(
+        '/usr/bin/env PATH=' + pth + ' ' + cmd,
+        **kw
+    )
+    out, err = p.communicate()
+    return p.returncode, out
 
 
 def run_test(repo, commit, testdir, branch):
 
+    cfg = config()
+    git = cfg.get('git', 'git')
+    cmake = cfg.get('cmake', 'cmake')
+    ctest = cfg.get('ctest', 'ctest')
+    print cmake
     # ======================
     # git clone and checkout
     # ======================
     s, out = _communicate(' '.join([
-        'git', 'clone',
+        git, 'clone',
         '--recursive',
         repo, testdir
     ]))
@@ -70,7 +85,7 @@ def run_test(repo, commit, testdir, branch):
         return (False, 'clone "%s" failed' % repo, out)
 
     s, out = _communicate(' '.join([
-        'git',
+        git,
         '-C', testdir,
         'checkout',
         commit
@@ -79,7 +94,7 @@ def run_test(repo, commit, testdir, branch):
         return (False, 'checkout "%s" failed' % commit, out)
 
     s, out = _communicate(' '.join([
-        'git',
+        git,
         '-C', testdir,
         'submodule', 'update'
     ]))
@@ -93,7 +108,7 @@ def run_test(repo, commit, testdir, branch):
     os.makedirs(builddir)
     s, out = _communicate(
         ' '.join([
-            'cmake',
+            cmake,
             '-D', 'SELENIUM_TESTS=ON',
             '-D', 'CHROME_TESTS=OFF',
             '-D', 'FIREFOX_TESTS=ON',
@@ -119,7 +134,7 @@ def run_test(repo, commit, testdir, branch):
         _ctest.format(**kw)
     )
     s, out = _communicate(
-        'ctest -VV -S {}'.format(build_script),
+        ctest + ' -VV -S {}'.format(build_script),
         cwd=builddir
     )
     test_result = s
@@ -209,12 +224,16 @@ def main(*args):
     queue = db['queue']
     results = db['results']
 
+    if cfg.get('kill-server'):
+        sp.call(cfg['kill-server'], shell=True)
+
     if not len(args) or args[0] == 'nightly':
         nightly(queue, results)
     else:
-        return continuous(*args[:3], queue=queue, results=results)
+        pass
+        # return continuous(*args[:3], queue=queue, results=results)
 
 
 if __name__ == '__main__':
     import sys
-    main(*sys.argv[1:])
+    print json.dumps(main(*sys.argv[1:]), indent=4)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 from datetime import datetime
 import json
 
@@ -34,6 +35,9 @@ if not _auth_token:
 
 
 def mongo_client():
+    '''
+    Get a global reference to the mongo client.
+    '''
     global _geojs_test_mongo
     if _geojs_test_mongo is None or not _geojs_test_mongo.alive():
         _geojs_test_mongo = pymongo.MongoClient()
@@ -41,10 +45,16 @@ def mongo_client():
 
 
 def mongo_database():
+    '''
+    Return the database containing the queue collection.
+    '''
     return mongo_client()['geojs_dashboard']
 
 
 def add_push(obj):
+    '''
+    Add a push to the test queue.
+    '''
     db = mongo_database()
 
     # get the branch name w/o refs/heads
@@ -56,8 +66,8 @@ def add_push(obj):
     # get the username of the person who pushed the branch
     user = obj['pusher']['name']
 
-    # get the time of the commit
-    timestamp = datetime.now()  # fromtimestamp(obj['pushed_at'])
+    # set a time stamp
+    timestamp = datetime.now()
 
     # check if the hash has already been tested
     tested = db['results']
@@ -66,7 +76,11 @@ def add_push(obj):
 
     # queue the commit for testing
     queue = db['queue']
-    result = queue.find_one({'branch': branch})
+
+    # look for an existing queue item that matches the commit
+    # to avoid duplicates
+    result = queue.find_one({'commit': commit})
+    context = branch + '/geojs_dashboard'
     if result is None:
         result = {}
 
@@ -74,38 +88,19 @@ def add_push(obj):
         'branch': branch,
         'commit': commit,
         'user': user,
-        'time': timestamp
+        'time': timestamp,
+        'context': context
     }
-
     queue.update({'branch': branch}, result, upsert=True)
 
-
-def handle_status(obj):
-    # if it is an error status of any kind then
-    # do nothing (let travis handle the non webgl
-    # errors)
-
-    if obj['state'] != 'success':
-        return
-
-    # check if this is a status message from travis
-    target = obj['context']
-    if target.find('travis-ci') < 0:
-        return
-
-    # TODO: handle multiple branches?
-    branch = obj['branches'][0]['name']
-    context = branch + '/geojs_dashboard'
-
-    # it is a success message from travis so mark
-    # a new status of pending
+    # set the status of the tip of the push to pending
     url = '/'.join((
         _github_api,
         'repos',
         _geojs_owner,
         _geojs_repo,
         'statuses',
-        obj['commit']['sha']
+        commit
     ))
     data = json.dumps({
         'state': 'pending',
@@ -119,18 +114,37 @@ def handle_status(obj):
         data=data
     )
     if not resp.ok:
-        raise Exception("Could not set pending status.")
+        print >> sys.stderr("Could not set pending status")
+
+
+def run_test(obj):
+    '''
+    Runs a test from a queue object.  After the test is run,
+    sets the status on github to the result.
+    '''
+    branch = obj['branch']
+    context = obj['context']
+    commit = obj['commit']
+    user = obj['user']
+    url = '/'.join((
+        _github_api,
+        'repos',
+        _geojs_owner,
+        _geojs_repo,
+        'statuses',
+        commit
+    ))
 
     # run the dashboard test locally
     try:
         status = dashboard.main(
-            obj['commit']['sha'],
+            commit,
             branch,
-            obj['commit']['committer']['login']
+            user
         )
     except Exception as e:
         # something went wrong in the dashboard, so set the
-        # status to error
+        # status to error and exit
         data = json.dumps({
             'state': 'error',
             'target_url': _cdash_url,
@@ -162,7 +176,7 @@ def handle_status(obj):
             'state': 'failure',
             'target_url': _cdash_url,  # can we get the actual url of the test from cdash?
             'context': context,
-            'description': 'One or more dashboard tests failed.'
+            'description': status['reason']
         })
         requests.post(
             url,
@@ -173,17 +187,26 @@ def handle_status(obj):
 
 @tangelo.restful
 def get(*arg, **kwarg):
+    '''
+    Just to make sure the server is listening.
+    '''
     return 'I hear you!'
 
 
 @tangelo.restful
 def post(*arg, **kwarg):
+    '''
+    This is the main listener for github webhooks.
+    '''
 
+    # retrieve the headers from the request
     headers = tangelo.request_headers()
 
-    if headers.get('X-Github-Event') not in ('status', 'push'):
+    # Check if this is a a push event.
+    if headers.get('X-Github-Event') not in ('push', ):
         return tangelo.HTTPStatusCode(400, "Unhandled event")
 
+    # get the request body as a dict
     body = tangelo.request_body()
     s = body.read()
 
@@ -192,9 +215,25 @@ def post(*arg, **kwarg):
     except:
         return tangelo.HTTPStatusCode(400, "Could not load json object.")
 
-    if headers['X-Github-Event'] == 'status':
-        handle_status(obj)
-    elif headers['X-Github-Event'] == 'push':
+    # add a new item to the test queue
+    if headers['X-Github-Event'] == 'push':
         add_push(obj)
 
     return 'OK'
+
+
+def main():
+    '''
+    On commandline call, get all queued tests, run them, and set the status.
+    '''
+
+    db = mongo_database()
+    queue = db['queue']
+
+    for item in queue.find():
+        run_test(item)
+        queue.remove(item)
+
+
+if __name__ == '__main__':
+    main()
