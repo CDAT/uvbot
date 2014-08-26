@@ -4,6 +4,8 @@ import os
 import sys
 from datetime import datetime
 import json
+import hmac
+import hashlib
 
 import pymongo
 import tangelo
@@ -19,19 +21,21 @@ _github_api = 'https://api.github.com'
 _geojs_owner = 'OpenGeoscience'
 _geojs_repo = 'geojs'
 _auth_token = os.environ.get('GEOJS_DASHBOARD_KEY')
-if not _auth_token:
-    try:
-        _auth_token = json.loads(
-            open(
-                os.path.expanduser('~/.geojs_dashboard_config.json'),
-                'r'
-            ).read()
-        )['dashboard_key']
-    except Exception:
-        pass
+_secret_key = os.environ.get('GEOJS_HOOK_KEY')
+try:
+    _config = json.loads(
+        open(
+            os.path.expanduser('~/.geojs_dashboard_config.json'),
+            'r'
+        ).read()
+    )
+    _auth_token = _config['dashboard_key']
+    _secret_key = _config['hook_key']
+except Exception:
+    pass
 
-if not _auth_token:
-    raise Exception('GEOJS_DASHBOARD_KEY required.')
+if not _auth_token or not _secret_key:
+    raise Exception('GEOJS_DASHBOARD_KEY and GEOJS_HOOK_KEY required.')
 
 
 def mongo_client():
@@ -195,22 +199,26 @@ def post(*arg, **kwarg):
     # retrieve the headers from the request
     headers = tangelo.request_headers()
 
-    # Check if this is a a push event.
-    if headers.get('X-Github-Event') not in ('push', ):
-        return tangelo.HTTPStatusCode(400, "Unhandled event")
-
     # get the request body as a dict
     body = tangelo.request_body()
     s = body.read()
+
+    # make sure this is a valid request coming from github
+    computed_hash = hmac.new(str(_secret_key), s, hashlib.sha1).hexdigest()
+    received_hash = headers.get('X-Hub-Signature', 'sha1=')[5:]
+    if not hmac.compare_digest(computed_hash, received_hash):
+        return tangelo.HTTPStatusCode(403, "Invalid signature")
 
     try:
         obj = json.loads(s)
     except:
         return tangelo.HTTPStatusCode(400, "Could not load json object.")
 
-    # add a new item to the test queue
     if headers['X-Github-Event'] == 'push':
+        # add a new item to the test queue
         add_push(obj)
+    else:
+        return tangelo.HTTPStatusCode(400, "Unhandled event")
 
     return 'OK'
 
