@@ -66,6 +66,9 @@ def add_push(obj):
 
     # get the new commit hash
     commit = obj['after']
+    if commit == '0' * 40:
+        # ignore branch deletions
+        return
 
     # get the username of the person who pushed the branch
     user = obj['pusher']['name']
