@@ -230,8 +230,7 @@ def main(*args):
     if not len(args) or args[0] == 'nightly':
         nightly(queue, results)
     else:
-        pass
-        # return continuous(*args[:3], queue=queue, results=results)
+        return continuous(*args[:3], queue=queue, results=results)
 
 
 if __name__ == '__main__':
