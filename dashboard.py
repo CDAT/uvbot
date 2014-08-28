@@ -23,8 +23,6 @@ ctest_start("Experimental")
 ctest_configure()
 ctest_build()
 ctest_test(PARALLEL_LEVEL 1 RETURN_VALUE res)
-ctest_coverage()
-file(REMOVE ${{CTEST_BINARY_DIRECTORY}}/coverage.xml)
 ctest_submit()
 
 if(NOT res EQUAL 0)
