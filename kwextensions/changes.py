@@ -140,7 +140,7 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
             def setLastRev(lastRev):
                 pass
                 # FIXME: remove this once we want to rememember between restarts
-                #self.lastRev = lastRev
+                self.lastRev = lastRev
             d.addCallback(setLastRev)
             d.addCallback(lambda _:
                     base.PollingChangeSource.startService(self))

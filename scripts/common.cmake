@@ -15,6 +15,9 @@ set (CTEST_CMAKE_GENERATOR "${ctest_generator}")
 set (CTEST_BUILD_NAME "${ctest_buildname}")
 set (CTEST_SITE "${ctest_site}")
 
+#FIXME: We need to configure this, not hardcode it!!!!
+set (CTEST_BUILD_FLAGS "-j9")
+
 set (CTEST_CMAKE_GENERATOR "${ctest_generator}")
 if (EXISTS "${ctest_configure_options_file}")
     file(READ "${ctest_configure_options_file}" ctest_configure_options)

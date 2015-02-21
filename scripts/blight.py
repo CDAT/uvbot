@@ -12,6 +12,11 @@ slave = BuildSlave("blight", "XXXXXXXX",
             'cmakeroot': "/opt/apps/cmake-3.0.1",
             'sharedresourcesroot': "/home/kitware/Dashboards/MyTests",
 
+            'os' : 'linux',
+            'distribution' : 'Ubuntu-12.04 64 bit',
+            'compiler' : 'gcc-4.6.3',
+            "generator" : "Unix Makefiles",
+
             # Add site-specific options here.
             'cc:CMAKE_CXX_FLAGS:STRING': "-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated",
             'cc:CMAKE_C_FLAGS:STRING': "-Wall -Wextra -Wshadow",
