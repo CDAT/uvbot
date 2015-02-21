@@ -122,7 +122,8 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
         monitor e.g. ["ParaView/ParaView", "utkarsh.ayachit/WonderfulProject"]
 
         """
-        base.PollingChangeSource.__init__(self, name=rooturl, **kwargs)
+        base.PollingChangeSource.__init__(self,
+                name="GitlabMergeRequestPoller(%s)" % rooturl, **kwargs)
 
         self.rooturl = rooturl
         self.token = token
@@ -173,7 +174,6 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
         # scheduled for a build. We also remove the 'request-builds' label.
         openmergerequests = self.api.getsortedmergerequests(projectid,
                 page=1, per_page=100, state='opened')
-        requests_to_process = []
         for mr in openmergerequests:
             mid = mr["id"]
             if 'do-tests' in mr["labels"]:
@@ -242,3 +242,101 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
                     'rooturl' : self.rooturl
                     }
                 )
+
+
+class GitlabIntegrationBranchPoller(base.PollingChangeSource, StateMixin):
+    """
+    Polls integration branches for changes and tests them.
+    """
+    compare_attrs = ["rooturl", "token", "projects"]
+
+    def __init__(self, rooturl, token, projects={}, verify_ssl=False, **kwargs):
+        """
+        @param rooturl: URL to the gitlab server e.g. https://kwgitlab.kitwarein.com
+        @type rooturl: string
+
+        @param token: secret token to access Gitlab API.
+
+        @param projects: dict of fully qualifies projects names with a list of branches
+        to monitor e.g. {
+            "ParaView/ParaView" : ["master", "next"],
+            "utkarsh.ayachit/WonderfulProject" : ["master"]
+        }
+        """
+        base.PollingChangeSource.__init__(self,
+                name="GitlabIntegrationBranchPoller(%s)"%rooturl, **kwargs)
+
+        self.rooturl = rooturl
+        self.token = token
+        self.projects = projects
+        self.verify_ssl = verify_ssl
+        self.api = None
+        self.lastRev = {}
+
+    def startService(self):
+        self.api = Gitlab(self.rooturl, token=self.token, verify_ssl=self.verify_ssl)
+        if not self.api.currentuser():
+            log.err("while initializing GitlabMergeRequestPoller for" + self.rooturl)
+        else:
+            d = self.getState('lastRev', {})
+            def setLastRev(lastRev):
+                pass
+                # FIXME: remove this once we want to rememember between restarts
+                self.lastRev = lastRev
+            d.addCallback(setLastRev)
+            d.addCallback(lambda _:
+                    base.PollingChangeSource.startService(self))
+            d.addErrback(log.err, 'while initializing GitPoller repository')
+            return d
+
+    def describe(self):
+        txt = ('GitlabIntegrationBranchPoller watching the remote git repository ' + self.rooturl)
+        if self.projects:
+            if not callable(self.projects):
+                txt += ', projects: ' + str(self.projects)
+        if not self.master:
+            txt += " [STOPPED - check log]"
+        return txt
+
+    @defer.inlineCallbacks
+    def poll(self):
+        "Iterate over all projects and poll them"
+        log.msg("Polling .................. ")
+        for project, branches in self.projects.iteritems():
+            projectid = urllib.quote(project.lower(),"")
+            yield self._poll_project(projectid, project, branches)
+        log.msg("Done polling")
+        yield self.setState('lastRev', self.lastRev)
+
+    @defer.inlineCallbacks
+    def _poll_project(self, projectid, projectname, branches):
+        for branchname in branches:
+            branch = self.api.getbranch(projectid, branchname)
+            if not branch:
+                log.err("No such branch %s:%s" % (projectname, branch))
+                continue
+            commit = branch["commit"]
+            sha = commit["id"]
+            # check if the branch has updated since the last we saw it.
+            key = unicode("%s.%s" % (projectid, branchname))
+            sha = unicode(sha)
+
+            project = self.api.getproject(projectid)
+
+            if self.lastRev.get(key, None) != sha:
+                self.lastRev[key] = sha
+                # TODO: should we do builds for each merge of just the latest state?
+                yield self.master.addChange(
+                        author = "%s <%s>" % (commit["author_name"], commit["author_email"]),
+                        revision = commit["id"],
+                        comments = commit["message"],
+                        files = ["--coming soon--"],
+                        category="integration-branch",
+                        # FIXME: add an option to simply use current timestamp
+                        when_timestamp = datetime.datetime.now(), # dateparse(commit["authored_date"]),
+                        branch = branchname,
+                        project = projectname,
+                        repository = project["http_url_to_repo"],
+                        src="gitlab",
+                        properties= {
+                        })

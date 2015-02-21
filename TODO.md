@@ -2,7 +2,6 @@ TODO list
 =========
 
 * Add support for ParaView Superbuild
-* Add support for testing master
 * Add Windows and OsX builds
 * Can we share git objects between all git repos?
 * Should we build separate build dirs for each merge request? -- Should we delete build directories for old merge requests?
@@ -15,3 +14,4 @@ Completed List
 * Post cross-reference links between github and buildbot and cdash
 * clean up cc:VAR...mechanism some more!
 * Add support for exclusion labels. VTK tests can't be execluded on ParaView tests right now.
+* Add support for testing master
