@@ -35,7 +35,8 @@ class CTestDashboard(ShellCommand):
     def __init__(self, model="Experimental", command=None, properties={}, **kwargs):
         self.warnCount = 0
         self.errorCount = 0
-
+        # TODO: we maybe can convert all these arguments to be passed in through
+        # the ctest_extra_options file.
         ShellCommand.__init__(self,
                 command=[
                     Interpolate('%(prop:cmakeroot)s/bin/ctest'),
@@ -57,9 +58,7 @@ class CTestDashboard(ShellCommand):
                     '-D',
                     Interpolate('ctest_site:STRING=%(prop:slavename)s'),
                     '-D',
-                    Interpolate('ctest_configure_options_file:STRING=%(prop:workdir)s/ctest_configure_options.cmake'),
-                    '-D',
-                    Interpolate('ctest_test_excludes_file:STRING=%(prop:workdir)s/ctest_test_excludes.cmake'),
+                    Interpolate('ctest_extra_options_file:STRING=%(prop:workdir)s/ctest_extra_options.cmake'),
                     '-D',
                     Interpolate('ctest_stages:STRING=%(prop:ctest_stages:-all)s'),
                     '-S',
@@ -163,41 +162,44 @@ class CTestConfigDownload(FileDownload):
                 slavedest=Interpolate("%(prop:workdir)s/common.ctest"),
                 **kwargs)
 
+def _get_config_contents(props):
+    # if there's a cmake-configure-args property, pass those to
+    # ctest_configure_options.
+    lines = []
+    regex = re.compile("^cc:(.*)$")
+    for (key, (value, source)) in props.asDict().iteritems():
+        m = regex.match(key)
+        if m and m.group(1):
+            lines.append("-D%s=%s" % (m.group(1), str(value)))
+    return ";".join(lines)
 
-def _get_config_contents(prefix, patternstr, joinstr):
-    @properties.renderer
-    def makeCommand(props):
-        # if there's a cmake-configure-args property, pass those to
-        # ctest_configure_options.
-        lines = []
-        regex = re.compile("^%s:(.*)$" % prefix)
-        for (key, (value, source)) in props.asDict().iteritems():
-            m = regex.match(key)
-            if m and m.group(1):
-                lines.append(patternstr % (m.group(1), str(value)))
-        return joinstr.join(lines)
-    return makeCommand
-
-
-class CTestConfigureOptionsDownload(StringDownload):
-    def __init__(self, s=None, slavedest=None, **kwargs):
-        StringDownload.__init__(self,
-                s=_get_config_contents(prefix='cc', patternstr='-D%s=%s', joinstr=';'),
-                slavedest=Interpolate("%(prop:workdir)s/ctest_configure_options.cmake"),
-                **kwargs)
-
-@properties.renderer
-def _get_test_excludes(props):
+def _get_test_params(props, prefix):
     excludes = []
-    regex = re.compile('^test_excludes:.*$')
+    regex = re.compile('^%s:.*$' % prefix)
     for (key, (value, source)) in props.asDict().iteritems():
         if regex.match(key):
             excludes += value
     return "|".join(excludes)
 
-class CTestTestArgsDownload(StringDownload):
+@properties.renderer
+def makeExtraOptionsString(props):
+    return """
+            # Extra configuration options for this build.
+            # Options to pass to the configure stage.
+            set (ctest_configure_options "%s")
+
+            # Test excludes
+            set (ctest_test_excludes "%s")
+
+            # Test include labels
+            set (ctest_test_include_labels "%s")
+            """ % (_get_config_contents(props),
+                    _get_test_params(props, "test_excludes"),
+                    _get_test_params(props, "test_include_labels"))
+
+class CTestExtraOptionsDownload(StringDownload):
     def __init__(self, s=None, slavedest=None, **kwargs):
         StringDownload.__init__(self,
-                s=_get_test_excludes,
-                slavedest=Interpolate("%(prop:workdir)s/ctest_test_excludes.cmake"),
+                s=makeExtraOptionsString,
+                slavedest=Interpolate("%(prop:workdir)s/ctest_extra_options.cmake"),
                 **kwargs)

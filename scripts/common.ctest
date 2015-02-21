@@ -5,8 +5,9 @@
 # ctest_buildname : name for the build.
 # ctest_site: name for the site.
 # ctest_generator : generator
-# ctest_configure_options_file : file with command line options to pass the configure step.
-# ctest_test_excludes_file : file with test exludes to pass to ctest_test() command.
+# ctest_extra_options_file: file to include that defines extra variables like
+#                           ctest_configure_options, ctest_test_excludes,
+#                           ctest_test_include_labels.
 # ctest_stages: all, configure, build, test
 set (CTEST_SOURCE_DIRECTORY "${ctest_source}")
 set (CTEST_BINARY_DIRECTORY "${ctest_build}")
@@ -19,13 +20,8 @@ set (CTEST_SITE "${ctest_site}")
 set (CTEST_BUILD_FLAGS "-j9")
 
 set (CTEST_CMAKE_GENERATOR "${ctest_generator}")
-if (EXISTS "${ctest_configure_options_file}")
-    file(READ "${ctest_configure_options_file}" ctest_configure_options)
-endif()
 
-if (EXISTS "${ctest_test_excludes_file}")
-    file(READ "${ctest_test_excludes_file}" ctest_test_excludes)
-endif()
+include("${ctest_extra_options_file}" OPTIONAL)
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
@@ -80,11 +76,10 @@ endif()
 # Test
 #==============================================================================
 if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*test.*"))
-    if (ctest_test_excludes)
-        ctest_test(EXCLUDE "${ctest_test_excludes}" RETURN_VALUE test_result)
-    else()
-        ctest_test(RETURN_VALUE test_result)
-    endif()
+    ctest_test(
+        INCLUDE_LABEL "${ctest_test_include_labels}"
+        EXCLUDE "${ctest_test_excludes}"
+        RETURN_VALUE test_result)
     ctest_submit(PARTS Test)
 
     if (NOT "${test_result}" STREQUAL "0")
