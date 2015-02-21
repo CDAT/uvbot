@@ -9,6 +9,7 @@ from buildbot.status.results import SUCCESS
 from buildbot.status.results import WARNINGS
 
 from twisted.python import log as twisted_log
+from urllib import urlencode
 
 import re
 class GitWithSubmodules(Git):
@@ -50,7 +51,9 @@ class CTestDashboard(ShellCommand):
                     '-D',
                     Interpolate('ctest_generator:STRING=%(prop:generator)s'),
                     '-D',
-                    Interpolate('ctest_buildname:STRING=%(prop:source_branch)s-%(prop:buildername)s'),
+                    # we're creating an unique buildname per build.
+                    # that makes it possible to link back to Cdash summary page easily.
+                    Interpolate('ctest_buildname:STRING=build%(prop:buildnumber)s-%(prop:buildername)s'),
                     '-D',
                     Interpolate('ctest_site:STRING=%(prop:slavename)s'),
                     '-D',
@@ -78,10 +81,6 @@ class CTestDashboard(ShellCommand):
         read_test_summary = False
         summaryRe = re.compile(r"BUILDBOT BUILD SUMMARY: (\d+)/(\d+)")
         testRe = re.compile(r"(\d+)% tests passed, (\d+) tests failed out of (\d)+")
-        failedTestsListRe = re.compile(r"The following tests FAILED:")
-
-        failedTestsHeader = []
-        failedTests = []
 
         for line in log.readlines():
             if not read_build_summary:
@@ -98,24 +97,52 @@ class CTestDashboard(ShellCommand):
                     self.failedTestsCount = int(g.group(2))
                     self.totalTestsCount = int(g.group(3))
                     read_test_summary = True
-                    failedTestsHeader.append(line.strip())
                     continue
-            if read_test_summary and failedTestsListRe.match(line):
-                failedTestsHeader.append(line.strip())
-                continue
-            if len(failedTestsHeader) == 2 and len(failedTests) < self.failedTestsCount:
-                failedTests.append(line.strip())
-                continue
+            if read_build_summary and read_test_summary:
+                break
+
+        buildnumber = self.getProperty("buildnumber")
+        buildername = self.getProperty("buildername")
+        buildid = "build%s-%s" % (buildnumber, buildername)
+        project = self.getProperty("project")
+        cdash_root = self.getProperty("cdash_url")
+        cdash_projectname = self.getProperty("cdash_project_names")[project]
+
+        cdash_index_url = cdash_root + "/index.php"
+        cdash_test_url = cdash_root + "/queryTests.php"
+
+        common_query = {}
+        common_query["project"] = cdash_projectname
+        common_query["showfilters"] = 0
+        common_query["limit"] = 100
+        common_query["showfeed"] = 0
+
+        build_dashboard_query = {}
+        build_dashboard_query.update(common_query)
+        build_dashboard_query["filtercount"] = 1
+        build_dashboard_query["field1"] = "buildname/string"
+        build_dashboard_query["compare1"] = 61
+        build_dashboard_query["value1"] = buildid
 
         if self.warnCount:
-            self.addCompleteLog("warnings (%d)" % self.warnCount, "--coming soon--")
+            self.addURL("warnings (%d)" % self.warnCount,
+                    cdash_index_url + "?" + urlencode(build_dashboard_query))
         if self.errorCount:
-            self.addCompleteLog("error (%d)" % self.errorCount, "--coming soon--")
+            self.addURL("error (%d)" % self.errorCount,
+                    cdash_index_url + "?" + urlencode(build_dashboard_query))
         if self.failedTestsCount:
-            # TODO: I can make this produce an HTML page that lists tests with links to CDash.
-            failedTests = failedTestsHeader + failedTests
-            self.addCompleteLog('%d failed tests' % self.failedTestsCount,
-                    "\n".join(failedTests) + "\n")
+            test_query = {}
+            test_query.update(build_dashboard_query)
+            test_query["filtercount"] = 2
+            test_query["filtercombine"] = "and"
+            test_query["field2"] = "status/string"
+            test_query["compare2"] = "61"
+            test_query["value2"] = "Failed"
+            self.addURL('%d failed tests' % self.failedTestsCount,
+                    cdash_test_url + "?" + urlencode(test_query))
+        if not self.warnCount and not self.errorCount:
+            # put the direct dashboard link if not already placed.
+            self.addURL("cdash", cdash_index_url + "?" + urlencode(build_dashboard_query))
 
     def evaluateCommand(self, cmd):
         """return command state"""
