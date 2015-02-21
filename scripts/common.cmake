@@ -35,6 +35,7 @@ ctest_start(${ctest_model} ${ctest_source} ${ctest_build})
 #==============================================================================
 # Configure
 #==============================================================================
+set (success TRUE)
 if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*")
     ctest_configure(OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
                     RETURN_VALUE configure_result)
@@ -48,7 +49,8 @@ if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*
 
     # If configuration failed, report error and stop test.
     if (NOT "${configure_result}" STREQUAL "0")
-        message(FATAL_ERROR "Configure failed!!!")
+        message("Configure failed!!!")
+        set (success FALSE)
     endif()
 endif()
 
@@ -58,7 +60,7 @@ endif()
 # Read ctest custom files from the project.
 ctest_read_custom_files(${ctest_build})
 
-if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*build.*")
+if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*build.*"))
     ctest_build(RETURN_VALUE build_result
                 NUMBER_ERRORS build_number_errors
                 NUMBER_WARNINGS build_number_warnings)
@@ -67,13 +69,17 @@ if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*build.*")
     # If build failed (or had non-zero errors), report error and stop test.
     if ( (NOT "${build_number_errors}" STREQUAL "0") OR
          (NOT "${build_result}" STREQUAL "0") )
-         message(FATAL_ERROR "Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!!!")
+         message("Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!!!")
+         set (success FALSE)
     endif()
+    message("BUILDBOT BUILD SUMMARY: ${build_number_warnings}/${build_number_errors}")
 endif()
+
+
 #==============================================================================
 # Test
 #==============================================================================
-if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*test.*")
+if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*test.*"))
     if (ctest_test_excludes)
         ctest_test(EXCLUDE "${ctest_test_excludes}" RETURN_VALUE test_result)
     else()
@@ -82,6 +88,7 @@ if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*test.*")
     ctest_submit(PARTS Test)
 
     if (NOT "${test_result}" STREQUAL "0")
-        message(FATAL_ERROR "Tests failed!!!")
+        message("Tests failed!!!")
+        set (success FALSE)
     endif()
 endif()
