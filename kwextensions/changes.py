@@ -208,7 +208,9 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
 
     def _accept_change(self, mr):
         self.api.createmergerequestewallnote(mr["project_id"], mr["id"],
-                "BUILDBOT: Will schedule builds soon")
+                "**BUILDBOT**:Will schedule builds soon." \
+                "You can monitor the status [here](http://hera:8010/grid?%s)" % \
+                        urllib.urlencode({'branch': mr['source_branch']}))
 
     def _reject_change(self, mr):
         #self.api.createmergerequestewallnote(mr["project_id"], mr["id"],
