@@ -20,7 +20,6 @@ slave = BuildSlave("blight", "XXXXXXXX",
             # Add site-specific options here.
             'cc:CMAKE_CXX_FLAGS:STRING': "-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated",
             'cc:CMAKE_C_FLAGS:STRING': "-Wall -Wextra -Wshadow",
-            'cc:PARAVIEW_DISABLE_VTK_TESTING:BOOL':'ON',
             'cc:BUILD_EXAMPLES:BOOL': 'ON',
             'cc:VTK_DEBUG_LEAKS:BOOL' : 'ON',
             'cc:PARAVIEW_BUILD_PLUGIN_MantaView:BOOL' : 'ON',
@@ -34,6 +33,17 @@ slave = BuildSlave("blight", "XXXXXXXX",
             'cc:COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
 
             # Add test options.
-            'ct:EXCLUDE' : 'CreateDelete|TestIceTCompositePassWithBlurAndOrderedCompositing|TestIceTCompositePassWithSobel|TestIceTShadowMapPass-image|IceTOddImageSizes|AnimatePipelineTime|EyeDomeLighting|pvcs.StructuredGridVolumeRendering|UncertaintyRendering|Visualizer-renderer_click|pvweb-chrome.TestApp-all|SurfaceLIC'
+            'test_excludes:buildslave' : ['CreateDelete',
+                                     'TestIceTCompositePassWithBlurAndOrderedCompositing',
+                                     'TestIceTCompositePassWithSobel',
+                                     'TestIceTShadowMapPass-image',
+                                     'IceTOddImageSizes',
+                                     'AnimatePipelineTime',
+                                     'EyeDomeLighting',
+                                     'pvcs.StructuredGridVolumeRendering',
+                                     'UncertaintyRendering',
+                                     'Visualizer-renderer_click',
+                                     'pvweb-chrome.TestApp-all',
+                                     'SurfaceLIC']
             }
         )

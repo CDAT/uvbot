@@ -47,7 +47,9 @@ class CTestDashboard(WarningCountingShellCommand):
                     '-D',
                     Interpolate('ctest_configure_options_file:STRING=%(prop:workdir)s/ctest_configure_options.cmake'),
                     '-D',
-                    Interpolate('ctest_test_args_file:STRING=%(prop:workdir)s/ctest_test_args.cmake'),
+                    Interpolate('ctest_test_excludes_file:STRING=%(prop:workdir)s/ctest_test_excludes.cmake'),
+                    '-D',
+                    Interpolate('ctest_stages:STRING=%(prop:ctest_stages:-all)s'),
                     '-S',
                     Interpolate('%(prop:workdir)s/common.ctest')],
                 **kwargs)
@@ -70,8 +72,8 @@ def _get_config_contents(prefix, patternstr, joinstr):
         for (key, (value, source)) in props.asDict().iteritems():
             m = regex.match(key)
             if m and m.group(1):
-                lines.append("-D%s=%s" % (m.group(1), str(value)))
-        return ";".join(lines)
+                lines.append(patternstr % (m.group(1), str(value)))
+        return joinstr.join(lines)
     return makeCommand
 
 
@@ -82,9 +84,18 @@ class CTestConfigureOptionsDownload(StringDownload):
                 slavedest=Interpolate("%(prop:workdir)s/ctest_configure_options.cmake"),
                 **kwargs)
 
+@properties.renderer
+def _get_test_excludes(props):
+    excludes = []
+    regex = re.compile('^test_excludes:.*$')
+    for (key, (value, source)) in props.asDict().iteritems():
+        if regex.match(key):
+            excludes += value
+    return "|".join(excludes)
+
 class CTestTestArgsDownload(StringDownload):
     def __init__(self, s=None, slavedest=None, **kwargs):
         StringDownload.__init__(self,
-                s=_get_config_contents(prefix='ct', patternstr='%s %s', joinstr=" "),
-                slavedest=Interpolate("%(prop:workdir)s/ctest_test_args.cmake"),
+                s=_get_test_excludes,
+                slavedest=Interpolate("%(prop:workdir)s/ctest_test_excludes.cmake"),
                 **kwargs)
