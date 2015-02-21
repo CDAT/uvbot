@@ -42,11 +42,11 @@ class CTestDashboard(ShellCommand):
                     Interpolate('%(prop:cmakeroot)s/bin/ctest'),
                     '-VV',
                     '-D',
-                    Interpolate('ctest_command:STRING=%(prop:workdir)s/bin/ctest'),
+                    Interpolate('ctest_command:STRING=%(prop:cmakeroot)s/bin/ctest'),
                     '-D',
-                    Interpolate('ctest_source:STRING=%(prop:workdir)s/source'),
+                    Interpolate('ctest_source:STRING=%(prop:builddir)s/source'),
                     '-D',
-                    Interpolate('ctest_build:STRING=%(prop:workdir)s/build'),
+                    Interpolate('ctest_build:STRING=%(prop:builddir)s/build'),
                     '-D',
                     'ctest_model:STRING=%s' % model,
                     '-D',
@@ -58,11 +58,11 @@ class CTestDashboard(ShellCommand):
                     '-D',
                     Interpolate('ctest_site:STRING=%(prop:slavename)s'),
                     '-D',
-                    Interpolate('ctest_extra_options_file:STRING=%(prop:workdir)s/ctest_extra_options.cmake'),
+                    Interpolate('ctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake'),
                     '-D',
                     Interpolate('ctest_stages:STRING=%(prop:ctest_stages:-all)s'),
                     '-S',
-                    Interpolate('%(prop:workdir)s/common.ctest')],
+                    Interpolate('%(prop:builddir)s/common.ctest')],
                 **kwargs)
 
     def createSummary(self, log):
@@ -159,7 +159,7 @@ class CTestConfigDownload(FileDownload):
     """Step to send the common.cmake file to the slave before each dashboard run."""
     def __init__(self, mastersrc, slavedest=None, **kwargs):
         FileDownload.__init__(self, mastersrc=mastersrc,
-                slavedest=Interpolate("%(prop:workdir)s/common.ctest"),
+                slavedest=Interpolate("%(prop:builddir)s/common.ctest"),
                 **kwargs)
 
 def _get_test_params(props, prefix):
@@ -211,5 +211,5 @@ class CTestExtraOptionsDownload(StringDownload):
     def __init__(self, s=None, slavedest=None, **kwargs):
         StringDownload.__init__(self,
                 s=makeExtraOptionsString,
-                slavedest=Interpolate("%(prop:workdir)s/ctest_extra_options.cmake"),
+                slavedest=Interpolate("%(prop:builddir)s/ctest_extra_options.cmake"),
                 **kwargs)
