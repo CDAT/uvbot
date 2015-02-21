@@ -162,17 +162,6 @@ class CTestConfigDownload(FileDownload):
                 slavedest=Interpolate("%(prop:workdir)s/common.ctest"),
                 **kwargs)
 
-def _get_config_contents(props):
-    # if there's a cmake-configure-args property, pass those to
-    # ctest_configure_options.
-    lines = []
-    regex = re.compile("^cc:(.*)$")
-    for (key, (value, source)) in props.asDict().iteritems():
-        m = regex.match(key)
-        if m and m.group(1):
-            lines.append("-D%s=%s" % (m.group(1), str(value)))
-    return ";".join(lines)
-
 def _get_test_params(props, prefix):
     excludes = []
     regex = re.compile('^%s:.*$' % prefix)
@@ -180,6 +169,27 @@ def _get_test_params(props, prefix):
         if regex.match(key):
             excludes += value
     return "|".join(excludes)
+
+def _get_configure_options(props):
+    source_precedence = ["BuildSlave", "Builder", "Build"]
+    regex = re.compile('^configure_options:.*$')
+
+    option_dicts = {}
+    for (key, (value, source)) in props.asDict().iteritems():
+        if not regex.match(key): continue
+        if type(value) != dict:
+            raise RuntimeError('%s: value must be a dict!' % key)
+        try:
+            index = source_precedence.index(source)
+            option_dicts[index] = value
+        except IndexError:
+            raise RuntimeError('%s: source (%s) unrecognized!' % (key, source))
+
+    config = {}
+    for option in option_dicts.values():
+        config.update(option)
+    lines = [ "-D%s=%s" % (key, str(value)) for key, value in config.iteritems() ]
+    return ";".join(lines)
 
 @properties.renderer
 def makeExtraOptionsString(props):
@@ -193,9 +203,9 @@ def makeExtraOptionsString(props):
 
             # Test include labels
             set (ctest_test_include_labels "%s")
-            """ % (_get_config_contents(props),
-                    _get_test_params(props, "test_excludes"),
-                    _get_test_params(props, "test_include_labels"))
+            """ % (_get_configure_options(props),
+                   _get_test_params(props, "test_excludes"),
+                   _get_test_params(props, "test_include_labels"))
 
 class CTestExtraOptionsDownload(StringDownload):
     def __init__(self, s=None, slavedest=None, **kwargs):

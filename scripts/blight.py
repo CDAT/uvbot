@@ -17,20 +17,26 @@ slave = BuildSlave("blight", "XXXXXXXX",
             'compiler' : 'gcc-4.6.3',
             "generator" : "Unix Makefiles",
 
-            # Add site-specific options here.
-            'cc:CMAKE_CXX_FLAGS:STRING': "-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated",
-            'cc:CMAKE_C_FLAGS:STRING': "-Wall -Wextra -Wshadow",
-            'cc:BUILD_EXAMPLES:BOOL': 'ON',
-            'cc:VTK_DEBUG_LEAKS:BOOL' : 'ON',
-            'cc:PARAVIEW_BUILD_PLUGIN_MantaView:BOOL' : 'ON',
-            'cc:MANTA_BUILD:PATH' :'/opt/source/manta-build',
-            'cc:PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL' : 'ON',
-            'cc:smooth_flash:FILEPATH' : '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
-            'cc:PARAVIEW_ENABLE_COSMOTOOLS:BOOL' : 'ON',
-            'cc:GENERIC_IO_INCLUDE_DIR:PATH' : '/home/kitware/Dashboards/Support/Cosmology/genericio',
-            'cc:GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
-            'cc:COSMOTOOLS_INCLUDE_DIR:PATH' : '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
-            'cc:COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
+            # Add site-specific cmake options here.
+            'configure_options:buildslave' : {
+                'CMAKE_CXX_FLAGS:STRING': "-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated",
+                'CMAKE_C_FLAGS:STRING': "-Wall -Wextra -Wshadow",
+                'BUILD_EXAMPLES:BOOL': 'ON',
+                'VTK_DEBUG_LEAKS:BOOL' : 'ON',
+                'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL' : 'ON',
+                'MANTA_BUILD:PATH' :'/opt/source/manta-build',
+                'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL' : 'ON',
+                'smooth_flash:FILEPATH' : '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
+                'PARAVIEW_ENABLE_COSMOTOOLS:BOOL' : 'ON',
+                'GENERIC_IO_INCLUDE_DIR:PATH' : '/home/kitware/Dashboards/Support/Cosmology/genericio',
+                'GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
+                'COSMOTOOLS_INCLUDE_DIR:PATH' : '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
+                'COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
+
+                # setup some default values for these overridables.
+                'CMAKE_BUILD_TYPE:STRING' : 'Debug',
+                "PARAVIEW_BUILD_QT_GUI:BOOL" : "ON",
+            },
 
             # Add test options.
             'test_excludes:buildslave' : ['CreateDelete',
