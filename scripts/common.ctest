@@ -59,7 +59,8 @@ ctest_read_custom_files(${ctest_build})
 if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*build.*"))
     ctest_build(RETURN_VALUE build_result
                 NUMBER_ERRORS build_number_errors
-                NUMBER_WARNINGS build_number_warnings)
+                NUMBER_WARNINGS build_number_warnings
+                APPEND)
     ctest_submit(PARTS Build)
 
     # If build failed (or had non-zero errors), report error and stop test.
