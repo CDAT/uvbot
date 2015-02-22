@@ -4,6 +4,9 @@ r"""
 """
 
 from buildbot.buildslave import BuildSlave
+from buildbot.config import BuilderConfig
+from kwextensions import factory
+from buildbot.process.properties import Property, Interpolate
 
 # Slave configuration for the machine.
 slave = BuildSlave("blight", "XXXXXXXX",
@@ -53,3 +56,60 @@ slave = BuildSlave("blight", "XXXXXXXX",
                                      'SurfaceLIC']
             }
         )
+
+
+build_configurations = {
+        'shared-python-mpi-debug' : {
+            "BUILD_SHARED_LIBS:BOOL" : "ON",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_USE_MPI:BOOL" : "ON",
+            'CMAKE_BUILD_TYPE:STRING' : 'Debug'
+            },
+        'static-python-mpi-release' : {
+            "BUILD_SHARED_LIBS:BOOL" : "OFF",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_USE_MPI:BOOL" : "ON",
+            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            },
+        'static-python-mpi-nogui-release' : {
+            "BUILD_SHARED_LIBS:BOOL" : "OFF",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_USE_MPI:BOOL" : "ON",
+            "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
+            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            },
+        'shared-python-mpi-nogui-release' : {
+            "BUILD_SHARED_LIBS:BOOL" : "ON",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_USE_MPI:BOOL" : "ON",
+            "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
+            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            }
+        }
+
+builders = {}
+builders["ParaView"] = []
+for key, configure_options in build_configurations.iteritems():
+    properties = {}
+    # add the cmake configure options
+    properties['configure_options:builderconfig'] = configure_options
+
+    # add a list of test include labels
+    properties["test_include_labels:builderconfig"] = ['PARAVIEW', 'CATALYST', 'PARAVIEWWEB']
+    builders["ParaView"].append(
+            BuilderConfig(name="linux-%s" % key,
+                slavenames=["blight"],
+                factory=factory.get_ctest_buildfactory(),
+                properties = properties,
+                env= {"DISPLAY" : ":0",
+                    "ExternalData_OBJECT_STORES": Interpolate("%(prop:sharedresourcesroot)s/ExternalData")
+                    }
+                ))
+
+def get_buildslave():
+    """Returns the BuildSlave instance for this machine"""
+    return slave
+
+def get_builders(project="ParaView"):
+    """Returns a list of build configurations for this slave for a specific project."""
+    return builders[project]
