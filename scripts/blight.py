@@ -57,7 +57,6 @@ slave = BuildSlave("blight", "XXXXXXXX",
             }
         )
 
-
 build_configurations = {
         'shared-python-mpi-debug' : {
             "BUILD_SHARED_LIBS:BOOL" : "ON",
@@ -105,6 +104,38 @@ for key, configure_options in build_configurations.iteritems():
                     "ExternalData_OBJECT_STORES": Interpolate("%(prop:sharedresourcesroot)s/ExternalData")
                     }
                 ))
+
+builders["ParaViewSuperbuild"]=[]
+builders["ParaViewSuperbuild"].append(
+        BuilderConfig(name="ubuntu12.04-shared-superbuild",
+            slavenames=["blight"],
+            factory=factory.get_ctest_buildfactory(),
+            properties = {
+                'configure_options:builderconfig' : {
+                    "BUILD_SHARED_LIBS:BOOL" : "ON",
+                    "USE_NONFREE_COMPONENTS:BOOL":"ON",
+                    "ENABLE_acusolve:BOOL":"ON",
+                    "ENABLE_boost:BOOL":"ON",
+                    "ENABLE_cgns:BOOL":"ON",
+                    "ENABLE_cosmotools:BOOL":"ON",
+                    "ENABLE_ffmpeg:BOOL":"ON",
+                    "ENABLE_manta:BOOL":"ON",
+                    "ENABLE_matplotlib:BOOL":"ON",
+                    "ENABLE_mpi:BOOL":"ON",
+                    "ENABLE_nektarreader:BOOL":"ON",
+                    "ENABLE_numpy:BOOL":"ON",
+                    "ENABLE_paraview:BOOL":"ON",
+                    "ENABLE_python:BOOL":"ON",
+                    "ENABLE_qt:BOOL":"ON",
+                    "ENABLE_silo:BOOL":"ON",
+                    "ENABLE_visitbridge:BOOL":"ON",
+                    "ENABLE_vistrails:BOOL":"ON",
+                    "PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL":"ON",
+                    "download_location:PATH":"/home/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads"
+                    }
+                }
+            )
+        )
 
 def get_buildslave():
     """Returns the BuildSlave instance for this machine"""
