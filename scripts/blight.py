@@ -113,6 +113,7 @@ builders["ParaViewSuperbuild"].append(
             properties = {
                 'configure_options:builderconfig' : {
                     "BUILD_SHARED_LIBS:BOOL" : "ON",
+                    'CMAKE_BUILD_TYPE:STRING' : 'Release',
                     "USE_NONFREE_COMPONENTS:BOOL":"ON",
                     "ENABLE_acusolve:BOOL":"ON",
                     "ENABLE_boost:BOOL":"ON",
