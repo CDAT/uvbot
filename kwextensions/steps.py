@@ -40,7 +40,7 @@ class CTestDashboard(ShellCommand):
         ShellCommand.__init__(self,
                 command=[
                     Interpolate('%(prop:cmakeroot)s/bin/ctest'),
-                    '-VV',
+                    '-V',
                     '-D',
                     Interpolate('ctest_command:STRING=%(prop:cmakeroot)s/bin/ctest'),
                     '-D',
@@ -76,18 +76,25 @@ class CTestDashboard(ShellCommand):
         self.totalTestsCount = 0
         self.testSuccessRate = 0
 
-        read_build_summary = False
+        read_warning_summary = False
+        read_error_summary = False
         read_test_summary = False
-        summaryRe = re.compile(r"BUILDBOT BUILD SUMMARY: (\d+)/(\d+)")
+        errorsRe = re.compile(r"\s*(\d+) Compiler errors")
+        warningsRe = re.compile(r"\s*(\d+) Compiler warnings")
         testRe = re.compile(r"(\d+)% tests passed, (\d+) tests failed out of (\d)+")
 
         for line in log.readlines():
-            if not read_build_summary:
-                g = summaryRe.match(line)
+            if not read_warning_summary:
+                g = warningsRe.match(line.strip())
                 if g:
                     self.warnCount = int(g.group(1))
-                    self.errorCount = int(g.group(2))
-                    read_build_summary = True
+                    read_warning_summary = True
+                    continue
+            if not read_error_summary:
+                g = errorsRe.match(line.strip())
+                if g:
+                    self.errorCount = int(g.group(1))
+                    read_error_summary = True
                     continue
             if not read_test_summary:
                 g = testRe.match(line)
@@ -97,7 +104,7 @@ class CTestDashboard(ShellCommand):
                     self.totalTestsCount = int(g.group(3))
                     read_test_summary = True
                     continue
-            if read_build_summary and read_test_summary:
+            if read_warning_summary and read_error_summary and read_test_summary:
                 break
 
         buildnumber = self.getProperty("buildnumber")
