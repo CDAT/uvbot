@@ -224,6 +224,7 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
         yield self.master.addChange(
                 author = "%s <%s>" % (commit["author_name"], commit["author_email"]),
                 revision = commit["id"],
+                revlink = "%s/commit/%s" % (source_project['web_url'], commit['id']),
                 comments = mr["title"] + "\n\n" + mr["description"],
                 files = ["--coming soon--"],
                 category="merge-request",
