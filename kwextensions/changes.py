@@ -277,7 +277,7 @@ class GitlabIntegrationBranchPoller(base.PollingChangeSource, StateMixin):
     def startService(self):
         self.api = Gitlab(self.rooturl, token=self.token, verify_ssl=self.verify_ssl)
         if not self.api.currentuser():
-            log.err("while initializing GitlabMergeRequestPoller for" + self.rooturl)
+            log.err("while initializing GitlabIntegrationBranchPoller for" + self.rooturl)
         else:
             d = self.getState('lastRev', {})
             def setLastRev(lastRev):
@@ -340,4 +340,6 @@ class GitlabIntegrationBranchPoller(base.PollingChangeSource, StateMixin):
                         repository = project["http_url_to_repo"],
                         src="gitlab",
                         properties= {
+                            'source_repo' : project["http_url_to_repo"],
+                            'rooturl' : self.rooturl
                         })
