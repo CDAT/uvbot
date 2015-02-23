@@ -10,6 +10,7 @@ from buildbot.status.results import WARNINGS
 
 from twisted.python import log as twisted_log
 from urllib import urlencode
+from datetime import datetime, timedelta
 
 import re
 class GitWithSubmodules(Git):
@@ -125,10 +126,15 @@ class CTestDashboard(ShellCommand):
 
         build_dashboard_query = {}
         build_dashboard_query.update(common_query)
-        build_dashboard_query["filtercount"] = 1
+        build_dashboard_query["filtercount"] = 2
         build_dashboard_query["field1"] = "buildname/string"
         build_dashboard_query["compare1"] = 61
         build_dashboard_query["value1"] = buildid
+        build_dashboard_query["field2"] = "buildstarttime/date"
+        build_dashboard_query["compare2"] = 83
+        # pick yesterday, justo be safe.
+        build_dashboard_query["value2"] = \
+                (datetime.now() - timedelta(days=-1)).strftime("%Y%m%d")
 
         if self.warnCount:
             self.addURL("warnings (%d)" % self.warnCount,
@@ -139,11 +145,11 @@ class CTestDashboard(ShellCommand):
         if self.failedTestsCount:
             test_query = {}
             test_query.update(build_dashboard_query)
-            test_query["filtercount"] = 2
+            test_query["filtercount"] = 3
             test_query["filtercombine"] = "and"
-            test_query["field2"] = "status/string"
-            test_query["compare2"] = "61"
-            test_query["value2"] = "Failed"
+            test_query["field3"] = "status/string"
+            test_query["compare3"] = "61"
+            test_query["value3"] = "Failed"
             self.addURL('%d failed tests' % self.failedTestsCount,
                     cdash_test_url + "?" + urlencode(test_query))
         if not self.warnCount and not self.errorCount:
