@@ -140,7 +140,8 @@ builders["ParaViewSuperbuild"].append(
                     "ENABLE_vistrails:BOOL":"ON",
                     "PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL":"ON",
                     "download_location:PATH":"/home/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads"
-                    }
+                    },
+                'upload_file_patterns:builderconfig' : [ '*.tar.gz', '*.tgz' ]
                 }
             )
         )

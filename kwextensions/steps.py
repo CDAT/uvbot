@@ -134,7 +134,7 @@ class CTestDashboard(ShellCommand):
         build_dashboard_query["compare2"] = 83
         # pick yesterday, justo be safe.
         build_dashboard_query["value2"] = \
-                (datetime.now() - timedelta(days=-1)).strftime("%Y%m%d")
+                (datetime.now() + timedelta(days=-1)).strftime("%Y%m%d")
 
         if self.warnCount:
             self.addURL("warnings (%d)" % self.warnCount,
@@ -175,13 +175,13 @@ class CTestConfigDownload(FileDownload):
                 slavedest=Interpolate("%(prop:builddir)s/common.ctest"),
                 **kwargs)
 
-def _get_test_params(props, prefix):
+def _get_test_params(props, prefix, joinstr):
     excludes = []
     regex = re.compile('^%s:.*$' % prefix)
     for (key, (value, source)) in props.asDict().iteritems():
         if regex.match(key):
             excludes += value
-    return "|".join(excludes)
+    return joinstr.join(excludes)
 
 def _get_configure_options(props):
     source_precedence = ["BuildSlave", "Builder", "Build"]
@@ -216,9 +216,14 @@ def makeExtraOptionsString(props):
 
             # Test include labels
             set (ctest_test_include_labels "%s")
+
+            set (ctest_upload_file_patterns "%s")
+
             """ % (_get_configure_options(props),
-                   _get_test_params(props, "test_excludes"),
-                   _get_test_params(props, "test_include_labels"))
+                   _get_test_params(props, "test_excludes", "|"),
+                   _get_test_params(props, "test_include_labels", "|"),
+                   _get_test_params(props, "upload_file_patterns", ";")
+                   )
 
 class CTestExtraOptionsDownload(StringDownload):
     def __init__(self, s=None, slavedest=None, **kwargs):

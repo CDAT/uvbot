@@ -88,3 +88,21 @@ if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES "
         set (success FALSE)
     endif()
 endif()
+
+#==============================================================================
+# Upload files.
+#==============================================================================
+if (success AND ctest_upload_file_patterns AND
+        ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*upload.*"))
+    set (files)
+    foreach (pattern ${ctest_upload_file_patterns})
+        set (cur_files)
+        file (GLOB cur_files "${pattern}")
+        set (files ${files} ${cur_files})
+    endforeach()
+    if (files)
+        message("Files to upload ${files}")
+        ctest_upload(FILES ${files})
+        ctest_submit(PARTS Upload)
+    endif()
+endif()
