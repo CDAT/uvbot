@@ -6,8 +6,8 @@ TODO list
 * Can we share git objects between all git repos?
 * Should we build separate build dirs for each merge request? -- Should we delete build directories for old merge requests?
 * The forked submodule issue --- how do we address it?
-
 * Should we make "branch" name used by buildbot incorporate the revision number?
+* Add a dependent superbuild build for merge requests.
 
 Completed List
 ===============
