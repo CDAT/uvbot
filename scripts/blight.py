@@ -60,27 +60,34 @@ slave = BuildSlave("blight", "XXXXXXXX",
 build_configurations = {
         'shared-python-mpi-debug' : {
             "BUILD_SHARED_LIBS:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
             "PARAVIEW_USE_MPI:BOOL" : "ON",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
             'CMAKE_BUILD_TYPE:STRING' : 'Debug'
             },
         'static-python-mpi-release' : {
             "BUILD_SHARED_LIBS:BOOL" : "OFF",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
             "PARAVIEW_USE_MPI:BOOL" : "ON",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
             'CMAKE_BUILD_TYPE:STRING' : 'Release'
             },
         'static-python-mpi-nogui-release' : {
             "BUILD_SHARED_LIBS:BOOL" : "OFF",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
             "PARAVIEW_USE_MPI:BOOL" : "ON",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
             "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
             'CMAKE_BUILD_TYPE:STRING' : 'Release'
             },
         'shared-python-mpi-nogui-release' : {
             "BUILD_SHARED_LIBS:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
             "PARAVIEW_USE_MPI:BOOL" : "ON",
+            "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
+            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            },
+        'static-nopython-nompi-nogui-release' : {
+            "BUILD_SHARED_LIBS:BOOL" : "OFF",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_USE_MPI:BOOL" : "OFF",
             "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
             'CMAKE_BUILD_TYPE:STRING' : 'Release'
             }
