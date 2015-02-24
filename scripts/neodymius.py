@@ -12,7 +12,7 @@ slave = BuildSlave('neodymius', 'XXXXXXXX',
             'os' : 'linux',
             'distribution' : 'Fedora?',
             'compiler' : 'icc',
-            "generator" : "Makefiles",
+            "generator" : "Unix Makefiles",
 
             # Add site-specific cmake options here.
             'configure_options:buildslave' : {
