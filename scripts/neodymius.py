@@ -19,14 +19,14 @@ slave = BuildSlave('neodymius', 'XXXXXXXX',
                 "CMAKE_CXX_FLAGS:STRING"  : "-Wall -Wextra -Wno-shadow -Wno-unused-function -Woverloaded-virtual -Wno-deprecated",
                 "CMAKE_C_FLAGS:STRING" : "-Wall -Wextra -Wno-shadow -Wno-unused-function",
                 "MPIEXEC:FILEPATH" : "mpiexec.hydra",
-                "PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL" : "ON"
+                "PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL" : "ON",
 
                 "BUILD_EXAMPLES:BOOL" : "ON",
                 "BUILD_SHARED_LIBS:BOOL" : "ON",
                 'CMAKE_BUILD_TYPE:STRING' : 'Release',
                 "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
                 "PARAVIEW_USE_MPI:BOOL" : "ON",
-                "VTK_DEBUG_LEAKS:BOOL"  : "ON",
+                "VTK_DEBUG_LEAKS:BOOL"  : "ON"
                 },
             'test_excludes:buildslave' : [
                 #  ProbePicking -- pick fails
