@@ -1,3 +1,5 @@
+import copy
+
 from buildbot.config import BuilderConfig
 
 from kwextensions import factory
@@ -6,6 +8,7 @@ from kwextensions import factory
 __all__ = [
     'build_config',
     'make_builders',
+    'merge_config',
 ]
 
 
@@ -70,3 +73,32 @@ def make_builders(project, buildsets, defprops={}, defconfig={}, **kwargs):
         ))
 
     return builders
+
+
+def merge_config(base, *args):
+    output = copy.deepcopy(base)
+
+    for d in args:
+        for k, v in d.items():
+            if k in output:
+                # Merge dictionaries.
+                if type(v) == dict:
+                    if type(output[k]) == dict:
+                        merge_config(output[k], v)
+                    else:
+                        raise RuntimeError('incompatible entries with key \'%s\'' % k)
+
+                # Concatenate lists.
+                elif type(v) == list:
+                    if type(output[k]) == list:
+                        output[k] += v
+                    else:
+                        raise RuntimeError('incompatible entries with key \'%s\'' % k)
+
+                # Overwrite otherwise.
+                else:
+                    output[k] = v
+            else:
+                output[k] = v
+
+    return output
