@@ -1,10 +1,12 @@
 from buildbot.buildslave import BuildSlave
 
+from machines import secrets
+
 __all__ = [
     'SLAVE',
 ]
 
-SLAVE = BuildSlave('neodymius', 'XXXXXXXX',
+SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/usr',

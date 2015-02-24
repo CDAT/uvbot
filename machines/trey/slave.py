@@ -1,10 +1,12 @@
 from buildbot.buildslave import BuildSlave
 
+from machines import secrets
+
 __all__ = [
     'SLAVE',
 ]
 
-SLAVE = BuildSlave('trey', 'XXXXXXXX',
+SLAVE = BuildSlave('trey', secrets.SECRETS['trey']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/Users/kitware/misc/root/cmake', # 3.1.3

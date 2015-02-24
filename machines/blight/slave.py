@@ -1,10 +1,12 @@
 from buildbot.buildslave import BuildSlave
 
+from machines import secrets
+
 __all__ = [
     'SLAVE',
 ]
 
-SLAVE = BuildSlave('blight', 'XXXXXXXX',
+SLAVE = BuildSlave('blight', secrets.SECRETS['blight']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/opt/apps/cmake-3.0.1',
