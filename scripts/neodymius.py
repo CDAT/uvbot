@@ -34,6 +34,7 @@ slave = BuildSlave('neodymius', 'XXXXXXXX',
                 # TestPythonView -- no matplotlib
                 "TestPythonView"
                 ]
+            }
         )
 
 builders = {}
