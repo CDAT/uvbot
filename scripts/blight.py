@@ -131,13 +131,13 @@ builder_options = {
 
 builders = {}
 builders["ParaView"] = []
-for key, option in options.iteritems():
+for key, option in builder_options.iteritems():
     # ---------------------
     # Setup properties for this BuilderConfig.
     properties = {}
     for prop_key in ['configure_options', 'test_excludes']:
         try:
-            properties['%s:builderconfig' % prop_key] = options[prop_key]
+            properties['%s:builderconfig' % prop_key] = option[prop_key]
         except KeyError: pass
 
     # add a list of test include labels
@@ -150,7 +150,7 @@ for key, option in options.iteritems():
           }
     # merge environments, if any.
     try:
-        env.update(options['env'][key])
+        env.update(option['env'][key])
     except KeyError: pass
 
     builders["ParaView"].append(
