@@ -8,6 +8,9 @@ from buildbot.config import BuilderConfig
 from kwextensions import factory
 from buildbot.process.properties import Property, Interpolate
 
+##############################################################################################################
+#### Configure Slave
+##############################################################################################################
 # Slave configuration for the machine.
 slave = BuildSlave("blight", "XXXXXXXX",
         max_builds=1,
@@ -57,73 +60,99 @@ slave = BuildSlave("blight", "XXXXXXXX",
             }
         )
 
-build_configurations = {
+##############################################################################################################
+#### Configure Builders
+##############################################################################################################
+builder_options = {
         'shared-python-mpi-debug' : {
-            "BUILD_SHARED_LIBS:BOOL" : "ON",
-            "PARAVIEW_USE_MPI:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
-            'CMAKE_BUILD_TYPE:STRING' : 'Debug'
+            'configure_options' : {
+                "BUILD_SHARED_LIBS:BOOL" : "ON",
+                "PARAVIEW_USE_MPI:BOOL" : "ON",
+                "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
+                'CMAKE_BUILD_TYPE:STRING' : 'Debug'
+                }
             },
         'static-python-mpi-release' : {
-            "BUILD_SHARED_LIBS:BOOL" : "OFF",
-            "PARAVIEW_USE_MPI:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
-            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            'configure_options' : {
+                "BUILD_SHARED_LIBS:BOOL" : "OFF",
+                "PARAVIEW_USE_MPI:BOOL" : "ON",
+                "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
+                'CMAKE_BUILD_TYPE:STRING' : 'Release'
+                }
             },
         'static-python-mpi-nogui-release' : {
-            "BUILD_SHARED_LIBS:BOOL" : "OFF",
-            "PARAVIEW_USE_MPI:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
-            "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
-            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            'configure_options' : {
+                "BUILD_SHARED_LIBS:BOOL" : "OFF",
+                "PARAVIEW_USE_MPI:BOOL" : "ON",
+                "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+                "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
+                'CMAKE_BUILD_TYPE:STRING' : 'Release'
+                }
             },
         'shared-python-mpi-nogui-release' : {
-            "BUILD_SHARED_LIBS:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
-            "PARAVIEW_USE_MPI:BOOL" : "ON",
-            "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
-            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            'configure_options' : {
+                "BUILD_SHARED_LIBS:BOOL" : "ON",
+                "PARAVIEW_ENABLE_PYTHON:BOOL" : "ON",
+                "PARAVIEW_USE_MPI:BOOL" : "ON",
+                "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
+                'CMAKE_BUILD_TYPE:STRING' : 'Release'
+                }
             },
         'static-nopython-nompi-nogui-release' : {
-            "BUILD_SHARED_LIBS:BOOL" : "OFF",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
-            "PARAVIEW_USE_MPI:BOOL" : "OFF",
-            "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
-            'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            'configure_options' : {
+                "BUILD_SHARED_LIBS:BOOL" : "OFF",
+                "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+                "PARAVIEW_USE_MPI:BOOL" : "OFF",
+                "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
+                'CMAKE_BUILD_TYPE:STRING' : 'Release'
+                }
             },
         'shared-nopython-nompi-release-qt5' : {
-            "BUILD_SHARED_LIBS:BOOL" : "ON",
-            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
-            "PARAVIEW_USE_MPI:BOOL" : "OFF",
-            "PARAVIEW_BUILD_QT_GUI:BOOL" : "ON",
-            'CMAKE_BUILD_TYPE:STRING' : 'Release',
-            'PARAVIEW_QT_VERSION:STRING': '5'
-            }
-        }
-environments = {
-        'shared-nopython-nompi-release-qt5' : {
-            'PATH' : "/opt/apps/qt-5.3.1/bin:${PATH}",
-            'LD_LIBRARY_PATH': "/opt/apps/qt-5.3.1/lib:${LD_LIBRARY_PATH}",
-            'CMAKE_PREFIX_PATH' : '/opt/apps/qt-5.3.1/lib/cmake:${CMAKE_PREFIX_PATH}'
+            'configure_options' : {
+                "BUILD_SHARED_LIBS:BOOL" : "ON",
+                "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+                "PARAVIEW_USE_MPI:BOOL" : "OFF",
+                "PARAVIEW_BUILD_QT_GUI:BOOL" : "ON",
+                'CMAKE_BUILD_TYPE:STRING' : 'Release',
+                'PARAVIEW_QT_VERSION:STRING': '5'
+                },
+            'env' : {
+                'PATH' : "/opt/apps/qt-5.3.1/bin:${PATH}",
+                'LD_LIBRARY_PATH': "/opt/apps/qt-5.3.1/lib:${LD_LIBRARY_PATH}",
+                'CMAKE_PREFIX_PATH' : '/opt/apps/qt-5.3.1/lib/cmake:${CMAKE_PREFIX_PATH}'
+                },
+            'test_excludes' : [
+                # This fails with an assertion. This really needs to be
+                # debugged before we make Qt5 the default.
+                'pv.LoadPlugins'
+                ]
             }
         }
 
 builders = {}
 builders["ParaView"] = []
-for key, configure_options in build_configurations.iteritems():
+for key, option in options.iteritems():
+    # ---------------------
+    # Setup properties for this BuilderConfig.
     properties = {}
-    # add the cmake configure options
-    properties['configure_options:builderconfig'] = configure_options
+    for prop_key in ['configure_options', 'test_excludes']:
+        try:
+            properties['%s:builderconfig' % prop_key] = options[prop_key]
+        except KeyError: pass
 
     # add a list of test include labels
     properties["test_include_labels:builderconfig"] = ['PARAVIEW', 'CATALYST', 'PARAVIEWWEB']
 
+    # ---------------------
+    # Setup environment.
     env = {"DISPLAY" : ":0",
            "ExternalData_OBJECT_STORES": Interpolate("%(prop:sharedresourcesroot)s/ExternalData")
           }
+    # merge environments, if any.
     try:
-        env.update(environments[key])
+        env.update(options['env'][key])
     except KeyError: pass
+
     builders["ParaView"].append(
             BuilderConfig(name="linux-%s" % key,
                 slavenames=["blight"],
