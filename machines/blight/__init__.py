@@ -15,5 +15,5 @@ BUILDERS = {
 def get_buildslave():
     return slave.SLAVE
 
-def get_builders(project='ParaView'):
-    return BUILDERS[project]
+def get_builders(project):
+    return BUILDERS.get(project, [])
