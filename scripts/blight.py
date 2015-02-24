@@ -90,6 +90,21 @@ build_configurations = {
             "PARAVIEW_USE_MPI:BOOL" : "OFF",
             "PARAVIEW_BUILD_QT_GUI:BOOL" : "OFF",
             'CMAKE_BUILD_TYPE:STRING' : 'Release'
+            },
+        'shared-nopython-nompi-release-qt5' : {
+            "BUILD_SHARED_LIBS:BOOL" : "ON",
+            "PARAVIEW_ENABLE_PYTHON:BOOL" : "OFF",
+            "PARAVIEW_USE_MPI:BOOL" : "OFF",
+            "PARAVIEW_BUILD_QT_GUI:BOOL" : "ON",
+            'CMAKE_BUILD_TYPE:STRING' : 'Release',
+            'PARAVIEW_QT_VERSION:STRING': '5'
+            }
+        }
+environments = {
+        'shared-nopython-nompi-release-qt5' : {
+            'PATH' : "/opt/apps/qt-5.3.1/bin:${PATH}",
+            'LD_LIBRARY_PATH': "/opt/apps/qt-5.3.1/lib:${LD_LIBRARY_PATH}",
+            'CMAKE_PREFIX_PATH' : '/opt/apps/qt-5.3.1/lib/cmake:${CMAKE_PREFIX_PATH}'
             }
         }
 
@@ -102,14 +117,19 @@ for key, configure_options in build_configurations.iteritems():
 
     # add a list of test include labels
     properties["test_include_labels:builderconfig"] = ['PARAVIEW', 'CATALYST', 'PARAVIEWWEB']
+
+    env = {"DISPLAY" : ":0",
+           "ExternalData_OBJECT_STORES": Interpolate("%(prop:sharedresourcesroot)s/ExternalData")
+          }
+    try:
+        env.update(environments[key])
+    except KeyError: pass
     builders["ParaView"].append(
             BuilderConfig(name="linux-%s" % key,
                 slavenames=["blight"],
                 factory=factory.get_ctest_buildfactory(),
                 properties = properties,
-                env= {"DISPLAY" : ":0",
-                    "ExternalData_OBJECT_STORES": Interpolate("%(prop:sharedresourcesroot)s/ExternalData")
-                    }
+                env=env
                 ))
 
 builders["ParaViewSuperbuild"]=[]
