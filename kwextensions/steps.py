@@ -42,28 +42,18 @@ class CTestDashboard(ShellCommand):
                 command=[
                     Interpolate('%(prop:cmakeroot)s/bin/ctest'),
                     '-V',
-                    '-D',
-                    Interpolate('ctest_command:STRING=%(prop:cmakeroot)s/bin/ctest'),
-                    '-D',
-                    Interpolate('ctest_source:STRING=%(prop:builddir)s/source'),
-                    '-D',
-                    Interpolate('ctest_build:STRING=%(prop:builddir)s/build'),
-                    '-D',
-                    'ctest_model:STRING=%s' % model,
-                    '-D',
-                    Interpolate('ctest_generator:STRING=%(prop:generator)s'),
-                    '-D',
+                    Interpolate('-Dctest_command:STRING=%(prop:cmakeroot)s/bin/ctest'),
+                    Interpolate('-Dctest_source:STRING=%(prop:builddir)s/source'),
+                    Interpolate('-Dctest_build:STRING=%(prop:builddir)s/build'),
+                                '-Dctest_model:STRING=%s' % model,
+                    Interpolate('-Dctest_generator:STRING=%(prop:generator)s'),
                     # we're creating an unique buildname per build.
                     # that makes it possible to link back to Cdash summary page easily.
-                    Interpolate('ctest_buildname:STRING=build%(prop:buildnumber)s-%(prop:buildername)s'),
-                    '-D',
-                    Interpolate('ctest_site:STRING=%(prop:slavename)s'),
-                    '-D',
-                    Interpolate('ctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake'),
-                    '-D',
-                    Interpolate('ctest_stages:STRING=%(prop:ctest_stages:-all)s'),
-                    '-S',
-                    Interpolate('%(prop:builddir)s/common.ctest')],
+                    Interpolate('-Dctest_buildname:STRING=build%(prop:buildnumber)s-%(prop:buildername)s'),
+                    Interpolate('-Dctest_site:STRING=%(prop:slavename)s'),
+                    Interpolate('-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake'),
+                    Interpolate('-Dctest_stages:STRING=%(prop:ctest_stages:-all)s'),
+                    '-S', Interpolate('%(prop:builddir)s/common.ctest')],
                 **kwargs)
 
     def createSummary(self, log):
