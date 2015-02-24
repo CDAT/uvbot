@@ -9,6 +9,13 @@ __all__ = [
     'build_config',
     'make_builders',
     'merge_config',
+    'PROJECTS',
+]
+
+
+PROJECTS = [
+    'ParaView',
+    'ParaViewSuperbuild',
 ]
 
 
