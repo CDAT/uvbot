@@ -40,7 +40,7 @@ buildsets = [
     {
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': (),
+        'features': ('superbuild',),
     },
 ]
 

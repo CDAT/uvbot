@@ -26,4 +26,6 @@ OPTIONS = {
 OPTIONORDER = ('libtype', 'buildtype')
 
 FEATURES = {
+    'superbuild': {
+    }
 }
