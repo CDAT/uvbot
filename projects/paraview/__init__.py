@@ -10,7 +10,7 @@ OPTIONS = {
         'linux': {},
         'windows': {},
         'osx': {},
-    }
+    },
     'libtype': {
         'shared': {
             'BUILD_SHARED_LIBS:BOOL': 'ON',
