@@ -26,12 +26,12 @@ defprops = {
         'pvcs.StructuredGridVolumeRendering',
         'pvweb-chrome.TestApp-all',
     ],
-    'env': {
-        'DISPLAY': ':0',
-        # since we're using mesa, no need to do offscreen screenshots.
-        'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
-    },
 }
+env = {
+    'DISPLAY': ':0',
+    # since we're using mesa, no need to do offscreen screenshots.
+    'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
+},
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
@@ -101,21 +101,22 @@ buildsets = [
 BUILDERS = projects.make_builders(paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
-    slavenames=['blight']
+    slavenames=['blight'],
+    env=env
 )
 
 qt5props = projects.merge_config(defprops, {
-    'env': {
-        'PATH': '/opt/apps/qt-5.3.1/bin:$PATH',
-        'LD_LIBRARY_PATH': '/opt/apps/qt-5.3.1/lib:$LD_LIBRARY_PATH',
-        'CMAKE_PREFIX_PATH': '/opt/apps/qt-5.3.1/lib/cmake:$CMAKE_PREFIX_PATH',
-    },
     'test_excludes:builderconfig': [
         # This fails with an assertion. This really needs
         # to be debugged before we make Qt5 the default.
         'pv.LoadPlugins',
     ]
 })
+qt5env = projects.merge_config(env, {
+    'PATH': '/opt/apps/qt-5.3.1/bin:$PATH',
+    'LD_LIBRARY_PATH': '/opt/apps/qt-5.3.1/lib:$LD_LIBRARY_PATH',
+    'CMAKE_PREFIX_PATH': '/opt/apps/qt-5.3.1/lib/cmake:$CMAKE_PREFIX_PATH',
+}
 
 qt5buildsets = [
     {
@@ -132,5 +133,6 @@ qt5buildsets = [
 BUILDERS += projects.make_builders(paraview, qt5buildsets,
     defprops=qt5props,
     defconfig=defconfig,
-    slavenames=['blight']
+    slavenames=['blight'],
+    env=qt5env
 )

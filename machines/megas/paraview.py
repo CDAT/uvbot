@@ -19,9 +19,9 @@ defprops = {
         'FindWidget', # X errors
         'EyeDomeLighting', # unsupported texture format
     ],
-    'env': {
-        'DISPLAY': ':1',
-    },
+}
+env = {
+    'DISPLAY': ':1',
 }
 
 defconfig = {
@@ -50,5 +50,6 @@ buildsets = [
 BUILDERS = projects.make_builders(paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
-    slavenames=['megas']
+    slavenames=['megas'],
+    env=env
 )

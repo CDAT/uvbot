@@ -10,11 +10,11 @@ defprops = {
         'ProbePicking', # pick fails
         'TestPythonView', # no matplotlib
     ],
-    'env': {
-        'DISPLAY': ':0',
-        'CC': 'icc',
-        'CXX': 'icpc',
-    },
+}
+env = {
+    'DISPLAY': ':0',
+    'CC': 'icc',
+    'CXX': 'icpc',
 }
 
 defconfig = {
@@ -42,5 +42,6 @@ buildsets = [
 BUILDERS = projects.make_builders(paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
-    slavenames=['neodymius']
+    slavenames=['neodymius'],
+    env=env
 )
