@@ -22,6 +22,8 @@ SLAVE = BuildSlave('megas', secrets.SECRETS['megas']['password'],
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
             'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+
+            'MPIEXEC:PATH': '/usr/lib64/mpich/bin/mpiexec',
         },
     }
 )
