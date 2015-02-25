@@ -40,11 +40,13 @@ base_features = (
 )
 buildsets = [
     {
+        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': base_features + (),
     },
     {
+        'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
         'features': base_features + (),

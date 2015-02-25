@@ -38,6 +38,7 @@ defconfig = {
 
 buildsets = [
     {
+        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': ('superbuild',),

@@ -6,6 +6,11 @@ __all__ = [
 ]
 
 OPTIONS = {
+    'os': {
+        'linux': {},
+        'windows': {},
+        'osx': {},
+    }
     'libtype': {
         'shared': {
             'BUILD_SHARED_LIBS:BOOL': 'ON',
@@ -23,7 +28,7 @@ OPTIONS = {
         },
     },
 }
-OPTIONORDER = ('libtype', 'buildtype')
+OPTIONORDER = ('osx', 'libtype', 'buildtype')
 
 FEATURES = {
     'superbuild': {

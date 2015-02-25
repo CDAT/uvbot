@@ -55,6 +55,7 @@ defconfig = {
 
 buildsets = [
     {
+        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'debug',
         'features': (
@@ -64,6 +65,7 @@ buildsets = [
         ),
     },
     {
+        'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
         'features': (
@@ -73,6 +75,7 @@ buildsets = [
         ),
     },
     {
+        'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
         'features': (
@@ -81,6 +84,7 @@ buildsets = [
         ),
     },
     {
+        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': (
@@ -89,6 +93,7 @@ buildsets = [
         ),
     },
     {
+        'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
         'features': (),
@@ -116,6 +121,7 @@ qt5props = projects.merge_config(defprops, {
 
 qt5buildsets = [
     {
+        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': (
