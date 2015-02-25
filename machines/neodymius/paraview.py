@@ -33,6 +33,8 @@ buildsets = [
             'gui',
             'python',
             'mpi',
+
+            'icc',
         ),
     },
 ]

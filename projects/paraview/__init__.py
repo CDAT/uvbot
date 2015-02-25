@@ -56,4 +56,6 @@ FEATURES = {
     'unified': {
         'PARAVIEW_USE_UNIFIED_BINDINGS:BOOL': ('OFF', 'ON'),
     },
+    'icc': {
+    },
 }
