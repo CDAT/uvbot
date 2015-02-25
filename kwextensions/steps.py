@@ -41,7 +41,7 @@ class CTestDashboard(ShellCommand):
         ShellCommand.__init__(self,
                 command=[
                     Interpolate('%(prop:cmakeroot)s/bin/ctest'),
-                    '-V',
+                    '-VV',
                     Interpolate('-Dctest_command:STRING=%(prop:cmakeroot)s/bin/ctest'),
                     Interpolate('-Dctest_source:STRING=%(prop:builddir)s/source'),
                     Interpolate('-Dctest_build:STRING=%(prop:builddir)s/build'),
