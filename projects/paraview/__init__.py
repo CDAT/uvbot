@@ -51,7 +51,7 @@ FEATURES = {
         'PARAVIEW_USE_MPI:BOOL': ('OFF', 'ON'),
     },
     'qt5': {
-        'PARAVIEW_QT_VERSION:STRING': ('5', '4'),
+        'PARAVIEW_QT_VERSION:STRING': ('4', '5'),
     },
     'unified': {
         'PARAVIEW_USE_UNIFIED_BINDINGS:BOOL': ('OFF', 'ON'),
