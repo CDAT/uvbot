@@ -45,6 +45,17 @@ buildsets = [
             'mpi',
         ),
     },
+    {
+        'os': 'linux',
+        'libtype': 'static',
+        'buildtype': 'release',
+        'features': (
+            'gui',
+            'python',
+            'kits',
+            'mpi',
+        ),
+    },
 ]
 
 BUILDERS = projects.make_builders(paraview, buildsets,
