@@ -15,7 +15,9 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
         'os': 'linux',
         'distribution': 'fedora-19-x86_64',
         'compiler': 'icc-14.0.0',
+
         'generator': 'Unix Makefiles',
+        'buildflags': '-j9',
 
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',

@@ -53,6 +53,7 @@ class CTestDashboard(ShellCommand):
                     Interpolate('-Dctest_site:STRING=%(prop:slavename)s'),
                     Interpolate('-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake'),
                     Interpolate('-Dctest_stages:STRING=%(prop:ctest_stages:-all)s'),
+                    Interpolate('-DCTEST_BUILD_FLAGS:STRING=%(prop:buildflags)s'),
                     '-S', Interpolate('%(prop:builddir)s/common.ctest')],
                 **kwargs)
 
