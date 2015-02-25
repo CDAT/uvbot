@@ -1,4 +1,5 @@
 from . import blight
+from . import neodymius
 from . import trey
 
 __all__ = [
@@ -7,5 +8,6 @@ __all__ = [
 
 MACHINES = [
     blight,
+    neodymius,
     trey,
 ]
