@@ -31,7 +31,7 @@ env = {
     'DISPLAY': ':0',
     # since we're using mesa, no need to do offscreen screenshots.
     'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
-},
+}
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
@@ -116,7 +116,7 @@ qt5env = projects.merge_config(env, {
     'PATH': '/opt/apps/qt-5.3.1/bin:$PATH',
     'LD_LIBRARY_PATH': '/opt/apps/qt-5.3.1/lib:$LD_LIBRARY_PATH',
     'CMAKE_PREFIX_PATH': '/opt/apps/qt-5.3.1/lib/cmake:$CMAKE_PREFIX_PATH',
-}
+})
 
 qt5buildsets = [
     {
