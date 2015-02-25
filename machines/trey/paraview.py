@@ -35,6 +35,7 @@ defconfig = {
 }
 
 base_features = (
+    'gui',
     'kits',
     'python',
 )
