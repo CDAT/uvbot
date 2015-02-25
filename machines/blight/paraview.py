@@ -1,5 +1,3 @@
-from buildbot.process.properties import Interpolate
-
 import projects
 from projects import paraview
 
@@ -33,26 +31,24 @@ defprops = {
         # since we're using mesa, no need to do offscreen screenshots.
         'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
     },
-
-    'supportroot': '/home/kitware/Dashboards/Support',
 }
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-    'PARAVIEW_DATA_STORE:PATH': Interpolate('%(prop:sharedresourcesroot)s/ExternalData'),
+    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
 
     'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',
     'MANTA_BUILD:PATH': '/opt/source/manta-build',
 
-    'smooth_flash:FILEPATH': Interpolate('%(prop:sharedresourcesroot)s/ParaViewSuperLargeData/smooth.flash'),
+    'smooth_flash:FILEPATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
 
     'PARAVIEW_ENABLE_COSMOTOOLS:BOOL': 'ON',
-    'GENERIC_IO_INCLUDE_DIR:PATH': Interpolate('%(prop:supportroot)s/Cosmology/genericio'),
-    'GENERIC_IO_LIBRARIES:FILEPATH': Interpolate('%(prop:supportroot)s/Cosmology/genericio-build/libGenericIO.a'),
-    'COSMOTOOLS_INCLUDE_DIR:PATH': Interpolate('%(prop:supportroot)s/Cosmology/cosmologytools-build/include'),
-    'COSMOTOOLS_LIBRARIES:FILEPATH': Interpolate('%(prop:supportroot)s/Cosmology/cosmologytools-build/libs/libcosmotools.a'),
+    'GENERIC_IO_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/genericio',
+    'GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
+    'COSMOTOOLS_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
+    'COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
 }
 
 buildsets = [
