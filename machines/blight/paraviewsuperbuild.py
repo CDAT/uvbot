@@ -1,3 +1,5 @@
+from buildbot.process.properties import Interpolate
+
 import projects
 from projects import paraviewsuperbuild
 
@@ -33,7 +35,7 @@ defconfig = {
     'ENABLE_visitbridge:BOOL': 'ON',
     'ENABLE_vistrails:BOOL': 'ON',
 
-    'download_location:PATH': '%(prop:sharedresourcesroot)s/ParaViewSuperbuild-downloads',
+    'download_location:PATH': Interpolate('%(prop:sharedresourcesroot)s/ParaViewSuperbuild-downloads'),
 }
 
 buildsets = [

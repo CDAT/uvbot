@@ -1,3 +1,5 @@
+from buildbot.process.properties import Interpolate
+
 import projects
 from projects import paraview
 
@@ -24,7 +26,7 @@ defconfig = {
     'VTK_LEGACY_REMOVE:BOOL': 'ON',
     'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
     'PARAVIEW_ENABLE_CATALYST:BOOL': 'ON',
-    'PARAVIEW_DATA_STORE:PATH': '%(prop:sharedresourcesroot)s/data',
+    'PARAVIEW_DATA_STORE:PATH': Interpolate('%(prop:sharedresourcesroot)s/data'),
 
     'VTK_USE_SYSTEM_EXPAT:BOOL': 'ON',
     'VTK_USE_SYSTEM_JPEG:BOOL': 'ON',

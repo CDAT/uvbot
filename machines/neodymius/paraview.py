@@ -1,3 +1,5 @@
+from buildbot.process.properties import Interpolate
+
 import projects
 from projects import paraview
 
@@ -21,7 +23,7 @@ defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
 
-    'PARAVIEW_DATA_STORE:PATH': '%(prop:sharedresourcesroot)s/ExternalData',
+    'PARAVIEW_DATA_STORE:PATH': Interpolate('%(prop:sharedresourcesroot)s/ExternalData'),
 }
 
 buildsets = [

@@ -1,3 +1,5 @@
+from buildbot.process.properties import Interpolate
+
 import projects
 from projects import paraview
 
@@ -39,18 +41,18 @@ defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-    'PARAVIEW_DATA_STORE:PATH': '%(prop:sharedresourcesroot)s/ExternalData',
+    'PARAVIEW_DATA_STORE:PATH': Interpolate('%(prop:sharedresourcesroot)s/ExternalData'),
 
     'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',
     'MANTA_BUILD:PATH': '/opt/source/manta-build',
 
-    'smooth_flash:FILEPATH': '%(prop:sharedresourcesroot)s/ParaViewSuperLargeData/smooth.flash',
+    'smooth_flash:FILEPATH': Interpolate('%(prop:sharedresourcesroot)s/ParaViewSuperLargeData/smooth.flash'),
 
     'PARAVIEW_ENABLE_COSMOTOOLS:BOOL': 'ON',
-    'GENERIC_IO_INCLUDE_DIR:PATH': '%(prop:supportroot)s/Cosmology/genericio',
-    'GENERIC_IO_LIBRARIES:FILEPATH': '%(prop:supportroot)s/Cosmology/genericio-build/libGenericIO.a',
-    'COSMOTOOLS_INCLUDE_DIR:PATH': '%(prop:supportroot)s/Cosmology/cosmologytools-build/include',
-    'COSMOTOOLS_LIBRARIES:FILEPATH': '%(prop:supportroot)s/Cosmology/cosmologytools-build/libs/libcosmotools.a',
+    'GENERIC_IO_INCLUDE_DIR:PATH': Interpolate('%(prop:supportroot)s/Cosmology/genericio'),
+    'GENERIC_IO_LIBRARIES:FILEPATH': Interpolate('%(prop:supportroot)s/Cosmology/genericio-build/libGenericIO.a'),
+    'COSMOTOOLS_INCLUDE_DIR:PATH': Interpolate('%(prop:supportroot)s/Cosmology/cosmologytools-build/include'),
+    'COSMOTOOLS_LIBRARIES:FILEPATH': Interpolate('%(prop:supportroot)s/Cosmology/cosmologytools-build/libs/libcosmotools.a'),
 }
 
 buildsets = [
