@@ -7,11 +7,11 @@ __all__ = [
 ]
 
 
-def make_web_status(secrets, dashdir=None):
+def make_web_status(secrets):
     authz_cfg = authz.Authz(
         # change any of these to True to enable; see the manual for more
         # options
-        auth=auth.HTPasswdAprAuth('%s/webstatuspasswords' % dashdir),
+        auth=auth.HTPasswdAprAuth('%s/webstatuspasswords' % secrets['buildbot_root']),
         gracefulShutdown=False,
         forceBuild='auth', # use this to test your slave once it is set up
         forceAllBuilds='auth',  # ..or this
