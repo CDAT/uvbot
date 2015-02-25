@@ -28,7 +28,7 @@ OPTIONS = {
         },
     },
 }
-OPTIONORDER = ('osx', 'libtype', 'buildtype')
+OPTIONORDER = ('os', 'libtype', 'buildtype')
 
 FEATURES = {
     'superbuild': {
