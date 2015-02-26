@@ -18,6 +18,7 @@ defprops = {
         'rendererSource', # broken stencil buffer on VNC(?)
         'FindWidget', # X errors
         'EyeDomeLighting', # unsupported texture format
+        'SelectionLabels', # http://www.paraview.org/Bug/view.php?id=15294
     ],
 }
 env = {

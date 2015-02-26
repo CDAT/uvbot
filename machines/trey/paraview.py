@@ -15,6 +15,7 @@ defprops = {
         'ProbePicking', # flaky
         'TestPythonView', # bad on OS X
         'HistogramSelection', # viewport too small (image corruption)
+        'SelectionLabels', # http://www.paraview.org/Bug/view.php?id=15294
     ],
 }
 
