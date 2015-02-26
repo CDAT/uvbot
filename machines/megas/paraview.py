@@ -22,6 +22,7 @@ defprops = {
 }
 env = {
     'DISPLAY': ':1',
+    'PATH': '/usr/lib64/mpich/bin:${PATH}',
 }
 
 defconfig = {
