@@ -10,6 +10,8 @@ restart of the main server. For now, please contact one of:
 
 to restart the server for you.
 
+Currently, buildbot 0.8.10 is the preferred version.
+
 Testing changes
 ===============
 
