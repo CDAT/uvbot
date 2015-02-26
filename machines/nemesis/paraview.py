@@ -62,5 +62,5 @@ buildsets = [
 BUILDERS = projects.make_builders(paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
-    slavenames=['megas']
+    slavenames=['nemesis']
 )
