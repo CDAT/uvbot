@@ -113,9 +113,9 @@ qt5props = projects.merge_config(defprops, {
     ]
 })
 qt5env = projects.merge_config(env, {
-    'PATH': '/opt/apps/qt-5.3.1/bin:%s' % os.environ['PATH'],
-    'LD_LIBRARY_PATH': '/opt/apps/qt-5.3.1/lib:%s' % os.environ['LD_LIBRARY_PATH'],
-    'CMAKE_PREFIX_PATH': '/opt/apps/qt-5.3.1/lib/cmake:%s' % os.environ['CMAKE_PREFIX_PATH'],
+    'PATH': '/opt/apps/qt-5.3.1/bin:${PATH}',
+    'LD_LIBRARY_PATH': '/opt/apps/qt-5.3.1/lib:${LD_LIBRARY_PATH}',
+    'CMAKE_PREFIX_PATH': '/opt/apps/qt-5.3.1/lib/cmake:${CMAKE_PREFIX_PATH}',
 })
 
 qt5buildsets = [
