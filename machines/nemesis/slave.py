@@ -9,7 +9,7 @@ __all__ = [
 SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
     max_builds=1,
     properties={
-        'cmakeroot': '/usr',
+        'cmakeroot': 'C:/Users/kitware/misc/root/cmake',
         'sharedresourcesroot': 'C:/Users/kitware/dashboards',
 
         'os': 'windows',
@@ -20,6 +20,7 @@ SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
         'buildflags': '-l9',
 
         'configure_options:buildslave': {
+            'CMAKE_MAKE_PROGRAM:FILEPATH': 'C:/Users/kitware/misc/root/cmake/bin/ninja.exe',
         },
     }
 )
