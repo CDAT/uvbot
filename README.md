@@ -18,7 +18,14 @@ to catch Python errors and other problems. By default, it will poll Gitlab for
 merge requests, but not actually write to it. Ensure that your machine and
 builds appear in the webpage served by buildbot.
 
-To run the master, a `secrets.json` file will be required. It should look like:
+Create a directory to host the master in with:
+
+```sh
+buildbot create-master /path/to/master
+```
+
+Create a symlink to the `master.cfg` file from `/path/to/master`. A
+`secrets.json` file will be required. It should look like:
 
 ```json
 {
@@ -29,7 +36,12 @@ To run the master, a `secrets.json` file will be required. It should look like:
 }
 ```
 
-An API token is availble from your profile page in Gitlab.
+An API token is availble from your profile page in Gitlab. Finally, to start
+the master:
+
+```sh
+buildbot start /path/to/master
+```
 
 Adding a Machine
 ================
