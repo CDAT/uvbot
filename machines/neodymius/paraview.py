@@ -9,6 +9,7 @@ defprops = {
     'test_excludes:builderconfig': [
         'ProbePicking', # pick fails
         'TestPythonView', # no matplotlib
+        'PropertyLink', # poorly designed
     ],
 }
 env = {
