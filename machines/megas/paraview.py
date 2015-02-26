@@ -33,28 +33,24 @@ defconfig = {
     'PARAVIEW_DATA_STORE:PATH': '/home/kitware/dashboards/data',
 }
 
+base_features = (
+    'gui',
+    'python',
+    'kits',
+    'mpi',
+)
 buildsets = [
     {
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': (
-            'gui',
-            'python',
-            'kits',
-            'mpi',
-        ),
+        'features': base_features,
     },
     {
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
-        'features': (
-            'gui',
-            'python',
-            'kits',
-            'mpi',
-        ),
+        'features': base_features,
     },
 ]
 

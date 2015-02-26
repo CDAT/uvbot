@@ -44,13 +44,13 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': base_features + (),
+        'features': base_features,
     },
     {
         'os': 'osx',
         'libtype': 'static',
         'buildtype': 'release',
-        'features': base_features + (),
+        'features': base_features,
     },
 ]
 
