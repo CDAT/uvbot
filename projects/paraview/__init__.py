@@ -56,6 +56,8 @@ FEATURES = {
     'unified': {
         'PARAVIEW_USE_UNIFIED_BINDINGS:BOOL': ('OFF', 'ON'),
     },
-    'icc': {
+    'opengl2': {
+        'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     },
+    'icc': {},
 }
