@@ -39,7 +39,7 @@ buildsets = [
     },
     {
         'os': 'windows',
-        'libtype': 'static',
+        'libtype': 'shared',
         'buildtype': 'release',
         'features': base_features + (
             'kits',
@@ -47,7 +47,7 @@ buildsets = [
     },
     {
         'os': 'windows',
-        'libtype': 'shared',
+        'libtype': 'static',
         'buildtype': 'release',
         'features': base_features,
     },
