@@ -8,6 +8,7 @@ import gitlab
 import urllib
 from dateutil.parser import parse as dateparse
 import datetime
+import os
 import requests
 import json
 
@@ -190,6 +191,8 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
                     self._reject_change(mr)
 
     def _authenticate_merge_request(self, mr):
+        if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
+            return False
         project_id = mr["project_id"]
         access_level = self.api.getaccesslevel(project_id, mr["author"]["id"])
         if access_level >= DEVELOPER:
