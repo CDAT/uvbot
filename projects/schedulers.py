@@ -1,5 +1,6 @@
 import paraview.schedule
 import paraviewsuperbuild.schedule
+import catalyst.schedule
 
 
 __all__ = [
@@ -10,6 +11,7 @@ __all__ = [
 SCHEDULES = {
     'ParaView': paraview.schedule,
     'ParaViewSuperbuild': paraviewsuperbuild.schedule,
+    'Catalyst' : catalyst.schedule,
 }
 
 

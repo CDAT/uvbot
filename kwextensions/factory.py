@@ -1,7 +1,8 @@
 from buildbot.process.factory import BuildFactory
 from buildbot.process.properties import Property, Interpolate
 from buildbot.steps.source.git import Git
-from kwextensions.steps import CTestDashboard, CTestConfigDownload, CTestExtraOptionsDownload
+from kwextensions.steps import CTestDashboard, CTestConfigDownload, CTestExtraOptionsDownload,\
+                               CatalyzePreConfigure, CTestCatalystExtraOptionsDownload
 import os
 
 moduledir = os.path.dirname(os.path.abspath(__file__))
@@ -21,3 +22,20 @@ mergeRequestBasicTestsFactory.addStep(CTestDashboard())
 
 def get_ctest_buildfactory():
     return mergeRequestBasicTestsFactory
+
+catalyst_update = Git(name="update",
+        repourl=Property("repository"),
+        mode='incremental',
+        submodules=True,
+        workdir="source",
+        env={'GIT_SSL_NO_VERIFY': 'true'})
+
+catalystTestFactory = BuildFactory()
+catalystTestFactory.addStep(catalyst_update)
+catalystTestFactory.addStep(CatalyzePreConfigure())
+catalystTestFactory.addStep(CTestConfigDownload(mastersrc="%s/catalyst.ctest" % moduledir))
+catalystTestFactory.addStep(CTestCatalystExtraOptionsDownload())
+catalystTestFactory.addStep(CTestDashboard())
+
+def get_catalyst_buildfactory():
+    return catalystTestFactory
