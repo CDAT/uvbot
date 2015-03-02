@@ -22,7 +22,7 @@ defconfig = {
 
     'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
 
-    'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards',
+    'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/paraview',
 }
 
 base_features = (
