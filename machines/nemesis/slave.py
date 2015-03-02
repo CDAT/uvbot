@@ -21,6 +21,7 @@ SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
 
         'configure_options:buildslave': {
             'CMAKE_MAKE_PROGRAM:FILEPATH': 'C:/Users/kitware/misc/root/cmake/bin/ninja.exe',
+            'CMAKE_NINJA_FORCE_RESPONSE_FILE:BOOL': 'ON', # paths are too long
         },
     }
 )
