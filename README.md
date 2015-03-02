@@ -45,6 +45,15 @@ the master:
 buildbot start /path/to/master
 ```
 
+In the /path/to/buildbot/rep folder, create an htpasswd file named webstatuspasswords.
+A simple way to do this is with the htpasswd command:
+
+```sh
+htpasswd -c webstatuspasswords username
+```
+
+This sample command will prompt for the password for user 'username' and create the file.
+
 Adding a Machine
 ================
 
