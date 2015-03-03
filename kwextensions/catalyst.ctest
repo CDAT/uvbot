@@ -1,0 +1,139 @@
+# ctest_command: ctest commmand
+# ctest_model : dashboard model to use.
+# ctest_source : path to source dir
+# ctest_build : path to build dir
+# ctest_buildname : name for the build.
+# ctest_site: name for the site.
+# ctest_generator : generator
+# ctest_extra_options_file: file to include that defines extra variables like
+#                           ctest_configure_options, ctest_test_excludes,
+#                           ctest_test_include_labels.
+# ctest_stages: all, configure, build, test
+get_filename_component (PARENT_DIR ${ctest_source} PATH)
+set (CTEST_SOURCE_DIRECTORY "${PARENT_DIR}/catalyst_source")
+set (CTEST_BINARY_DIRECTORY "${ctest_build}")
+set (CTEST_COMMAND "${ctest_command}")
+set (CTEST_CMAKE_GENERATOR "${ctest_generator}")
+set (CTEST_BUILD_NAME "${ctest_buildname}")
+set (CTEST_SITE "${ctest_site}")
+
+# Avoid non-ascii characters in tool output.
+set(ENV{LC_ALL} C)
+
+include("${ctest_extra_options_file}" OPTIONAL)
+
+ctest_start(${ctest_model} ${ctest_source} ${ctest_build})
+
+set (success TRUE)
+#==============================================================================
+# Configure
+#==============================================================================
+if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*")
+    set(CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh ${CTEST_SOURCE_DIRECTORY}")
+
+    ctest_configure(OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
+                    RETURN_VALUE configure_result)
+    ctest_submit(PARTS Configure Notes)
+    # If configuration failed, report error and stop test.
+    if (NOT "${configure_result}" STREQUAL "0")
+        message("Configure failed!!!")
+        set(success FALSE)
+    else()
+    # else configure the tests...
+        message("Configuring tests...")
+        list(APPEND ctest_configure_options "-DParaView_DIR=${CTEST_BINARY_DIRECTORY}")
+        unset(CTEST_CONFIGURE_COMMAND)
+        ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}/Testing"
+                        SOURCE "${CTEST_SOURCE_DIRECTORY}/Testing"
+                        APPEND
+                        OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
+                        RETURN_VALUE test_configure_result)
+    # if configuring the tests failed, report error and stop
+        if (NOT ${test_configure_result} STREQUAL "0")
+            message("Configuring tests failed!!!")
+            set(success FALSE)
+        endif()
+    endif()
+endif()
+
+#==============================================================================
+# Build
+#==============================================================================
+# Read ctest custom files from the project.
+ctest_read_custom_files(${ctest_build})
+
+if (success AND ("${ctest_stages}" STREQUAL "all" OR ${ctest_stages} MATCHES ".*build.*"))
+    ctest_build(RETURN_VALUE build_result
+                NUMBER_ERRORS build_number_errors
+                NUMBER_WARNINGS build_number_warnings
+                APPEND)
+    ctest_submit(PARTS Build)
+
+    # If build failed (or had non-zero errors), report error and stop test.
+    if ( (NOT ${build_number_errors} STREQUAL "0") OR
+         (NOT ${build_result} STREQUAL "0") )
+         message("Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!!!")
+         set( success FALSE)
+    else()
+        ctest_build(APPEND
+                    SOURCE "${CTEST_SOURCE_DIRECTORY}/Testing"
+                    BUILD "${CTEST_BINARY_DIRECTORY}/Testing"
+                    RETURN_VALUE test_build_result)
+        if (NOT "${test_build_result}" STREQUAL "0")
+            message("Building tests failed!!!")
+            set(success FALSE)
+        endif()
+    endif()
+    message("BUILDBOT BUILD SUMMARY: ${build_number_warnings}/${build_number_errors}")
+endif()
+
+#==============================================================================
+# Test
+#==============================================================================
+if (success AND ("${ctest_stages}" STREQUAL "all" OR ${ctest_stages} MATCHES ".*test.*"))
+    ctest_test(
+         APPEND
+         SOURCE "${CTEST_SOURCE_DIRECTORY}/Testing"
+         BUILD "${CTEST_BINARY_DIRECTORY}/Testing"
+         EXCLUDE "${ctest_test_excludes}"
+         RETURN_VALUE test_result)
+    ctest_submit(PARTS Test)
+
+    if (NOT "${test_result}" STREQUAL "0")
+        message("Tests failed!!!")
+        set(success FALSE)
+    endif()
+endif()
+
+#==============================================================================
+# Upload files.
+#==============================================================================
+if (success AND
+        ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*upload.*"))
+    set(files)
+
+    # if we should upload the catalyst source, zip it and add it to the list
+    # of files to upload
+    if (ctest_upload_catalyst_source)
+        get_filename_component(catalyst_source_dir_name "${CTEST_SOURCE_DIRECTORY}" NAME)
+        execute_process(COMMAND
+                        tar czf "${catalyst_source_archive}"
+                        -C "${catalyst_source_directory}/.."
+                        ${catalyst_source_dir_name})
+        list(APPEND files ${catalyst_source_archive})
+    endif()
+
+    if (ctest_upload_file_patterns)
+        foreach (pattern ${ctest_upload_file_patterns})
+            set(cur_files)
+            file(GLOB cur_files "${pattern}")
+            list(APPEND files ${cur_files})
+        endforeach()
+    endif()
+
+    if (files)
+        message("Files to upload ${files}")
+        ctest_upload(FILES ${files})
+        ctest_submit(PARTS Upload)
+    endif()
+endif()

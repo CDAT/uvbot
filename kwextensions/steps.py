@@ -222,3 +222,61 @@ class CTestExtraOptionsDownload(StringDownload):
                 s=makeExtraOptionsString,
                 slavedest=Interpolate("%(prop:builddir)s/ctest_extra_options.cmake"),
                 **kwargs)
+
+@properties.renderer
+def makeCatalystExtraOptionsString(props):
+    uploadSrc = props.getProperty('catalyst:upload_source_tarball')
+    editionList = props.getProperty('catalyst:catalyst_editions_required')
+    editionStr = "+".join(editionList)
+    tarFileName = "Catalyst-%s-Source.tar.gz" % editionStr
+    return """
+            # Extra configuration options for this build.
+            # Options to pass to the configure stage.
+            set (ctest_configure_options "%s")
+
+            # Test excludes
+            set (ctest_test_excludes "%s")
+
+            # Test include labels
+            set (ctest_test_include_labels "%s")
+
+            set (ctest_upload_file_patterns "%s")
+
+            set (ctest_upload_catalyst_source "%s")
+            set (catalyst_source_archive "%s")
+
+            """ % (_get_configure_options(props),
+                   _get_test_params(props, "test_excludes", "|"),
+                   _get_test_params(props, "test_include_labels", "|"),
+                   _get_test_params(props, "upload_file_patterns", ";"),
+                   uploadSrc,
+                   tarFileName
+                   )
+
+class CTestCatalystExtraOptionsDownload(StringDownload):
+    def __init__(self, s=None, slavedest=None, **kwargs):
+        StringDownload.__init__(self,
+                s=makeCatalystExtraOptionsString,
+                slavedest=Interpolate("%(prop:builddir)s/ctest_extra_options.cmake"),
+                **kwargs)
+
+@properties.renderer
+def make_catalyze_command(props):
+    from sys import executable as python_executable
+    command = [python_executable,]
+    builddir = props.getProperty('builddir')
+    command += ['%s/source/Catalyst/catalyze.py' % builddir, '-r']
+    command.append('%s/source' % builddir)
+    editionList = props.getProperty('catalyst:catalyst_editions_required')
+    for edition in editionList:
+        command += ['-i','%s/source/Catalyst/Editions/%s' % (builddir,edition)]
+    command += ['-o','%s/catalyst_source' % builddir, '-t']
+    return command
+    
+
+class CatalyzePreConfigure(ShellCommand):
+    name="catalyze"
+    description="preconfiguring catalyst source"
+    desctiptionDone="preconfigured catalyst"
+    def __init__(self, **kwargs):
+        ShellCommand.__init__(self,command=make_catalyze_command,**kwargs)
