@@ -1,13 +1,11 @@
 from buildbot.steps.source.git import Git
 from buildbot.process import properties
+from buildbot.process.buildstep import LogLineObserver
 from buildbot.steps.shell import ShellCommand, WarningCountingShellCommand
 from buildbot.process.properties import Property, Interpolate
 from buildbot.steps.transfer import FileDownload, StringDownload
 
-from buildbot.status.results import FAILURE
-from buildbot.status.results import SUCCESS
-from buildbot.status.results import WARNINGS
-
+from buildbot.status.results import FAILURE, SUCCESS, WARNINGS
 from twisted.python import log as twisted_log
 from urllib import urlencode
 from datetime import datetime, timedelta
@@ -48,6 +46,74 @@ def makeCTestDashboardCommand(props):
     command_prefix.extend(command)
     return command_prefix
 
+# Generates the command to fetch the user's VTK fork
+@properties.renderer
+def makeUserVTKCommand(props):
+    repo = props.getProperty('repository')
+    cmd = ''
+    if repo.endswith('paraview.git') and props.hasProperty('username'):
+        username = props.getProperty('username')
+        newRepo = 'https://kwgitlab.kitwarein.com/%s/vtk.git' % username
+        cmd = 'cd VTK && git remote add tmp %s && git -c http.sslVerify=false fetch tmp && git remote remove tmp && cd .. && git submodule update' % newRepo
+    return cmd
+
+def failureForSubmodule(step):
+    from buildbot.status.builder import FAILURE
+    lastStep = step.build.getStatus().getSteps()[0]
+    output = lastStep.getLogs()[0].getText()
+    return step.build.result == FAILURE and output.find('in submodule path \'VTK\'') != -1
+
+class FetchUserVTKFork(ShellCommand):
+    # TODO make this work for non-VTK submodules
+    def __init__(self, **kwargs):
+        ShellCommand.__init__(self,command=makeUserVTKCommand,
+                              haltOnFailure=True,
+                              flunkOnFailure=True,
+                              doStepIf=failureForSubmodule,
+                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              description=["Trying user's VTK fork..."],
+                              descriptionDone=["Tried user's VTK fork"],
+                              **kwargs)
+@properties.renderer
+def makeSubmoduleTestCommand(props):
+    repo = props.getProperty('repository')
+    cmd = ''
+    if repo.endswith('paraview.git') and props.hasProperty('username'):
+        cmd = 'git rev-parse HEAD; git merge-base origin/master HEAD'
+    return cmd
+
+
+class CompareHashes(LogLineObserver):
+    hashes = []
+    def outLineReceived(self,line):
+        if len(line) > 0:
+            self.hashes.append(line)
+    def hashesAreTheSame(self):
+        if len(self.hashes) != 2:
+            return False # don't know what to do in this case
+        return self.hashes[0] == self.hashes[1]
+
+class IsVTKSubmoduleValid(ShellCommand):
+    def __init__(self, **kwargs):
+        self.myLogObserver = CompareHashes()
+        ShellCommand.__init__(self,command = makeSubmoduleTestCommand,
+                              alwaysRun=True,
+                              warnOnFailure=True,
+                              workdir=Interpolate('%(prop:builddir)s/source/VTK'),
+                              description=['Testing if VTK is merged'],
+                              descriptionDone=['Is VTK merged'],
+                              **kwargs)
+        self.addLogObserver('stdio',self.myLogObserver)
+
+    def evaluateCommand(self, cmd):
+        """return command state"""
+        result = ShellCommand.evaluateCommand(self, cmd)
+        if result != SUCCESS:
+            return result
+        if self.myLogObserver.hashesAreTheSame():
+            return SUCCESS
+        else:
+            return WARNINGS
 
 class CTestDashboard(ShellCommand):
     name="build-n-test"
