@@ -279,4 +279,4 @@ class CatalyzePreConfigure(ShellCommand):
     description="preconfiguring catalyst source"
     desctiptionDone="preconfigured catalyst"
     def __init__(self, **kwargs):
-        ShellCommand.__init__(self,command=make_catalyze_command,**kwargs)
+        ShellCommand.__init__(self,command=make_catalyze_command,haltOnFailure=True,**kwargs)
