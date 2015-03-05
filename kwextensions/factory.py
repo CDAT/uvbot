@@ -9,8 +9,10 @@ from kwextensions.steps import CTestDashboard,\
                                DownloadCataystCTestScript,\
                                DownloadLauncher,\
                                CTestExtraOptionsDownload,\
-                               FetchUserVTKFork,\
-                               IsVTKSubmoduleValid
+                               makeUploadFetchSubmoduleScript,\
+                               FetchUserSubmoduleForks,\
+                               makeUploadTestSubmoduleScript,\
+                               AreSubmodulesValid
 
 update = Git(name="update",
         repourl=Property("repository"),
@@ -23,7 +25,8 @@ update = Git(name="update",
 
 mergeRequestBasicTestsFactory = BuildFactory()
 mergeRequestBasicTestsFactory.addStep(update)
-mergeRequestBasicTestsFactory.addStep(FetchUserVTKFork())
+mergeRequestBasicTestsFactory.addStep(makeUploadFetchSubmoduleScript())
+mergeRequestBasicTestsFactory.addStep(FetchUserSubmoduleForks())
 mergeRequestBasicTestsFactory.addStep(DownloadCommonCTestScript())
 mergeRequestBasicTestsFactory.addStep(CTestExtraOptionsDownload())
 # DownloadLauncher is only needed for Windows.
@@ -34,14 +37,16 @@ mergeRequestBasicTestsFactory.addStep(
 mergeRequestBasicTestsFactory.addStep(CTestDashboard(
     timeout=60*60*2 # 2 hrs. Superbuilds can take a while without producing any output.
     ))
-mergeRequestBasicTestsFactory.addStep(IsVTKSubmoduleValid())
+mergeRequestBasicTestsFactory.addStep(makeUploadTestSubmoduleScript())
+mergeRequestBasicTestsFactory.addStep(AreSubmodulesValid())
 
 def get_ctest_buildfactory():
     return mergeRequestBasicTestsFactory
 
 catalystTestFactory = BuildFactory()
 catalystTestFactory.addStep(update)
-catalystTestFactory.addStep(FetchUserVTKFork())
+catalystTestFactory.addStep(makeUploadFetchSubmoduleScript())
+catalystTestFactory.addStep(FetchUserSubmoduleForks())
 catalystTestFactory.addStep(DownloadCommonCTestScript())
 catalystTestFactory.addStep(DownloadCataystCTestScript())
 catalystTestFactory.addStep(CTestExtraOptionsDownload())
@@ -49,7 +54,8 @@ catalystTestFactory.addStep(
         SetProperty(property="ctest_dashboard_script",
             value=Interpolate('%(prop:builddir)s/catalyst.common.ctest')))
 catalystTestFactory.addStep(CTestDashboard())
-catalystTestFactory.addStep(IsVTKSubmoduleValid())
+catalystTestFactory.addStep(makeUploadTestSubmoduleScript())
+catalystTestFactory.addStep(AreSubmodulesValid())
 
 def get_catalyst_buildfactory():
     return catalystTestFactory

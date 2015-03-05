@@ -10,6 +10,8 @@ from twisted.python import log as twisted_log
 from urllib import urlencode
 from datetime import datetime, timedelta
 
+Gitlab_Base_URL = "https://kwgitlab.kitwarein.com"
+
 import re
 class GitWithSubmodules(Git):
     """
@@ -46,74 +48,76 @@ def makeCTestDashboardCommand(props):
     command_prefix.extend(command)
     return command_prefix
 
-# Generates the command to fetch the user's VTK fork
+# Generates the command to fetch the user's fork of submodules
 @properties.renderer
-def makeUserVTKCommand(props):
+def makeUserForkCommand(props):
     repo = props.getProperty('repository')
     cmd = ''
-    if repo.endswith('paraview.git') and props.hasProperty('username'):
+    if props.hasProperty('username') and props.hasProperty('try_user_fork') and\
+            props.getProperty('try_user_fork') == True:
+        argList = ['git', 'submodule', 'foreach', 'cmake']
         username = props.getProperty('username')
-        newRepo = 'https://kwgitlab.kitwarein.com/%s/vtk.git' % username
-        cmd = 'cd VTK && git remote add tmp %s && git -c http.sslVerify=false fetch tmp && git remote remove tmp && cd .. && git submodule update' % newRepo
+        basedir = props.getProperty('builddir')
+        cmakefile = '%s/fetch_submodule.cmake' % basedir
+        argList.append('-Dusername:STRING=%s' % username)
+        argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
+        argList += ['-P', cmakefile]
+        cmd = " ".join(argList) + ' && git submodule update --init'
     return cmd
 
 def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
     lastStep = step.build.getStatus().getSteps()[0]
     output = lastStep.getLogs()[0].getText()
-    return step.build.result == FAILURE and output.find('in submodule path \'VTK\'') != -1
+    return step.build.result == FAILURE and output.find('in submodule path') != -1
 
-class FetchUserVTKFork(ShellCommand):
-    # TODO make this work for non-VTK submodules
+def makeUploadFetchSubmoduleScript(**kwargs):
+    import os
+    moduledir = os.path.dirname(os.path.abspath(__file__))
+    step = FileDownload(mastersrc="%s/fetch_submodule.cmake" % moduledir,
+                        slavedest=Interpolate("%(prop:builddir)s/fetch_submodule.cmake"),
+                        haltOnFailure=True,
+                        doStepIf=failureForSubmodule,
+                        **kwargs)
+    return step
+
+class FetchUserSubmoduleForks(ShellCommand):
     def __init__(self, **kwargs):
-        ShellCommand.__init__(self,command=makeUserVTKCommand,
+        ShellCommand.__init__(self,command=makeUserForkCommand,
                               haltOnFailure=True,
                               flunkOnFailure=True,
                               doStepIf=failureForSubmodule,
                               workdir=Interpolate('%(prop:builddir)s/source'),
-                              description=["Trying user's VTK fork..."],
-                              descriptionDone=["Tried user's VTK fork"],
+                              description=["Trying user's submodule forks..."],
+                              descriptionDone=["Tried user's submodule forks"],
+                              env={'GIT_SSL_NO_VERIFY': 'true'},
                               **kwargs)
+
+def makeUploadTestSubmoduleScript(**kwargs):
+    import os
+    moduledir = os.path.dirname(os.path.abspath(__file__))
+    step = FileDownload(mastersrc="%s/test_submodule.cmake" % moduledir,
+                        slavedest=Interpolate("%(prop:builddir)s/test_submodule.cmake"),
+                        haltOnFailure=True,
+                        **kwargs)
+    return step
+
 @properties.renderer
 def makeSubmoduleTestCommand(props):
-    repo = props.getProperty('repository')
-    cmd = ''
-    if repo.endswith('paraview.git') and props.hasProperty('username'):
-        cmd = 'git rev-parse HEAD; git merge-base origin/master HEAD'
+    cmd = ['git', 'submodule', 'foreach', 'cmake', '-P']
+    builddir = props.getProperty('builddir')
+    cmd.append('%s/test_submodule.cmake' % builddir)
     return cmd
 
 
-class CompareHashes(LogLineObserver):
-    hashes = []
-    def outLineReceived(self,line):
-        if len(line) > 0:
-            self.hashes.append(line)
-    def hashesAreTheSame(self):
-        if len(self.hashes) != 2:
-            return False # don't know what to do in this case
-        return self.hashes[0] == self.hashes[1]
-
-class IsVTKSubmoduleValid(ShellCommand):
+class AreSubmodulesValid(ShellCommand):
     def __init__(self, **kwargs):
-        self.myLogObserver = CompareHashes()
         ShellCommand.__init__(self,command = makeSubmoduleTestCommand,
-                              alwaysRun=True,
                               warnOnFailure=True,
-                              workdir=Interpolate('%(prop:builddir)s/source/VTK'),
-                              description=['Testing if VTK is merged'],
-                              descriptionDone=['Is VTK merged'],
+                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              description=['Testing if submodules are merged'],
+                              descriptionDone=['Are submodules merged'],
                               **kwargs)
-        self.addLogObserver('stdio',self.myLogObserver)
-
-    def evaluateCommand(self, cmd):
-        """return command state"""
-        result = ShellCommand.evaluateCommand(self, cmd)
-        if result != SUCCESS:
-            return result
-        if self.myLogObserver.hashesAreTheSame():
-            return SUCCESS
-        else:
-            return WARNINGS
 
 class CTestDashboard(ShellCommand):
     name="build-n-test"
