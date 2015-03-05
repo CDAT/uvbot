@@ -99,6 +99,7 @@ def makeUploadTestSubmoduleScript(**kwargs):
     step = FileDownload(mastersrc="%s/test_submodule.cmake" % moduledir,
                         slavedest=Interpolate("%(prop:builddir)s/test_submodule.cmake"),
                         haltOnFailure=True,
+                        alwaysRun=True,
                         **kwargs)
     return step
 
@@ -113,6 +114,7 @@ def makeSubmoduleTestCommand(props):
 class AreSubmodulesValid(ShellCommand):
     def __init__(self, **kwargs):
         ShellCommand.__init__(self,command = makeSubmoduleTestCommand,
+                              alwaysRun=True,
                               warnOnFailure=True,
                               workdir=Interpolate('%(prop:builddir)s/source'),
                               description=['Testing if submodules are merged'],
