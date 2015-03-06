@@ -111,15 +111,50 @@ def makeSubmoduleTestCommand(props):
     return cmd
 
 
+class TestScriptOutputLogger(LogLineObserver):
+    inMaster = {} # hash of submodule name to bool
+    firstParentOfMaster = {} # hash of submodule name to bool
+    allInMaster = True
+    allFirstParentOfMaster = True
+    currentSubmodule = ''
+    def lineReceived(self, line, lineType):
+        if line.find('Entering') == 0:
+            self.currentSubmodule = line[9:]
+            self.inMaster[self.currentSubmodule] = True
+            self.firstParentOfMaster[self.currentSubmodule] = True
+        elif line.find('Error: commits are not merged to master.') != -1:
+            self.allInMaster = False
+            self.inMaster[self.currentSubmodule] = False
+        elif line.find('Error: head is not in the first parent list of master.') != -1:
+            self.allFirstParentOfMaster = False
+            self.firstParentOfMaster[self.currentSubmodule] = False
+    def outLineReceived(self,line):
+        self.lineReceived(line,'out')
+    def errLineReceived(self,line):
+        self.lineReceived(line,'err')
+
 class AreSubmodulesValid(ShellCommand):
     def __init__(self, **kwargs):
+        self.myLogger = TestScriptOutputLogger()
         ShellCommand.__init__(self,command = makeSubmoduleTestCommand,
                               alwaysRun=True,
-                              warnOnFailure=True,
                               workdir=Interpolate('%(prop:builddir)s/source'),
                               description=['Testing if submodules are merged'],
                               descriptionDone=['Are submodules merged'],
                               **kwargs)
+        self.addLogObserver('stdio',self.myLogger)
+        self.addLogObserver('stderr',self.myLogger)
+    def evaluateCommand(self, cmd):
+        """return command state"""
+        result = ShellCommand.evaluateCommand(self, cmd)
+        if result != SUCCESS:
+            return result
+        elif self.myLogger.allFirstParentOfMaster:
+            return SUCCESS
+        elif self.myLogger.allInMaster:
+            return WARNINGS # TODO should this succeed?
+        else: # TODO - error messages?  I collected info in the logger...
+            return WARNINGS
 
 class CTestDashboard(ShellCommand):
     name="build-n-test"
