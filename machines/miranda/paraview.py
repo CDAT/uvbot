@@ -1,0 +1,127 @@
+import projects
+from projects import paraview
+
+__all__ = [
+    'BUILDERS',
+]
+
+#------------------------------------------------------------------------------
+# Common properties and environment.
+#------------------------------------------------------------------------------
+defprops = {
+    'test_include_labels:builderconfig': [
+        'PARAVIEW',
+    ],
+    'test_excludes:builderconfig': [
+        'UncertaintyRendering', # TODO: why?
+        'pvcs-collab.CreateDelete', # TODO: why?
+        'OpenHelp', # random clucene exceptions
+    ],
+}
+defenv = {
+    'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+}
+
+#------------------------------------------------------------------------------
+# VS9 (2008) 64-bit properties and environment.
+#------------------------------------------------------------------------------
+vs9x64props = {
+        'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+        'vcvarsargument' : 'amd64',
+}
+
+vs9x64env = {
+        'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;C:/Tools/Python27/x64;${PATH}'
+}
+#------------------------------------------------------------------------------
+# VS9 (2008) 32-bit properties and environment.
+#------------------------------------------------------------------------------
+vs9x32props = {
+        'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+        'vcvarsargument' : 'x86',
+}
+
+vs9x32env= {
+        'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;C:/Tools/Python27/x32;${PATH}'
+}
+
+#------------------------------------------------------------------------------
+ninjaprops = {
+    'generator': 'Ninja',
+    'buildflags': '-l9',
+}
+
+#vs9Gx32props = {
+#    'generator': 'Visual Studio 9 2008',
+#    'buildflags': '-l9',
+#}
+#
+#vs9Gx64props = {
+#    'generator': 'Visual Studio 9 2008 Win64',
+#    'buildflags': '-l9',
+#}
+
+#------------------------------------------------------------------------------
+defconfig = {
+    'BUILD_EXAMPLES:BOOL': 'ON',
+    'VTK_DEBUG_LEAKS:BOOL': 'ON',
+    'VTK_LEGACY_REMOVE:BOOL': 'ON',
+    'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
+    'PARAVIEW_DATA_STORE:PATH': 'C:/Dashboards/data/paraview',
+}
+
+defconfigx64 = {
+    'PYTHON_EXECUTABLE:FILEPATH' : 'C:/Tools/Python27/x64/python.exe',
+    'PYTHON_INCLUDE_DIR:PATH' : 'C:/Tools/Python27/x64/include',
+    'PYTHON_LIBRARY:FILEPATH' : 'C:/Tools/Python27/x64/libs/python27.lib',
+}
+
+defconfigx32 = {
+    'PYTHON_EXECUTABLE:FILEPATH' : 'C:/Tools/Python27/x32/python.exe',
+    'PYTHON_INCLUDE_DIR:PATH' : 'C:/Tools/Python27/x32/include',
+    'PYTHON_LIBRARY:FILEPATH' : 'C:/Tools/Python27/x32/libs/python27.lib',
+}
+
+base_features = (
+    'gui',
+    'python',
+)
+
+buildsets64 = [
+    {
+        'os': 'win64',
+        'libtype': 'static',
+        'buildtype': 'release',
+        'features': base_features,
+    },
+    {
+        'os': 'win64',
+        'libtype': 'shared',
+        'buildtype': 'debug',
+        'features': base_features,
+    },
+]
+
+BUILDERS = projects.make_builders(paraview, buildsets64,
+    defprops=projects.merge_config(projects.merge_config(defprops, ninjaprops), vs9x64props),
+    defconfig=projects.merge_config(defconfig, defconfigx64),
+    slavenames=['miranda'],
+    env=projects.merge_config(defenv, vs9x64env)
+)
+
+buildsets32 = [
+    {
+        'os': 'win32',
+        'libtype': 'shared',
+        'buildtype': 'release',
+        'features': base_features,
+    },
+]
+
+BUILDERS.extend(projects.make_builders(paraview, buildsets32,
+    defprops=projects.merge_config(projects.merge_config(defprops, ninjaprops), vs9x32props),
+    defconfig=projects.merge_config(defconfig, defconfigx32),
+    slavenames=['miranda'],
+    env=projects.merge_config(defenv, vs9x32env)
+    )
+)

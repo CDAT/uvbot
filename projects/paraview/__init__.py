@@ -10,6 +10,8 @@ OPTIONS = {
         'linux': {},
         'windows': {},
         'osx': {},
+        'win32': {},
+        'win64': {},
     },
     'libtype': {
         'shared': {
@@ -60,4 +62,5 @@ FEATURES = {
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     },
     'icc': {},
+    'vs': {}
 }

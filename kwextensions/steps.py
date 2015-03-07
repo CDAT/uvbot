@@ -28,33 +28,38 @@ class GitWithSubmodules(Git):
         # We'll handle it here.
         Git.__init__(self, submodules=False, **kwargs)
 
+@properties.renderer
+def makeCTestDashboardCommand(props):
+    props_dict = {'prop:ctest_stages' : 'all'}
+    for (key, (value, source)) in props.asDict().iteritems():
+        props_dict["prop:%s" % key] = value
+    command = ['%(prop:cmakeroot)s/bin/ctest' % props_dict,
+            '-VV',
+            '-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake' % props_dict,
+            '-Dctest_stages:STRING=%(prop:ctest_stages)s' % props_dict,
+            '-S',
+            '%(prop:builddir)s/common.ctest' % props_dict
+            ]
+    if not props.getProperty('vcvarsall'):
+        return command
+    command_prefix = ["call",
+            "%(prop:builddir)s/vclauncher.bat" % props_dict
+            ]
+    command_prefix.extend(command)
+    return command_prefix
+
 
 class CTestDashboard(ShellCommand):
     name="build-n-test"
     description="building-n-testing"
     descriptionDone="built and tested"
-    def __init__(self, model="Experimental", command=None, properties={}, **kwargs):
+    def __init__(self, command=None, **kwargs):
         self.warnCount = 0
         self.errorCount = 0
         # TODO: we maybe can convert all these arguments to be passed in through
         # the ctest_extra_options file.
         ShellCommand.__init__(self,
-                command=[
-                    Interpolate('%(prop:cmakeroot)s/bin/ctest'),
-                    '-VV',
-                    Interpolate('-Dctest_command:STRING=%(prop:cmakeroot)s/bin/ctest'),
-                    Interpolate('-Dctest_source:STRING=%(prop:builddir)s/source'),
-                    Interpolate('-Dctest_build:STRING=%(prop:builddir)s/build'),
-                                '-Dctest_model:STRING=%s' % model,
-                    Interpolate('-Dctest_generator:STRING=%(prop:generator)s'),
-                    # we're creating an unique buildname per build.
-                    # that makes it possible to link back to Cdash summary page easily.
-                    Interpolate('-Dctest_buildname:STRING=build%(prop:buildnumber)s-%(prop:buildername)s'),
-                    Interpolate('-Dctest_site:STRING=%(prop:slavename)s'),
-                    Interpolate('-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake'),
-                    Interpolate('-Dctest_stages:STRING=%(prop:ctest_stages:-all)s'),
-                    Interpolate('-DCTEST_BUILD_FLAGS:STRING=%(prop:buildflags)s'),
-                    '-S', Interpolate('%(prop:builddir)s/common.ctest')],
+                command=makeCTestDashboardCommand,
                 **kwargs)
 
     def createSummary(self, log):
@@ -197,30 +202,63 @@ def _get_configure_options(props):
 
 @properties.renderer
 def makeExtraOptionsString(props):
+    props_dict = {'prop:model' : 'Experimental'}
+    for (key, (value, source)) in props.asDict().iteritems():
+        if isinstance(value, str):
+            value = value.replace("\\", '/')
+        props_dict["prop:%s" % key] = value
+    props_dict['ctest_configure_options'] = _get_configure_options(props)
+    props_dict['ctest_test_excludes'] = _get_test_params(props, "test_excludes", "|")
+    props_dict['ctest_test_include_labels'] = _get_test_params(props, "test_include_labels", "|")
+    props_dict['ctest_upload_file_patterns'] = _get_test_params(props, "upload_file_patterns", ";")
     return """
+            # Essential options.
+            set (CTEST_COMMAND "%(prop:cmakeroot)s/bin/ctest")
+            set (CTEST_SOURCE_DIRECTORY "%(prop:builddir)s/source")
+            set (CTEST_BINARY_DIRECTORY "%(prop:builddir)s/build")
+            set (CTEST_CMAKE_GENERATOR "%(prop:generator)s")
+
+            # we're creating an unique buildname per build.
+            # that makes it possible to link back to Cdash summary page easily.
+            set (CTEST_BUILD_NAME "build%(prop:buildnumber)s-%(prop:buildername)s")
+            set (CTEST_SITE "%(prop:slavename)s")
+
+            set (CTEST_BUILD_FLAGS "%(prop:buildflags)s")
+
             # Extra configuration options for this build.
+            set (ctest_model "%(prop:model)s")
+
             # Options to pass to the configure stage.
-            set (ctest_configure_options "%s")
+            set (ctest_configure_options "%(ctest_configure_options)s")
 
             # Test excludes
-            set (ctest_test_excludes "%s")
+            set (ctest_test_excludes "%(ctest_test_excludes)s")
 
             # Test include labels
-            set (ctest_test_include_labels "%s")
+            set (ctest_test_include_labels "%(ctest_test_include_labels)s")
 
-            set (ctest_upload_file_patterns "%s")
-
-            """ % (_get_configure_options(props),
-                   _get_test_params(props, "test_excludes", "|"),
-                   _get_test_params(props, "test_include_labels", "|"),
-                   _get_test_params(props, "upload_file_patterns", ";")
-                   )
+            set (ctest_upload_file_patterns "%(ctest_upload_file_patterns)s")
+            """ % props_dict
 
 class CTestExtraOptionsDownload(StringDownload):
     def __init__(self, s=None, slavedest=None, **kwargs):
         StringDownload.__init__(self,
                 s=makeExtraOptionsString,
                 slavedest=Interpolate("%(prop:builddir)s/ctest_extra_options.cmake"),
+                **kwargs)
+
+
+class CTestLauncherDownload(StringDownload):
+    def __init__(self, s=None, slavedest=None, **kwargs):
+        global _vclauncher
+        StringDownload.__init__(self,
+                s=Interpolate("""rem Name: vclauncher.bat
+rem Task: launch ctest after setting appropriate environment for Visual Studio compilers.
+@echo on
+call "%(prop:vcvarsall)s" %(prop:vcvarsargument)s
+call %%*
+"""),
+                slavedest=Interpolate("%(prop:builddir)s/vclauncher.bat"),
                 **kwargs)
 
 @properties.renderer
