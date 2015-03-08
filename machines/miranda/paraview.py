@@ -77,14 +77,14 @@ defconfigx64 = {
 }
 
 defconfigx32 = {
-    'PYTHON_EXECUTABLE:FILEPATH' : 'C:/Tools/Python27/x32/python.exe',
-    'PYTHON_INCLUDE_DIR:PATH' : 'C:/Tools/Python27/x32/include',
-    'PYTHON_LIBRARY:FILEPATH' : 'C:/Tools/Python27/x32/libs/python27.lib',
+# We don't have 32-bit Python on this machine for dashboards.
+#   'PYTHON_EXECUTABLE:FILEPATH' : 'C:/Tools/Python27/x32/python.exe',
+#   'PYTHON_INCLUDE_DIR:PATH' : 'C:/Tools/Python27/x32/include',
+#   'PYTHON_LIBRARY:FILEPATH' : 'C:/Tools/Python27/x32/libs/python27.lib',
 }
 
 base_features = (
     'gui',
-    'python',
 )
 
 buildsets64 = [
@@ -92,13 +92,13 @@ buildsets64 = [
         'os': 'win64',
         'libtype': 'static',
         'buildtype': 'release',
-        'features': base_features,
+        'features': base_features + ('python',) ,
     },
     {
         'os': 'win64',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'features': base_features,
+        'features': base_features + ('python',) ,
     },
 ]
 
