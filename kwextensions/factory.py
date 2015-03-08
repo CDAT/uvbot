@@ -25,7 +25,9 @@ mergeRequestBasicTestsFactory.addStep(FileDownload(
 mergeRequestBasicTestsFactory.addStep(CTestExtraOptionsDownload())
 # CTestLauncherDownload is only needed for Windows.
 mergeRequestBasicTestsFactory.addStep(CTestLauncherDownload())
-mergeRequestBasicTestsFactory.addStep(CTestDashboard())
+mergeRequestBasicTestsFactory.addStep(CTestDashboard(
+    timeout=60*60*2 # 2 hrs. Superbuilds can take a while without producing any output.
+    ))
 
 def get_ctest_buildfactory():
     return mergeRequestBasicTestsFactory
