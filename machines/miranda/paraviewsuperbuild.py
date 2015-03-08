@@ -52,6 +52,7 @@ defenv = {
 # VS9 (2008) 64-bit properties and environment.
 #------------------------------------------------------------------------------
 vs9x64props = {
+        'compiler': 'msvc-2008-64bit',
         'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
         'vcvarsargument' : 'amd64',
 }
@@ -68,6 +69,7 @@ vs9x64config = {
 # VS9 (2008) 32-bit properties and environment.
 #------------------------------------------------------------------------------
 vs9x32props = {
+        'compiler': 'msvc-2008-32bit',
         'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
         'vcvarsargument' : 'x86',
 }
