@@ -10,6 +10,8 @@ OPTIONS = {
         'linux': {},
         'windows': {},
         'osx': {},
+        'win32' : {},
+        'win64' : {},
     },
     'libtype': {
         'shared': {

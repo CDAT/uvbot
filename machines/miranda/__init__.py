@@ -5,11 +5,11 @@ r'''
 
 from . import slave
 from . import paraview
-#from . import paraviewsuperbuild
+from . import paraviewsuperbuild
 
 BUILDERS = {
     'ParaView': paraview.BUILDERS,
-#    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
+    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
 }
 
 def get_buildslave():
