@@ -98,7 +98,8 @@ buildsets64 = [
         'os': 'win64',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'features': base_features + ('python',) ,
+        'features': base_features + ('python', 'nocollab') , # disable
+                        # collaboration tests in debug builds.
     },
 ]
 

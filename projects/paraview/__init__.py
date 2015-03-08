@@ -62,5 +62,8 @@ FEATURES = {
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     },
     'icc': {},
-    'vs': {}
+    'vs': {},
+    'nocollab' : {
+        'PARAVIEW_COLLABORATION_TESTING:BOOL': ('ON', 'OFF'),
+    },
 }
