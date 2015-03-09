@@ -124,3 +124,6 @@ do_catalyst_dashboard("${CATALYST_EDITIONS}")
 #
 #set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras" "Rendering-Base" "Rendering-Base-Python")
 #do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+# XXX: This should not be necessary, but CTest's code flow is confusing.
+set(CTEST_RUN_CURRENT_SCRIPT FALSE)
