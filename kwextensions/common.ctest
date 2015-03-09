@@ -12,7 +12,7 @@
 #
 
 # I still have no clue what this is.
-set (CTEST_USE_LAUNCHERS 1)
+set(CTEST_USE_LAUNCHERS 1)
 
 # ctest_stages: all, configure, build, test
 include("${ctest_extra_options_file}")
@@ -25,7 +25,7 @@ ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
 #==============================================================================
 # Configure
 #==============================================================================
-set (success TRUE)
+set(success TRUE)
 if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*")
     ctest_configure(OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
                     RETURN_VALUE configure_result)
@@ -33,16 +33,16 @@ if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*
     #if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     #    # If CMakeCache.txt is present. Let's upload that to the dashboard as well.
     #    # Helps debug issues.
-    #    list (APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
-    #endif()
+    #    list(APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+    #endif ()
     ctest_submit(PARTS Configure Notes)
 
     # If configuration failed, report error and stop test.
     if (NOT "${configure_result}" STREQUAL "0")
         message("Configure failed!!!")
-        set (success FALSE)
-    endif()
-endif()
+        set(success FALSE)
+    endif ()
+endif ()
 
 #==============================================================================
 # Build
@@ -58,14 +58,13 @@ if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES "
     ctest_submit(PARTS Build)
 
     # If build failed (or had non-zero errors), report error and stop test.
-    if ( (NOT "${build_number_errors}" STREQUAL "0") OR
-         (NOT "${build_result}" STREQUAL "0") )
+    if ((NOT "${build_number_errors}" STREQUAL "0") OR
+        (NOT "${build_result}" STREQUAL "0"))
          message("Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!!!")
-         set (success FALSE)
-    endif()
+         set(success FALSE)
+    endif ()
     message("BUILDBOT BUILD SUMMARY: ${build_number_warnings}/${build_number_errors}")
-endif()
-
+endif ()
 
 #==============================================================================
 # Test
@@ -79,24 +78,24 @@ if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES "
 
     if (NOT "${test_result}" STREQUAL "0")
         message("Tests failed!!!")
-        set (success FALSE)
-    endif()
-endif()
+        set(success FALSE)
+    endif ()
+endif ()
 
 #==============================================================================
 # Upload files.
 #==============================================================================
 if (success AND ctest_upload_file_patterns AND
-        ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*upload.*"))
-    set (files)
+    ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*upload.*"))
+    set(files)
     foreach (pattern ${ctest_upload_file_patterns})
-        set (cur_files)
-        file (GLOB cur_files "${pattern}")
-        set (files ${files} ${cur_files})
-    endforeach()
+        set(cur_files)
+        file(GLOB cur_files "${pattern}")
+        set(files ${files} ${cur_files})
+    endforeach ()
     if (files)
         message("Files to upload ${files}")
         ctest_upload(FILES ${files})
         ctest_submit(PARTS Upload)
-    endif()
-endif()
+    endif ()
+endif ()
