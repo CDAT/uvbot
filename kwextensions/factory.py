@@ -1,8 +1,11 @@
 from buildbot.process.factory import BuildFactory
 from buildbot.process.properties import Property, Interpolate
 from buildbot.steps.source.git import Git
+from buildbot.steps.transfer import FileDownload
 from kwextensions.steps import CTestDashboard, CTestConfigDownload, CTestExtraOptionsDownload,\
-                               CatalyzePreConfigure, CTestCatalystExtraOptionsDownload
+                               CatalyzePreConfigure,\
+                               CTestCatalystExtraOptionsDownload,\
+                               CTestLauncherDownload
 import os
 
 moduledir = os.path.dirname(os.path.abspath(__file__))
@@ -16,9 +19,15 @@ update = Git(name="update",
 
 mergeRequestBasicTestsFactory = BuildFactory()
 mergeRequestBasicTestsFactory.addStep(update)
-mergeRequestBasicTestsFactory.addStep(CTestConfigDownload(mastersrc="%s/common.ctest" % moduledir))
+mergeRequestBasicTestsFactory.addStep(FileDownload(
+            mastersrc="%s/common.ctest" % moduledir,
+            slavedest=Interpolate("%(prop:builddir)s/common.ctest")))
 mergeRequestBasicTestsFactory.addStep(CTestExtraOptionsDownload())
-mergeRequestBasicTestsFactory.addStep(CTestDashboard())
+# CTestLauncherDownload is only needed for Windows.
+mergeRequestBasicTestsFactory.addStep(CTestLauncherDownload())
+mergeRequestBasicTestsFactory.addStep(CTestDashboard(
+    timeout=60*60*2 # 2 hrs. Superbuilds can take a while without producing any output.
+    ))
 
 def get_ctest_buildfactory():
     return mergeRequestBasicTestsFactory

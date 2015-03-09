@@ -1,29 +1,26 @@
-# ctest_command: ctest commmand
-# ctest_model : dashboard model to use.
-# ctest_source : path to source dir
-# ctest_build : path to build dir
-# ctest_buildname : name for the build.
-# ctest_site: name for the site.
-# ctest_generator : generator
 # ctest_extra_options_file: file to include that defines extra variables like
 #                           ctest_configure_options, ctest_test_excludes,
-#                           ctest_test_include_labels.
+#                           ctest_test_include_labels,
+#                           ctest_model : dashboard model to use.
+#                           CTEST_COMMAND
+#                           CTEST_SOURCE_DIRECTORY
+#                           CTEST_BINARY_DIRECTORY
+#                           CTEST_CMAKE_GENERATOR
+#                           CTEST_BUILD_NAME
+#                           CTEST_SITE
+#                           CTEST_BUILD_FLAGS
+#
+
+# I still have no clue what this is.
+set (CTEST_USE_LAUNCHERS 1)
+
 # ctest_stages: all, configure, build, test
-set (CTEST_SOURCE_DIRECTORY "${ctest_source}")
-set (CTEST_BINARY_DIRECTORY "${ctest_build}")
-set (CTEST_COMMAND "${ctest_command}")
-set (CTEST_CMAKE_GENERATOR "${ctest_generator}")
-set (CTEST_BUILD_NAME "${ctest_buildname}")
-set (CTEST_SITE "${ctest_site}")
-
-set (CTEST_CMAKE_GENERATOR "${ctest_generator}")
-
-include("${ctest_extra_options_file}" OPTIONAL)
+include("${ctest_extra_options_file}")
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
 
-ctest_start(${ctest_model} ${ctest_source} ${ctest_build})
+ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
 
 #==============================================================================
 # Configure
@@ -33,10 +30,10 @@ if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*
     ctest_configure(OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
                     RETURN_VALUE configure_result)
 
-    #if (EXISTS "${ctest_build}/CMakeCache.txt")
+    #if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     #    # If CMakeCache.txt is present. Let's upload that to the dashboard as well.
     #    # Helps debug issues.
-    #    list (APPEND CTEST_NOTES_FILES "${ctest_build}/CMakeCache.txt")
+    #    list (APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     #endif()
     ctest_submit(PARTS Configure Notes)
 
@@ -51,7 +48,7 @@ endif()
 # Build
 #==============================================================================
 # Read ctest custom files from the project.
-ctest_read_custom_files(${ctest_build})
+ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
 
 if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*build.*"))
     ctest_build(RETURN_VALUE build_result
