@@ -9,7 +9,7 @@ __all__ = [
 SLAVE = BuildSlave('miranda', secrets.SECRETS['miranda']['password'],
     max_builds=1,
     properties={
-        'cmakeroot': 'C:/Tools/cmake-3.1.3',
+        'cmakeroot': 'C:/Tools/cmake-3.1.3-x64',
         'sharedresourcesroot': 'C:/Dashboards/MyTests',
 
         'os': 'windows',
