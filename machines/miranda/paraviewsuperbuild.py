@@ -95,7 +95,6 @@ buildsets = [
 BUILDERS = projects.make_builders(paraviewsuperbuild, buildsets,
     defprops=projects.merge_config(defprops, vs9x64props),
     defconfig=projects.merge_config(defconfig, vs9x64config),
-    use_short_dirname=True,
     slavenames=['miranda'],
     env=projects.merge_config(defenv, vs9x64env)
 )
@@ -113,7 +112,6 @@ buildsets = [
 BUILDERS.extend(projects.make_builders(paraviewsuperbuild, buildsets,
     defprops=projects.merge_config(defprops, vs9x32props),
     defconfig=projects.merge_config(defconfig, vs9x32config),
-    use_short_dirname=True,
     slavenames=['miranda'],
     env=projects.merge_config(defenv, vs9x32env)
 ))
