@@ -16,6 +16,7 @@ env = {
 buildsets = [
     {
         'os': 'linux',
+        'features' : ('catalyst',),
     },
 ]
 

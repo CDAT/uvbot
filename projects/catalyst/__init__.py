@@ -18,4 +18,7 @@ OPTIONS = {
 
 OPTIONORDER = ('os', )
 
-FEATURES = {}
+FEATURES = {
+    'catalyst': {
+    }
+}
