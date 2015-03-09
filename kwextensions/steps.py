@@ -106,7 +106,7 @@ class CTestDashboard(ShellCommand):
 
         buildnumber = self.getProperty("buildnumber")
         buildername = self.getProperty("buildername")
-        shortrevision = self.getProperty('revision')[0:8]
+        shortrevision = self.getProperty('got_revision')[0:8]
         buildid = "%s-build%s-%s" % (shortrevision, buildnumber, buildername)
         project = self.getProperty("project")
         cdash_root = self.getProperty("cdash_url")
@@ -202,7 +202,7 @@ def makeExtraOptionsString(props):
     props_dict['ctest_test_excludes'] = _get_test_params(props, "test_excludes", "|")
     props_dict['ctest_test_include_labels'] = _get_test_params(props, "test_include_labels", "|")
     props_dict['ctest_upload_file_patterns'] = _get_test_params(props, "upload_file_patterns", ";")
-    props_dict['shortrevision'] = props.getProperty('revision')[0:8]
+    props_dict['shortrevision'] = props.getProperty('got_revision')[0:8]
     return """
             # Essential options.
             set (CTEST_COMMAND "%(prop:cmakeroot)s/bin/ctest")
