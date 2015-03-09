@@ -11,7 +11,7 @@ import os
 moduledir = os.path.dirname(os.path.abspath(__file__))
 
 update = Git(name="update",
-        repourl=Property("source_repo"), # FIXME: I think this can now change to "repository"
+        repourl=Property("repository"),
         mode='incremental',
         submodules=True,
         workdir="source",

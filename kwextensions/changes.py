@@ -238,7 +238,6 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
                 repository = source_project["http_url_to_repo"],
                 src = "gitlab",
                 properties = {
-                    'source_repo' : source_project["http_url_to_repo"],
                     'source_project_id' : mr['source_project_id'],
                     'source_branch' : mr['source_branch'],
                     'merge_request_id' : mr['id'],
@@ -343,6 +342,5 @@ class GitlabIntegrationBranchPoller(base.PollingChangeSource, StateMixin):
                         repository = project["http_url_to_repo"],
                         src="gitlab",
                         properties= {
-                            'source_repo' : project["http_url_to_repo"],
                             'rooturl' : self.rooturl
                         })
