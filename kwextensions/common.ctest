@@ -10,12 +10,14 @@
 #                           CTEST_SITE
 #                           CTEST_BUILD_FLAGS
 #
+# ctest_stages: all, configure, build, test
 
 # I still have no clue what this is.
 set(CTEST_USE_LAUNCHERS 1)
 
-# ctest_stages: all, configure, build, test
-include("${ctest_extra_options_file}")
+if (ctest_extra_options_file)
+    include("${ctest_extra_options_file}")
+endif()
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
