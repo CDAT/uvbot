@@ -81,7 +81,7 @@ function(do_catalyst_dashboard catalyst_editions)
     include("${CTEST_SCRIPT_DIRECTORY}/common.ctest")
 
     # build tests.
-    set (CTEST_CONFIGURE_COMMAND ${CMAKE_COMMAND})
+    unset(CTEST_CONFIGURE_COMMAND)
     ctest_configure(APPEND
                     SOURCE ${CTEST_SOURCE_DIRECTORY}/Testing
                     BUILD ${CTEST_BINARY_DIRECTORY}/Testing
