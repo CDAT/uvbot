@@ -1,14 +1,13 @@
 from buildbot.process.factory import BuildFactory
 from buildbot.process.properties import Property, Interpolate
+from buildbot.steps.master import SetProperty
 from buildbot.steps.source.git import Git
-from buildbot.steps.transfer import FileDownload
-from kwextensions.steps import CTestDashboard, CTestConfigDownload, CTestExtraOptionsDownload,\
-                               CatalyzePreConfigure,\
-                               CTestCatalystExtraOptionsDownload,\
-                               CTestLauncherDownload
-import os
 
-moduledir = os.path.dirname(os.path.abspath(__file__))
+from kwextensions.steps import CTestDashboard,\
+                               DownloadCommonCTestScript,\
+                               DownloadCataystCTestScript,\
+                               DownloadLauncher,\
+                               CTestExtraOptionsDownload
 
 update = Git(name="update",
         repourl=Property("repository"),
@@ -19,12 +18,13 @@ update = Git(name="update",
 
 mergeRequestBasicTestsFactory = BuildFactory()
 mergeRequestBasicTestsFactory.addStep(update)
-mergeRequestBasicTestsFactory.addStep(FileDownload(
-            mastersrc="%s/common.ctest" % moduledir,
-            slavedest=Interpolate("%(prop:builddir)s/common.ctest")))
+mergeRequestBasicTestsFactory.addStep(DownloadCommonCTestScript())
 mergeRequestBasicTestsFactory.addStep(CTestExtraOptionsDownload())
-# CTestLauncherDownload is only needed for Windows.
-mergeRequestBasicTestsFactory.addStep(CTestLauncherDownload())
+# DownloadLauncher is only needed for Windows.
+mergeRequestBasicTestsFactory.addStep(DownloadLauncher())
+catalystTestFactory.addStep(
+        SetProperty(property="ctest_dashboard_script",
+            value=Interpolate('%(prop:builddir)s/common.ctest')))
 mergeRequestBasicTestsFactory.addStep(CTestDashboard(
     timeout=60*60*2 # 2 hrs. Superbuilds can take a while without producing any output.
     ))
@@ -32,18 +32,14 @@ mergeRequestBasicTestsFactory.addStep(CTestDashboard(
 def get_ctest_buildfactory():
     return mergeRequestBasicTestsFactory
 
-catalyst_update = Git(name="update",
-        repourl=Property("repository"),
-        mode='incremental',
-        submodules=True,
-        workdir="source",
-        env={'GIT_SSL_NO_VERIFY': 'true'})
-
 catalystTestFactory = BuildFactory()
-catalystTestFactory.addStep(catalyst_update)
-catalystTestFactory.addStep(CatalyzePreConfigure())
-catalystTestFactory.addStep(CTestConfigDownload(mastersrc="%s/catalyst.ctest" % moduledir))
-catalystTestFactory.addStep(CTestCatalystExtraOptionsDownload())
+catalystTestFactory.addStep(update)
+catalystTestFactory.addStep(DownloadCommonCTestScript())
+catalystTestFactory.addStep(DownloadCataystCTestScript())
+catalystTestFactory.addStep(CTestExtraOptionsDownload())
+catalystTestFactory.addStep(
+        SetProperty(property="ctest_dashboard_script",
+            value=Interpolate('%(prop:builddir)s/catalyst.common.ctest')))
 catalystTestFactory.addStep(CTestDashboard())
 
 def get_catalyst_buildfactory():

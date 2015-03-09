@@ -1,0 +1,105 @@
+# Wrapper for common.ctest used to run dashboards for catalyst editions.
+# Essentially, this file call common.ctest multiple times for each edition to
+# build and test.
+
+cmake_minimum_required(VERSION 2.8)
+# Avoid non-ascii characters in tool output.
+set(ENV{LC_ALL} C)
+
+set(CTEST_USE_LAUNCHERS 1)
+
+include("${ctest_extra_options_file}")
+
+# Find Python
+find_package(PythonInterp 2 REQUIRED)
+
+function (get_catalyst_name outvar catalyst_editions)
+    set (catalyst_name)
+    foreach (edition IN LISTS catalyst_editions)
+        if (catalyst_name)
+            set (catalyst_name "${catalyst_name}+${edition}")
+        else()
+            set (catalyst_name "${edition}")
+        endif()
+    endforeach()
+    set (${outvar} ${catalyst_name} PARENT_SCOPE)
+endfunction()
+
+
+function (catalyze name paraview_repo_dir out_dir editions)
+    set (extra_args)
+    foreach(ed IN LISTS editions)
+        list(APPEND extra_args "-i")
+        list(APPEND extra_args "${paraview_repo_dir}/Catalyst/Editions/${ed}")
+    endforeach()
+
+    execute_process(COMMAND ${PYTHON_EXECUTABLE}
+        "${paraview_repo_dir}/Catalyst/catalyze.py"
+
+        # The source repo
+        "-r" "${paraview_repo_dir}"
+
+        ${extra_args}
+
+        # the output directory
+        "-o" "${out_dir}"
+
+        # also copy tests.
+        "-t"
+        )
+endfunction()
+
+function(do_catalyst_dashboard catalyst_editions)
+    get_catalyst_name(catalyst_name "${catalyst_editions}")
+
+    set (original_source_directory ${CTEST_SOURCE_DIRECTORY})
+    set (original_binary_directory ${CTEST_BINARY_DIRECTORY})
+
+    set (CTEST_SOURCE_DIRECTORY "${original_binary_directory}/${catalyst_name}")
+    set (CTEST_BINARY_DIRECTORY "${original_binary_directory}/${catalyst_name}-build")
+    set (CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-${catalyst_name}")
+
+    # lets clean the edition catalyst source and build directories
+    file (REMOVE_RECURSE "${CTEST_SOURCE_DIRECTORY}")
+    file (REMOVE_RECURSE "${CTEST_BINARY_DIRECTORY}")
+
+    # 1. Catalyst the requested edition.
+    catalyze(${catalyst_name}
+        "${original_source_directory}"
+        # CTEST_SOURCE_DIRECTORY is now the Catalyst edition source dir.
+        "${CTEST_SOURCE_DIRECTORY}"
+        "${catalyst_editions}")
+
+    # this ensures that common.ctest doesn't reload the file.
+    unset(ctest_extra_options_file)
+    include(common.ctest)
+
+    # TODO:Create tar ball and then upload it.
+    # We'll add that once we've verified that the work so far happens as
+    # expected.
+endfunction()
+
+set(CATALYST_EDITIONS "Base")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+set(CATALYST_EDITIONS "Base" "Essentials")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+# TODO: enable once base starts working.
+#set(CATALYST_EDITIONS "Base" "Essentials" "Extras")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+#
+#set(CATALYST_EDITIONS "Base" "Essentials" "Extras" "Rendering-Base")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+#
+#set(CATALYST_EDITIONS "Base" "Enable-Python")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+#
+#set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+#
+#set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+#
+#set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras" "Rendering-Base" "Rendering-Base-Python")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
