@@ -106,7 +106,8 @@ class CTestDashboard(ShellCommand):
 
         buildnumber = self.getProperty("buildnumber")
         buildername = self.getProperty("buildername")
-        buildid = "build%s-%s" % (buildnumber, buildername)
+        shortrevision = self.getProperty('revision')[0:8]
+        buildid = "%s-build%s-%s" % (shortrevision, buildnumber, buildername)
         project = self.getProperty("project")
         cdash_root = self.getProperty("cdash_url")
         cdash_projectname = self.getProperty("cdash_project_names")[project]
@@ -148,9 +149,7 @@ class CTestDashboard(ShellCommand):
             test_query["value3"] = "Failed"
             self.addURL('%d failed tests' % self.failedTestsCount,
                     cdash_test_url + "?" + urlencode(test_query))
-        if not self.warnCount and not self.errorCount:
-            # put the direct dashboard link if not already placed.
-            self.addURL("cdash", cdash_index_url + "?" + urlencode(build_dashboard_query))
+         self.addURL("cdash", cdash_index_url + "?" + urlencode(build_dashboard_query))
 
     def evaluateCommand(self, cmd):
         """return command state"""
@@ -211,6 +210,7 @@ def makeExtraOptionsString(props):
     props_dict['ctest_test_excludes'] = _get_test_params(props, "test_excludes", "|")
     props_dict['ctest_test_include_labels'] = _get_test_params(props, "test_include_labels", "|")
     props_dict['ctest_upload_file_patterns'] = _get_test_params(props, "upload_file_patterns", ";")
+    props_dict['shortrevision'] = props.getProperty('revision')[0:8]
     return """
             # Essential options.
             set (CTEST_COMMAND "%(prop:cmakeroot)s/bin/ctest")
@@ -220,7 +220,7 @@ def makeExtraOptionsString(props):
 
             # we're creating an unique buildname per build.
             # that makes it possible to link back to Cdash summary page easily.
-            set (CTEST_BUILD_NAME "build%(prop:buildnumber)s-%(prop:buildername)s")
+            set (CTEST_BUILD_NAME "%(shortrevision)s-build%(prop:buildnumber)s-%(prop:buildername)s")
             set (CTEST_SITE "%(prop:slavename)s")
 
             set (CTEST_BUILD_FLAGS "%(prop:buildflags)s")
