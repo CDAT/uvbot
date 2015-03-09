@@ -71,7 +71,7 @@ function(do_catalyst_dashboard catalyst_editions)
         "${catalyst_editions}")
 
     # don't run cmake to configure directly. Instead, we use cmake.sh.
-    set (CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh")
+    set (CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh ${CTEST_SOURCE_DIRECTORY}")
 
     # Make common.ctest only do the build and configure steps.
     set (ctest_stages "configure;build")
