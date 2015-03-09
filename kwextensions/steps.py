@@ -149,9 +149,7 @@ class CTestDashboard(ShellCommand):
             test_query["value3"] = "Failed"
             self.addURL('%d failed tests' % self.failedTestsCount,
                     cdash_test_url + "?" + urlencode(test_query))
-        if not self.warnCount and not self.errorCount:
-            # put the direct dashboard link if not already placed.
-            self.addURL("cdash", cdash_index_url + "?" + urlencode(build_dashboard_query))
+         self.addURL("cdash", cdash_index_url + "?" + urlencode(build_dashboard_query))
 
     def evaluateCommand(self, cmd):
         """return command state"""
