@@ -23,7 +23,7 @@ mergeRequestBasicTestsFactory.addStep(DownloadCommonCTestScript())
 mergeRequestBasicTestsFactory.addStep(CTestExtraOptionsDownload())
 # DownloadLauncher is only needed for Windows.
 mergeRequestBasicTestsFactory.addStep(DownloadLauncher())
-catalystTestFactory.addStep(
+mergeRequestBasicTestsFactory.addStep(
         SetProperty(property="ctest_dashboard_script",
             value=Interpolate('%(prop:builddir)s/common.ctest')))
 mergeRequestBasicTestsFactory.addStep(CTestDashboard(
