@@ -80,11 +80,18 @@ function(do_catalyst_dashboard catalyst_editions)
     unset(ctest_extra_options_file)
     include("${CTEST_SCRIPT_DIRECTORY}/common.ctest")
 
-    # TODO: do tests.
+    # build tests.
+    ctest_build(APPEND BUILD "${CTEST_BINARY_DIRECTORY}/Testing")
+    ctest_test(APPEND BUILD "${CTEST_BINARY_DIRECTORY}/Testing")
+    ctest_submit(PARTS Test)
 
-    # TODO:Create tar ball and then upload it.
-    # We'll add that once we've verified that the work so far happens as
-    # expected.
+    # Create tar ball and then upload it.
+    get_filename_component(catalyst_source_directory_name "${CTEST_SOURCE_DIRECTORY}" NAME)
+    execute_process(COMMAND
+        tar czf "${catalyst_name}.tar.gz" -C "${CTEST_SOURCE_DIRECTORY}/.."
+        ${catalyst_source_directory_name})
+    ctest_upload(FILES ${catalyst_name}.tar.gz)
+    ctest_submit(PARTS Upload)
 endfunction()
 
 set(CATALYST_EDITIONS "Base")
