@@ -26,7 +26,7 @@ ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
 # Configure
 #==============================================================================
 set(success TRUE)
-if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*")
+if (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";configure;")
     ctest_configure(OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
                     RETURN_VALUE configure_result)
 
@@ -38,7 +38,7 @@ if ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*configure.*
     ctest_submit(PARTS Configure Notes)
 
     # If configuration failed, report error and stop test.
-    if (NOT "${configure_result}" STREQUAL "0")
+    if (NOT configure_result EQUAL "0")
         message("Configure failed!!!")
         set(success FALSE)
     endif ()
@@ -50,7 +50,7 @@ endif ()
 # Read ctest custom files from the project.
 ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
 
-if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*build.*"))
+if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";build;"))
     ctest_build(RETURN_VALUE build_result
                 NUMBER_ERRORS build_number_errors
                 NUMBER_WARNINGS build_number_warnings
@@ -58,8 +58,8 @@ if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES "
     ctest_submit(PARTS Build)
 
     # If build failed (or had non-zero errors), report error and stop test.
-    if ((NOT "${build_number_errors}" STREQUAL "0") OR
-        (NOT "${build_result}" STREQUAL "0"))
+    if ((NOT build_number_errors EQUAL "0") OR
+        (NOT build_result EQUAL "0"))
          message("Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!!!")
          set(success FALSE)
     endif ()
@@ -69,14 +69,14 @@ endif ()
 #==============================================================================
 # Test
 #==============================================================================
-if (success AND ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*test.*"))
+if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";test;"))
     ctest_test(
         INCLUDE_LABEL "${ctest_test_include_labels}"
         EXCLUDE "${ctest_test_excludes}"
         RETURN_VALUE test_result)
     ctest_submit(PARTS Test)
 
-    if (NOT "${test_result}" STREQUAL "0")
+    if (NOT test_result EQUAL "0")
         message("Tests failed!!!")
         set(success FALSE)
     endif ()
@@ -86,12 +86,12 @@ endif ()
 # Upload files.
 #==============================================================================
 if (success AND ctest_upload_file_patterns AND
-    ("${ctest_stages}" STREQUAL "all" OR "${ctest_stages}" MATCHES ".*upload.*"))
+    (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";upload;"))
     set(files)
-    foreach (pattern ${ctest_upload_file_patterns})
+    foreach (pattern IN LISTS ctest_upload_file_patterns)
         set(cur_files)
         file(GLOB cur_files "${pattern}")
-        set(files ${files} ${cur_files})
+        list(APPEND files ${cur_files})
     endforeach ()
     if (files)
         message("Files to upload ${files}")
