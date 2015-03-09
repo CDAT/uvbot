@@ -70,9 +70,17 @@ function(do_catalyst_dashboard catalyst_editions)
         "${CTEST_SOURCE_DIRECTORY}"
         "${catalyst_editions}")
 
+    # don't run cmake to configure directly. Instead, we use cmake.sh.
+    set (CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh")
+
+    # Make common.ctest only do the build and configure steps.
+    set (ctest_stages "configure;build")
+
     # this ensures that common.ctest doesn't reload the file.
     unset(ctest_extra_options_file)
     include("${CTEST_SCRIPT_DIRECTORY}/common.ctest")
+
+    # TODO: do tests.
 
     # TODO:Create tar ball and then upload it.
     # We'll add that once we've verified that the work so far happens as
