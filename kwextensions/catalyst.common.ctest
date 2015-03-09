@@ -81,6 +81,12 @@ function(do_catalyst_dashboard catalyst_editions)
     include("${CTEST_SCRIPT_DIRECTORY}/common.ctest")
 
     # build tests.
+    set (CTEST_CONFIGURE_COMMAND ${CMAKE_COMMAND})
+    ctest_configure(APPEND
+                    SOURCE ${CTEST_SOURCE_DIRECTORY}/Testing
+                    BUILD ${CTEST_BINARY_DIRECTORY}/Testing
+                    OPTIONS "-DPVPYTHON_EXE=${CTEST_BINARY_DIRECTORY}/bin/pvpython;-DParaView_DIR=${CTEST_BINARY_DIRECTORY}"
+                    )
     ctest_build(APPEND BUILD "${CTEST_BINARY_DIRECTORY}/Testing")
     ctest_test(APPEND BUILD "${CTEST_BINARY_DIRECTORY}/Testing")
     ctest_submit(PARTS Test)
@@ -97,8 +103,8 @@ endfunction()
 set(CATALYST_EDITIONS "Base")
 do_catalyst_dashboard("${CATALYST_EDITIONS}")
 
-set(CATALYST_EDITIONS "Base" "Essentials")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
+#set(CATALYST_EDITIONS "Base" "Essentials")
+#do_catalyst_dashboard("${CATALYST_EDITIONS}")
 
 # TODO: enable once base starts working.
 #set(CATALYST_EDITIONS "Base" "Essentials" "Extras")
