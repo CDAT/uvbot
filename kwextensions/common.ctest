@@ -27,8 +27,9 @@ ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
 #==============================================================================
 set(success TRUE)
 if (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";configure;")
-    ctest_configure(OPTIONS "--no-warn-unused-cli;${ctest_configure_options}"
-                    RETURN_VALUE configure_result)
+    ctest_configure(
+        OPTIONS         "--no-warn-unused-cli;${ctest_configure_options}"
+        RETURN_VALUE    configure_result)
 
     #if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     #    # If CMakeCache.txt is present. Let's upload that to the dashboard as well.
@@ -51,10 +52,11 @@ endif ()
 ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
 
 if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";build;"))
-    ctest_build(RETURN_VALUE build_result
-                NUMBER_ERRORS build_number_errors
-                NUMBER_WARNINGS build_number_warnings
-                APPEND)
+    ctest_build(
+        RETURN_VALUE    build_result
+        NUMBER_ERRORS   build_number_errors
+        NUMBER_WARNINGS build_number_warnings
+        APPEND)
     ctest_submit(PARTS Build)
 
     # If build failed (or had non-zero errors), report error and stop test.
@@ -71,9 +73,9 @@ endif ()
 #==============================================================================
 if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";test;"))
     ctest_test(
-        INCLUDE_LABEL "${ctest_test_include_labels}"
-        EXCLUDE "${ctest_test_excludes}"
-        RETURN_VALUE test_result)
+        INCLUDE_LABEL   "${ctest_test_include_labels}"
+        EXCLUDE         "${ctest_test_excludes}"
+        RETURN_VALUE    test_result)
     ctest_submit(PARTS Test)
 
     if (NOT test_result EQUAL "0")
