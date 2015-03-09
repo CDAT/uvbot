@@ -89,7 +89,7 @@ def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None,
         if use_short_dirname:
             slavebuilddir=get_slavebuilddir(name)
         else:
-            slavebuilddir=name
+            slavebuilddir=None
 
         print kwargs
         builders.append(BuilderConfig(
