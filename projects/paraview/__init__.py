@@ -10,8 +10,6 @@ OPTIONS = {
         'linux': {},
         'windows': {},
         'osx': {},
-        'win32': {},
-        'win64': {},
     },
     'libtype': {
         'shared': {
@@ -27,6 +25,7 @@ OPTIONS = {
         },
         'debug': {
             'CMAKE_BUILD_TYPE:STRING': 'Debug',
+            'PARAVIEW_COLLABORATION_TESTING:BOOL': 'OFF',
         },
     },
 }
@@ -63,7 +62,5 @@ FEATURES = {
     },
     'icc': {},
     'vs': {},
-    'nocollab' : {
-        'PARAVIEW_COLLABORATION_TESTING:BOOL': ('ON', 'OFF'),
-    },
+    '32bit': {},
 }

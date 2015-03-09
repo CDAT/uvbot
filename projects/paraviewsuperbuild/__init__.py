@@ -10,8 +10,6 @@ OPTIONS = {
         'linux': {},
         'windows': {},
         'osx': {},
-        'win32' : {},
-        'win64' : {},
     },
     'libtype': {
         'shared': {
@@ -33,6 +31,6 @@ OPTIONS = {
 OPTIONORDER = ('os', 'libtype', 'buildtype')
 
 FEATURES = {
-    'superbuild': {
-    }
+    'superbuild': {},
+    '32bit': {},
 }
