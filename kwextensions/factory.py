@@ -14,6 +14,7 @@ update = Git(name="update",
         mode='incremental',
         submodules=True,
         workdir="source",
+        reference=Property("referencedir"),
         env={'GIT_SSL_NO_VERIFY': 'true'})
 
 mergeRequestBasicTestsFactory = BuildFactory()
