@@ -39,8 +39,8 @@ if (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";configure;")
     ctest_submit(PARTS Configure Notes)
 
     # If configuration failed, report error and stop test.
-    if (NOT configure_result EQUAL "0")
-        message("Configure failed!!!")
+    if (configure_result)
+        message("Configure failed!")
         set(success FALSE)
     endif ()
 endif ()
@@ -60,9 +60,8 @@ if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";bu
     ctest_submit(PARTS Build)
 
     # If build failed (or had non-zero errors), report error and stop test.
-    if ((NOT build_number_errors EQUAL "0") OR
-        (NOT build_result EQUAL "0"))
-         message("Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!!!")
+    if (build_number_errors OR build_result)
+         message("Build failed with ${build_number_errors} errors and ${build_number_warnings} warnings!")
          set(success FALSE)
     endif ()
     message("BUILDBOT BUILD SUMMARY: ${build_number_warnings}/${build_number_errors}")
@@ -78,8 +77,8 @@ if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";te
         RETURN_VALUE    test_result)
     ctest_submit(PARTS Test)
 
-    if (NOT test_result EQUAL "0")
-        message("Tests failed!!!")
+    if (test_result)
+        message("Tests failed!")
         set(success FALSE)
     endif ()
 endif ()
@@ -96,7 +95,7 @@ if (success AND ctest_upload_file_patterns AND
         list(APPEND files ${cur_files})
     endforeach ()
     if (files)
-        message("Files to upload ${files}")
+        message("Files to upload: ${files}")
         ctest_upload(FILES ${files})
         ctest_submit(PARTS Upload)
     endif ()
