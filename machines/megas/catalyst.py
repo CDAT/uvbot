@@ -5,7 +5,9 @@ __all__ = [
     'BUILDERS',
 ]
 
-defprops = {}
+defprops = {
+    'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
+}
 
 defconfig = {}
 
