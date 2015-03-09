@@ -13,6 +13,8 @@ defprops = {
         'SurfaceLIC-ShuttleAll', # seems the streamlines aren't thick enough?
         'NonlinearSubdivisionDisplay', # missing mesh edges?
     ],
+    'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/vcvarsall.bat',
+    'vcvarsargument': 'x64',
 }
 
 defconfig = {
