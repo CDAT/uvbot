@@ -20,6 +20,7 @@ defprops = {
         'EyeDomeLighting', # unsupported texture format
         'SelectionLabels', # http://www.paraview.org/Bug/view.php?id=15294
     ],
+    'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
 }
 env = {
     'DISPLAY': ':1',
