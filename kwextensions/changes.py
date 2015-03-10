@@ -250,6 +250,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                         command = self._strip_prefix(line, BUILDBOT_PREFIX)
                         # TODO: parse arguments from the command
 
+                        # XXX: Add buildbot commands here.
                         if command == 'build':
                             return True
                         else:
