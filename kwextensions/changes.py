@@ -114,6 +114,7 @@ class Gitlab(object):
         order_by='updated_at',
         sort='desc')
     getmergerequestcomments = _mkrequest_paged('projects/{}/merge_request/{}/comments')
+    getmergerequestchanges = _mkrequest_paged('projects/{}/merge_request/{}/changes')
     createmergerequestwallnote = _mkpost('projects/{}/merge_requests/{}/notes')
 
     # Groups
@@ -165,6 +166,19 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
             d.addCallback(lambda _: base.PollingChangeSource.startService(self))
             d.addErrback(log.err, 'cannot initialize GitlabPoller')
             return d
+
+    def describe_files(self, files):
+        descs = []
+        for file_desc in files:
+            if file_desc['new_file']:
+                descs.append('Added %(new_path)s' % file_desc)
+            elif file_desc['deleted_file']:
+                descs.append('Deleted %(old_path)s' % file_desc)
+            elif file_desc['renamed_file']:
+                descs.append('Renamed %(old_path)s -> %(new_path)s' % file_desc)
+            else:
+                descs.append('Changed %(old_path)s' % file_desc)
+        return descs
 
 
 class GitlabMergeRequestPoller(GitlabPoller):
@@ -266,13 +280,13 @@ class GitlabMergeRequestPoller(GitlabPoller):
     def _add_change(self, project, request, commit):
         project_info = self.api.getproject(request['source_project_id'])
 
+        changes = self.api.getmergerequestchanges(pid, request['id'])
         yield self.master.addChange(
             author='%(author_name)s <%(author_email)s>' % commit,
             revision=commit['id'],
             revlink='%s/commit/%s' % (project_info['web_url'], commit['id']),
             comments='%s\n\n%s' % (request['title'], request['description']),
-            # TODO: get the files changed.
-            files=['TODO'],
+            files=self.describe_files(changes['files']),
             when_timestamp=datetime.datetime.now(),
             branch=request['source_branch'],
             project=project,
