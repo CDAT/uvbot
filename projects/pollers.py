@@ -31,6 +31,7 @@ def make_pollers(secrets):
         GitlabMergeRequestPoller(
             host=secrets['gitlab_host'],
             token=secrets['gitlab_api_token'],
+            web_host=secrets['web_status_url'],
             projects=REPOS,
             verify_ssl=False,
             pollInterval=10*60, # in seconds

@@ -185,10 +185,10 @@ class GitlabMergeRequestPoller(GitlabPoller):
     BUILDBOT_PREFIX = '@buildbot: '
 
     # TODO: add options for required access level.
-    # TODO: add options for web status view URL.
-    def __init__(self, host, token, projects=[], **kwargs):
+    def __init__(self, host, token, web_host, projects=[], **kwargs):
         GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token)
 
+        self.web_host = web_host
         self.projects = projects
 
     def describe(self):
