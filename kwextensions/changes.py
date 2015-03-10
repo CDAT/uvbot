@@ -4,13 +4,11 @@ from buildbot import config
 from twisted.python import log
 from twisted.internet import defer
 
-import gitlab
 import urllib
 from dateutil.parser import parse as dateparse
 import datetime
 import os
 import requests
-import json
 
 GUEST     = 10
 REPORTER  = 20
@@ -18,96 +16,122 @@ DEVELOPER = 30
 MASTER    = 40
 OWNER     = 50
 
-class Gitlab(gitlab.Gitlab):
-    def getsortedmergerequests(self, project_id, page=1, per_page=20, state=None):
-        """Returns merge requests sorted in descending order by update time"""
-        data = {'page': page, 'per_page': per_page, 'state': state,
-                'order_by': 'updated_at', 'sort': 'desc' }
 
-        request = requests.get('{}/{}/merge_requests'.format(self.projects_url, project_id),
-                               params=data, headers=self.headers, verify=self.verify_ssl)
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
-        else:
-            return False
+def _mkrequest(path, **defkwargs):
+    def func(self, *args, **kwargs):
+        data = defkwargs.copy()
+        data.update(kwargs)
 
-    def getprojectteammember(self, project_id, user_id):
-        """
-        Gets a project's team member's information.
+        return self.fetch(path.format(*args), **data)
 
-        @param project_id (required) - The ID or NAMESPACE/PROJECT_NAME of a project
-        @param user_id (required) - The ID of a user
-        {
-          "id": 1,
-          "username": "john_smith",
-          "email": "john@example.com",
-          "name": "John Smith",
-          "state": "active",
-          "created_at": "2012-05-23T08:00:58Z",
-          "access_level": 40
+    return func
+
+
+def _mkrequest_paged(path, **defkwargs):
+    def func(self, *args, **kwargs):
+        data = defkwargs.copy()
+        data.update(kwargs)
+
+        return self.fetch_all(path.format(*args), **data)
+
+    return func
+
+
+def _mkpost(path, **defkwargs):
+    def func(self, *args, **kwargs):
+        data = defkwargs.copy()
+        data.update(kwargs)
+
+        return self.post(path.format(*args), **data)
+
+    return func
+
+
+class Gitlab(object):
+    def __init__(self, host, token, verify_ssl=True):
+        self.urlbase = 'https://%s/api/v3' % host
+        self.headers = {
+            'PRIVATE-TOKEN': token,
         }
-        """
-        request = requests.get("{}/{}/members/{}".format(self.projects_url, project_id, user_id),
-                params={}, headers=self.headers,
-                verify=self.verify_ssl)
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
-        else:
+        self.verify_ssl = verify_ssl
+
+    def fetch(self, path, **kwargs):
+        url = '%s/%s' % (self.urlbase, path)
+        response = requests.get(url, headers=self.headers, verify=self.verify_ssl, **kwargs)
+
+        if response.status_code != 200:
             return False
 
-    def getgroupmembers(self, group_id):
-        """
-        Get a list of group members viewable by the authenticated user.
-        @param group_id: The group ID.
-
-        @return
-        [
-          {
-            "id": 1,
-            "username": "raymond_smith",
-            "email": "ray@smith.org",
-            "name": "Raymond Smith",
-            "state": "active",
-            "created_at": "2012-10-22T14:13:35Z",
-            "access_level": 30
-          },
-          {
-            "id": 2,
-            "username": "john_doe",
-            "email": "joh@doe.org",
-            "name": "John Doe",
-            "state": "active",
-            "created_at": "2012-10-22T14:13:35Z",
-            "access_level": 30
-          }
-        ]
-        """
-        request = requests.get("{}/{}/members".format(self.groups_url, group_id),
-                params={}, headers=self.headers,
-                verify=self.verify_ssl)
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+        if callable(response.json):
+            return response.json()
         else:
+            return response.json
+
+    def fetch_all(self, path, **kwargs):
+        kwargs.update({
+            'page': 1,
+            'per_page': 100,
+        })
+
+        full = []
+        while True:
+            items = self.fetch(path, params=kwargs)
+            if not items:
+                break
+            full += items
+            if len(items) < kwargs['per_page']:
+                break
+            kwargs['page'] += 1
+
+        return full
+
+    def post(self, path, **kwargs):
+        url = '%s/%s' % (self.urlbase, path)
+        response = requests.post(url, headers=self.headers, verify=self.verify_ssl, data=kwargs)
+
+        if response.status_code != 201:
             return False
+
+        if callable(response.json):
+            return response.json()
+        else:
+            return response.json
+
+    # Users
+    currentuser = _mkrequest('user')
+
+    # Projects
+    getproject = _mkrequest('projects/{}')
+    getprojects = _mkrequest_paged('projects')
+    getprojectmembers = _mkrequest_paged('projects/{}/members')
+    getprojectteammember = _mkrequest('projects/{}/members/{}')
+    getbranch = _mkrequest('projects/{}/repository/branches/{}')
+
+    # Merge requests
+    getmergerequests = _mkrequest_paged('projects/{}/merge_requests')
+    getsortedmergerequests = _mkrequest_paged('projects/{}/merge_requests',
+        order_by='updated_at',
+        sort='desc')
+    getmergerequestcomments = _mkrequest_paged('projects/{}/merge_request/{}/comments')
+    createmergerequestwallnote = _mkpost('projects/{}/merge_requests/{}/notes')
+
+    # Groups
+    getgroupmembers = _mkrequest_paged('groups/{}/members')
 
     def getaccesslevel(self, project_id, user_id):
-        """Returns the access level for a user with respect to a particular
-        project
-
-        @param project_id (required) - The ID or NAMESPACE/PROJECT_NAME of a project
-        @param user_id (required) - The ID of a user
-        """
-        pm = self.getprojectteammember(project_id, user_id)
-        if pm:
-            return int(pm["access_level"])
+        members = self.getprojectmembers(project_id)
 
         project = self.getproject(project_id)
-        if project and project.has_key("namespace"):
-            members = self.getgroupmembers(project["namespace"]["id"])
-            if not members: return 0
-            for m in members:
-                if m["id"] == user_id: return int(m["access_level"])
-        return 0
+        if project and 'namespace' in project:
+            group_members = self.getgroupmembers(project['namespace']['id'])
+            members += group_members
+
+        access = 0
+        for perm in filter(lambda member: user_id == member['id'], members):
+            if perm['access_level'] > access:
+                access = perm['access_level']
+        return access
+
 
 class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
     compare_attrs = ["rooturl", "token", "projects"]
@@ -174,7 +198,7 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
         # - any merge request with 'request-builds' label will be authorized and
         # scheduled for a build. We also remove the 'request-builds' label.
         openmergerequests = self.api.getsortedmergerequests(projectid,
-                page=1, per_page=100, state='opened')
+                state='opened')
         for mr in openmergerequests:
             mid = mr["id"]
             if 'do-tests' in mr["labels"]:
@@ -211,8 +235,8 @@ class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
 
     def _accept_change(self, mr):
         self.api.createmergerequestewallnote(mr["project_id"], mr["id"],
-                "**BUILDBOT**: Your merge request has been queued for testing. " \
-                "You can monitor the status [here](http://hera:8010/grid?%s)." % \
+                body="**BUILDBOT**: Your merge request has been queued for testing. " \
+                     "You can monitor the status [here](http://hera:8010/grid?%s)." % \
                         urllib.urlencode({'branch': mr['source_branch']}))
 
     def _reject_change(self, mr):
