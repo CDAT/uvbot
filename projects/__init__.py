@@ -15,6 +15,10 @@ __all__ = [
 
 
 PROJECTS = [
+    # VTK
+    'VTK',
+
+    # ParaView
     'ParaView',
     'ParaViewSuperbuild',
     'Catalyst',

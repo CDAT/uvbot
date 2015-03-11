@@ -1,5 +1,9 @@
 from kwextensions.changes import GitlabMergeRequestPoller, GitlabIntegrationBranchPoller
 
+# VTK
+import vtk.poll
+
+# ParaView
 import paraview.poll
 import paraviewsuperbuild.poll
 
@@ -25,6 +29,10 @@ def _add_project_poll(poll):
     CDASH_PROJECTNAMES[poll.REPO] = poll.CDASH_PROJECTNAME
 
 
+# VTK
+_add_project_poll(vtk.poll)
+
+# ParaView
 _add_project_poll(paraview.poll)
 _add_project_poll(paraviewsuperbuild.poll)
 
