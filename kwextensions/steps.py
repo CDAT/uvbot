@@ -1,16 +1,16 @@
 from buildbot.steps.source.git import Git
 from buildbot.process import properties
+from buildbot.process.buildstep import LogLineObserver
 from buildbot.steps.shell import ShellCommand, WarningCountingShellCommand
 from buildbot.process.properties import Property, Interpolate
 from buildbot.steps.transfer import FileDownload, StringDownload
 
-from buildbot.status.results import FAILURE
-from buildbot.status.results import SUCCESS
-from buildbot.status.results import WARNINGS
-
+from buildbot.status.results import FAILURE, SUCCESS, WARNINGS
 from twisted.python import log as twisted_log
 from urllib import urlencode
 from datetime import datetime, timedelta
+
+Gitlab_Base_URL = "https://kwgitlab.kitwarein.com"
 
 import re
 class GitWithSubmodules(Git):
@@ -48,6 +48,113 @@ def makeCTestDashboardCommand(props):
     command_prefix.extend(command)
     return command_prefix
 
+# Generates the command to fetch the user's fork of submodules
+@properties.renderer
+def makeUserForkCommand(props):
+    repo = props.getProperty('repository')
+    cmd = ''
+    if props.hasProperty('username') and props.hasProperty('try_user_fork') and\
+            props.getProperty('try_user_fork') == True:
+        argList = ['git', 'submodule', 'foreach', 'cmake']
+        username = props.getProperty('username')
+        basedir = props.getProperty('builddir')
+        cmakefile = '%s/fetch_submodule.cmake' % basedir
+        argList.append('-Dusername:STRING=%s' % username)
+        argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
+        argList += ['-P', cmakefile]
+        cmd = " ".join(argList) + ' && git submodule update --init'
+    return cmd
+
+def failureForSubmodule(step):
+    from buildbot.status.builder import FAILURE
+    lastStep = step.build.getStatus().getSteps()[0]
+    output = lastStep.getLogs()[0].getText()
+    return step.build.result == FAILURE and output.find('in submodule path') != -1
+
+def makeUploadFetchSubmoduleScript(**kwargs):
+    import os
+    moduledir = os.path.dirname(os.path.abspath(__file__))
+    step = FileDownload(mastersrc="%s/fetch_submodule.cmake" % moduledir,
+                        slavedest=Interpolate("%(prop:builddir)s/fetch_submodule.cmake"),
+                        haltOnFailure=True,
+                        doStepIf=failureForSubmodule,
+                        **kwargs)
+    return step
+
+class FetchUserSubmoduleForks(ShellCommand):
+    def __init__(self, **kwargs):
+        ShellCommand.__init__(self,command=makeUserForkCommand,
+                              haltOnFailure=True,
+                              flunkOnFailure=True,
+                              doStepIf=failureForSubmodule,
+                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              description=["Trying user's submodule forks..."],
+                              descriptionDone=["Tried user's submodule forks"],
+                              env={'GIT_SSL_NO_VERIFY': 'true'},
+                              **kwargs)
+
+def makeUploadTestSubmoduleScript(**kwargs):
+    import os
+    moduledir = os.path.dirname(os.path.abspath(__file__))
+    step = FileDownload(mastersrc="%s/test_submodule.cmake" % moduledir,
+                        slavedest=Interpolate("%(prop:builddir)s/test_submodule.cmake"),
+                        haltOnFailure=True,
+                        alwaysRun=True,
+                        **kwargs)
+    return step
+
+@properties.renderer
+def makeSubmoduleTestCommand(props):
+    cmd = ['git', 'submodule', 'foreach', 'cmake', '-P']
+    builddir = props.getProperty('builddir')
+    cmd.append('%s/test_submodule.cmake' % builddir)
+    return cmd
+
+
+class TestScriptOutputLogger(LogLineObserver):
+    inMaster = {} # hash of submodule name to bool
+    firstParentOfMaster = {} # hash of submodule name to bool
+    allInMaster = True
+    allFirstParentOfMaster = True
+    currentSubmodule = ''
+    def lineReceived(self, line, lineType):
+        if line.find('Entering') == 0:
+            self.currentSubmodule = line[9:]
+            self.inMaster[self.currentSubmodule] = True
+            self.firstParentOfMaster[self.currentSubmodule] = True
+        elif line.find('Error: commits are not merged to master.') != -1:
+            self.allInMaster = False
+            self.inMaster[self.currentSubmodule] = False
+        elif line.find('Error: head is not in the first parent list of master.') != -1:
+            self.allFirstParentOfMaster = False
+            self.firstParentOfMaster[self.currentSubmodule] = False
+    def outLineReceived(self,line):
+        self.lineReceived(line,'out')
+    def errLineReceived(self,line):
+        self.lineReceived(line,'err')
+
+class AreSubmodulesValid(ShellCommand):
+    def __init__(self, **kwargs):
+        self.myLogger = TestScriptOutputLogger()
+        ShellCommand.__init__(self,command = makeSubmoduleTestCommand,
+                              alwaysRun=True,
+                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              description=['Testing if submodules are merged'],
+                              descriptionDone=['Are submodules merged'],
+                              **kwargs)
+        self.addLogObserver('stdio',self.myLogger)
+        self.addLogObserver('stderr',self.myLogger)
+    def evaluateCommand(self, cmd):
+        """return command state"""
+        result = ShellCommand.evaluateCommand(self, cmd)
+        if result != SUCCESS:
+            return result
+        elif self.myLogger.allFirstParentOfMaster:
+            return SUCCESS
+        elif self.myLogger.allInMaster:
+            return WARNINGS # TODO should this succeed?
+        else: # TODO - error messages?  I collected info in the logger...
+            return WARNINGS
 
 class CTestDashboard(ShellCommand):
     name="build-n-test"
