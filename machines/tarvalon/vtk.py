@@ -1,0 +1,38 @@
+import projects
+from projects import vtk
+from . import slave
+
+__all__ = [
+    'BUILDERS',
+]
+
+defprops = {}
+env = {}
+
+defconfig = {
+    'BUILD_EXAMPLES:BOOL': 'OFF',
+    'VTK_DEBUG_LEAKS:BOOL': 'ON',
+    'VTK_DATA_STORE:PATH': 'C:/Dashboards/CDashHome/ExternalData',
+    'VTK_USER_LARGE_DATA:BOOL': 'ON',
+
+    'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
+}
+
+buildsets = [
+    {
+        'os': 'windows',
+        'libtype': 'shared',
+        'buildtype': 'release',
+        'features': (
+            'mpi',
+            'qt',
+            'vs',
+        ),
+    },
+]
+
+BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
+    defprops=defprops,
+    defconfig=defconfig,
+    env=env
+)
