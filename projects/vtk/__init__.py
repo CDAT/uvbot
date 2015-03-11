@@ -30,9 +30,12 @@ OPTIONS = {
         'debug': {
             'CMAKE_BUILD_TYPE:STRING': 'Debug',
         },
+        'relwithdebinfo': {
+            'CMAKE_BUILD_TYPE:STRING': 'RelWithDebInfo',
+        },
     },
 }
-OPTIONORDER = ('os', 'libtype', 'buildtype')
+OPTIONORDER = ('os', 'libtype', 'buildtype',)
 
 FEATURES = {
     'python': {
@@ -61,4 +64,6 @@ FEATURES = {
     },
     'icc': {},
     'vs': {},
+    'asan': {},
+    'ubsan': {},
 }
