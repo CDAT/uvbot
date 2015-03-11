@@ -134,6 +134,12 @@ class Gitlab(object):
                 access = perm['access_level']
         return access
 
+    def getaccesslevel_cache(self, cache, project_id, user_id):
+        key = '%d,%d' % (project_id, user_id)
+        if key not in cache:
+            cache[key] = self.getaccesslevel(project_id, user_id)
+        return cache[key]
+
 
 class GitlabPoller(base.PollingChangeSource, StateMixin):
     compare_attrs = [
@@ -229,7 +235,8 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
     def _check_merge_request(self, request):
         pid = request['project_id']
-        access = self.api.getaccesslevel(pid, request['author']['id'])
+        access_cache = {}
+        access = self.api.getaccesslevel_cache(access_cache, pid, request['author']['id'])
         if access >= DEVELOPER:
             log.msg('accepting request %d because it is by a developer' % request['id'])
             return True
@@ -246,7 +253,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
             content = comment['note'].splitlines()
             for line in content:
                 if line.startswith(BUILDBOT_PREFIX):
-                    if self.api.getaccesslevel(pid, author['id']) >= DEVELOPER:
+                    if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
                         command = self._strip_prefix(line, BUILDBOT_PREFIX)
                         # TODO: parse arguments from the command
 
