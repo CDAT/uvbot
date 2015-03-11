@@ -1,13 +1,14 @@
 
 __all__ = [
     'NAME',
+
     'OPTIONS',
     'OPTIONORDER',
 
     'FEATURES',
 ]
 
-NAME = 'catalyst'
+NAME = 'paraview'
 
 OPTIONS = {
     'os': {
@@ -16,9 +17,8 @@ OPTIONS = {
     },
 }
 
-OPTIONORDER = ('os', )
+OPTIONORDER = ('os',)
 
 FEATURES = {
-    'catalyst': {
-    }
+    'catalyst': {},
 }

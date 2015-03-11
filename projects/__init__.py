@@ -85,7 +85,7 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
             kwargs['slavebuilddir'] = hashlib.md5(name).hexdigest()[:dirlen]
 
         builders.append(BuilderConfig(
-            name='%s-%s' % (slave.slavename, name),
+            name='%s-%s-%s' % (project.NAME, slave.slavename, name),
             factory=myfactory,
             properties=props,
             slavenames=[slave.slavename],
