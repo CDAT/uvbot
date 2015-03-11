@@ -91,17 +91,20 @@ base_features = (
 
 buildsets64 = [
     {
-        'os': 'win64',
+        'os': 'windows',
         'libtype': 'static',
         'buildtype': 'release',
-        'features': base_features + ('python',) ,
+        'features': base_features + (
+            'python',
+        ),
     },
     {
-        'os': 'win64',
+        'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'features': base_features + ('python', 'nocollab') , # disable
-                        # collaboration tests in debug builds.
+        'features': base_features + (
+            'python',
+        ),
     },
 ]
 
@@ -114,10 +117,12 @@ BUILDERS = projects.make_builders(paraview, buildsets64,
 
 buildsets32 = [
     {
-        'os': 'win32',
+        'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': base_features,
+        'features': base_features + (
+            '32bit',
+        ),
     },
 ]
 

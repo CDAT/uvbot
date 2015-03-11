@@ -61,17 +61,8 @@ def build_config(project, defconfig={}, features=(), *args, **kwargs):
 
     return (name, config)
 
-def get_slavebuilddir(buildername):
-    text = buildername.replace('+', '-')
-    text_list = text.split('-')
-    return "".join([text_list[0][0] + text_list[0][-2:] ] + [x[0] for x in text_list[1:]])
 
-def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None, use_short_dirname=False, **kwargs):
-    """
-    @use_short_dirname - when set to True, we use a compact name for naming
-    build directory on the slave machine.
-    """
-
+def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None, **kwargs):
     configs = {}
     for buildset in buildsets:
         name, conf = build_config(project, defconfig=defconfig, **buildset)
@@ -80,18 +71,11 @@ def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None,
     if myfactory is None:
         myfactory = factory.get_ctest_buildfactory()
 
-
     builders = []
     for name, config in configs.items():
         props = defprops.copy()
         props['configure_options:builderconfig'] = config
 
-        if use_short_dirname:
-            slavebuilddir=get_slavebuilddir(name)
-        else:
-            slavebuilddir=None
-
-        print kwargs
         builders.append(BuilderConfig(
             name=name,
             factory=myfactory,
