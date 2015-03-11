@@ -80,7 +80,6 @@ def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None,
             name=name,
             factory=myfactory,
             properties=props,
-            slavebuilddir=slavebuilddir,
             **kwargs
         ))
 

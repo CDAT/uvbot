@@ -85,7 +85,7 @@ vs9x32config = {
 #------------------------------------------------------------------------------
 buildsets = [
     {
-        'os': 'win64',
+        'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': ('superbuild',),
@@ -102,10 +102,10 @@ BUILDERS = projects.make_builders(paraviewsuperbuild, buildsets,
 #------------------------------------------------------------------------------
 buildsets = [
     {
-        'os': 'win32',
+        'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': ('superbuild',),
+        'features': ('superbuild','32bit',),
     },
 ]
 
