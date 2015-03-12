@@ -217,7 +217,7 @@ class CTestDashboard(ShellCommand):
         buildid = "%s-build%s-%s" % (shortrevision, buildnumber, buildername)
         project = self.getProperty("project")
         cdash_root = self.getProperty("cdash_url")
-        cdash_projectname = self.getProperty("cdash_project_names")[project]
+        cdash_projectname = self.getProperty("cdash_projectnames")[project]
 
         cdash_index_url = cdash_root + "/index.php"
         cdash_test_url = cdash_root + "/queryTests.php"

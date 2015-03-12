@@ -35,7 +35,8 @@ Create a symlink to the `master.cfg` file from `/path/to/master`. A
     "gitlab_host": "kwgitlab.kitwarein.com",
     "gitlab_api_token": "myapitoken",
     "web_status_url": "http://public_url:port",
-    "web_status_port": 35215
+    "web_status_port": 35215,
+    "cdash_url": "https://open.cdash.org"
 }
 ```
 

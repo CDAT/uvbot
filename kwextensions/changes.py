@@ -6,10 +6,10 @@ from twisted.internet import defer
 
 import urllib
 from dateutil.parser import parse as dateparse
-import datetime
+from datetime import datetime
 import os
 import requests
-
+import cdash
 
 GUEST     = 10
 REPORTER  = 20
@@ -189,11 +189,13 @@ class GitlabMergeRequestPoller(GitlabPoller):
     BUILDBOT_PREFIX = '@buildbot: '
 
     # TODO: add options for required access level.
-    def __init__(self, host, token, web_host, projects=[], **kwargs):
+    def __init__(self, host, token, web_host, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
         GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
 
         self.web_host = web_host
         self.projects = projects
+        self.cdash_host = cdash_host
+        self.cdash_projectnames = cdash_projectnames
 
     def describe(self):
         msg = self.name
@@ -224,7 +226,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                         # TODO: cancel previous builds for this branch if they
                         # exist.
                         self.last_rev[unicode(mid)] = unicode(sha)
-                        self._accept_change(request, branch['commit'])
+                        self._accept_change(request, branch['commit'], project)
                         yield self._add_change(project, request, branch['commit'])
                 else:
                     self._reject_change(request)
@@ -267,14 +269,23 @@ class GitlabMergeRequestPoller(GitlabPoller):
                         pass
         return False
 
-    def _accept_change(self, request, commit):
+    def _accept_change(self, request, commit, project):
         if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
             log.msg('would accept change %d' % request['id'])
             return
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
 
+        # Add a link to CDash for test results.
+        if self.cdash_host and project in self.cdash_projectnames:
+            q = cdash.Query(self.cdash_projectnames[project])
+            q.add_filter('buildname/string', cdash.StringOp.CONTAINS, commit['id'][:8])
+            q.add_filter('buildstarttime/date', cdash.DateOp.IS_AFTER,
+                    # pick yesterday, just to be safe.
+                    (datetime.now() + timedelta(days=-1)))
+            msg += ' You may view the test results [here](%s).' % q.get_url('%s/index.php' % self.cdash_host)
+
         # TODO: How to handle branches with the same name over time?
-        msg += ' Kitware developers may monitor the status of testing [here](%s?%s)' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
+        msg += ' Kitware developers may monitor the status of testing [here](%s?%s).' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
 
         msg += '\n\nBranch-at: %s' % commit['id']
         self.api.createmergerequestewallnote(request['project_id'], request['id'], body=msg)
@@ -299,7 +310,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
             revlink='%s/commit/%s' % (source_project_info['web_url'], commit['id']),
             comments='%s\n\n%s' % (request['title'], request['description']),
             files=self.describe_files(changes['changes']),
-            when_timestamp=datetime.datetime.now(),
+            when_timestamp=datetime.now(),
             branch=request['source_branch'],
             project=project,
             repository=source_project_info['http_url_to_repo'],
@@ -311,15 +322,19 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'target_project_id': request['target_project_id'],
                 'rooturl': 'https://%s' % self.host,
                 'try_user_fork': True,
-                'owner': source_project_info['owner']['username']
+                'owner': source_project_info['owner']['username'],
+                'cdash_url': self.cdash_host,
+                'cdash_projectnames': self.cdash_projectnames,
             })
 
 
 class GitlabIntegrationBranchPoller(GitlabPoller):
-    def __init__(self, host, token, projects=[], **kwargs):
+    def __init__(self, host, token, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
         GitlabPoller.__init__(self, 'GitlabIntegrationBranchPoller(%s)', host, token, **kwargs)
 
         self.projects = projects
+        self.cdash_host = cdash_host
+        self.cdash_projectnames = cdash_projectnames
 
     def describe(self):
         msg = self.name
@@ -364,7 +379,7 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                     comments=commit['message'],
                     # TODO: get the files changed.
                     files=['TODO'],
-                    when_timestamp=datetime.datetime.now(),
+                    when_timestamp=datetime.now(),
                     branch=branch,
                     project=project,
                     repository=project_info['http_url_to_repo'],
@@ -372,4 +387,6 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                     properties={
                         'rooturl': 'https://%s' % self.host,
                         'try_user_fork': False,
+                        'cdash_url': self.cdash_host,
+                        'cdash_projectnames': self.cdash_projectnames,
                     })
