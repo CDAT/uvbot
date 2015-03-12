@@ -18,12 +18,14 @@ def make_schedulers(buildnames):
                 category='merge-request',
                 project=poll.REPO),
             treeStableTimer=None,
-            builderNames=buildnames),
+            builderNames=buildnames,
+            reason="ParaView 'merge-request' created/changed."),
         AnyBranchScheduler(
             name='ParaView Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
                 category='integration-branch',
                 project=poll.REPO),
             treeStableTimer=None,
-            builderNames=buildnames),
+            builderNames=buildnames,
+            reason="ParaView 'master' changed."),
     ]
