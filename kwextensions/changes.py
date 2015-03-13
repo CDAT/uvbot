@@ -220,14 +220,15 @@ class GitlabMergeRequestPoller(GitlabPoller):
             if 'buildbot' in request['labels']:
                 if self._check_merge_request(request):
                     branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
-                    sha = branch['commit']['id']
+                    commit = branch['commit']
+                    sha = commit['id']
                     # Check if the commit has changed since we last tested it.
                     if self.last_rev.get(unicode(mid)) != unicode(sha):
                         # TODO: cancel previous builds for this branch if they
                         # exist.
                         self.last_rev[unicode(mid)] = unicode(sha)
-                        self._accept_change(request, branch['commit'], project)
-                        yield self._add_change(project, request, branch['commit'])
+                        self._accept_change(request, commit, project)
+                        yield self._add_change(project, request, commit)
                 else:
                     self._reject_change(request)
 
