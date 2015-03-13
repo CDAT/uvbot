@@ -369,6 +369,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'rooturl': 'https://%s' % self.host,
                 'try_user_fork': True,
                 'owner': source_project_info['owner']['username'],
+                'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
                 'cdash_url': self.cdash_host,
                 'cdash_projectnames': self.cdash_projectnames,
             })
@@ -434,6 +435,7 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                     properties={
                         'rooturl': 'https://%s' % self.host,
                         'try_user_fork': False,
+                        'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
                         'cdash_url': self.cdash_host,
                         'cdash_projectnames': self.cdash_projectnames,
                     })

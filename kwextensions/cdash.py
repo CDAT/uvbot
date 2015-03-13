@@ -1,6 +1,8 @@
 from urllib import urlencode
 from datetime import datetime
 
+TIMEFORMAT = '%Y%m%dT%H%M%S'
+
 class StringOp(object):
     CONTAINS = 63
     DOES_NOT_CONTAIN = 64
@@ -42,7 +44,7 @@ class Query(object):
             field, compare, value = self.__filters[i]
             if isinstance(value, datetime):
                 # XXX: this is localtime because cdash doesn't understand 'Z' suffix
-                value = value.strftime('%Y%m%dT%H%M%S')
+                value = value.strftime(TIMEFORMAT)
             q = { 'field%d' % idx : field,
                   'compare%d' % idx : compare,
                   'value%d' % idx : value
