@@ -7,6 +7,7 @@ from twisted.internet import defer
 import urllib
 from dateutil.parser import parse as dateparse
 from datetime import datetime, timedelta
+from operator import itemgetter
 import os
 import requests
 import cdash
@@ -114,6 +115,7 @@ class Gitlab(object):
         order_by='updated_at',
         sort='desc')
     getmergerequestcomments = _mkrequest_paged('projects/{}/merge_request/{}/comments')
+    getmergerequestwallnotes = _mkrequest_paged('projects/{}/merge_request/{}/notes')
     getmergerequestchanges = _mkrequest('projects/{}/merge_request/{}/changes')
     createmergerequestwallnote = _mkpost('projects/{}/merge_requests/{}/notes')
 
@@ -242,8 +244,13 @@ class GitlabMergeRequestPoller(GitlabPoller):
         if access >= DEVELOPER:
             log.msg('accepting request %d because it is by a developer' % request['id'])
             return True
+
         # Look at comments for buildbot commands.
-        comments = self.api.getmergerequestcomments(pid, request['id'])
+        comments = self.api.getmergerequestnotes(pid, request['id'])
+
+        # Sort comments from newest to oldest.
+        comments.sort(key=itemgetter('id'), reverse=True)
+
         for comment in comments:
             author = comment['author']
             if author['id'] == self.buildbot_id:
@@ -252,6 +259,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                     break
                 # Skip comments by buildbot.
                 continue
+
             content = comment['note'].splitlines()
             for line in content:
                 if line.startswith(BUILDBOT_PREFIX):
