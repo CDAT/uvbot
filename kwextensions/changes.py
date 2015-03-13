@@ -241,7 +241,8 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 if self._check_merge_request(request, commit):
                     # Check if the commit has changed since we last tested it.
                     sha = commit['id']
-                    if self.last_rev.get(unicode(mid)) != unicode(sha):
+                    force = False # TODO
+                    if self.last_rev.get(unicode(mid)) != unicode(sha) or force:
                         # TODO: cancel previous builds for this branch if they
                         # exist.
                         self.last_rev[unicode(mid)] = unicode(sha)
@@ -253,6 +254,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
     def _strip_prefix(self, string, prefix):
         return string[len(prefix):]
 
+    # TODO: return an action
     def _check_merge_request(self, request, commit):
         pid = request['target_project_id']
         access_cache = {}
