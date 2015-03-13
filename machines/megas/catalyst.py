@@ -1,6 +1,7 @@
 import projects
 from projects import catalyst
 from kwextensions import factory
+from . import slave
 
 __all__ = [
     'BUILDERS',
@@ -24,10 +25,9 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(catalyst, buildsets,
+BUILDERS = projects.make_builders(slave.SLAVE, catalyst, buildsets,
     defprops=defprops,
     defconfig=defconfig,
     myfactory=factory.get_catalyst_buildfactory(),
-    slavenames=['megas'],
     env=env
 )

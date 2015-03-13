@@ -62,7 +62,7 @@ def build_config(project, defconfig={}, features=(), *args, **kwargs):
     return (name, config)
 
 
-def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None, **kwargs):
+def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, **kwargs):
     configs = {}
     for buildset in buildsets:
         name, conf = build_config(project, defconfig=defconfig, **buildset)
@@ -77,9 +77,10 @@ def make_builders(project, buildsets, defprops={}, defconfig={}, myfactory=None,
         props['configure_options:builderconfig'] = config
 
         builders.append(BuilderConfig(
-            name=name,
+            name='%s-%s' % (slave.slavename, name),
             factory=myfactory,
             properties=props,
+            slavenames=[slave.slavename],
             **kwargs
         ))
 
