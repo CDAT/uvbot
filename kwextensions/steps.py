@@ -230,7 +230,6 @@ class CTestDashboard(ShellCommand):
         query.add_filter(("buildstarttime/date", cdash.DateOp.IS_AFTER,
             # pick yesterday, just to be safe.
             (datetime.now() + timedelta(days=-1))))
-        self.addURL("cdash" % self.warnCount, query.get_url(cdash_index_url))
 
         if self.warnCount:
             self.addURL("warnings (%d)" % self.warnCount, query.get_url(cdash_index_url))
