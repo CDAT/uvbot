@@ -292,7 +292,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 # Skip comments by buildbot.
                 continue
 
-            content = comment['note'].splitlines()
+            content = body.splitlines()
             for line in content:
                 if line.startswith(self._BUILDBOT_PREFIX):
                     if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
