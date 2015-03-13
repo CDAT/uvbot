@@ -1,5 +1,5 @@
 from urllib import urlencode
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class StringOp(object):
     CONTAINS = 63
@@ -25,7 +25,7 @@ class Query(object):
         self.__filters = filters
 
     def add_filter(self, filter, op='and'):
-        if len(self.__filters) != 0 and self.__filtercombine != op:
+        if self.__filters and self.__filtercombine != op:
             raise RuntimeError, 'Incompatible filter combination specified (%s != %s)' % (self.__filtercombine, op)
         self.__filtercombine = op
         self.__filters.append(filter)
