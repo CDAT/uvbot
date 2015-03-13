@@ -224,7 +224,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                         # TODO: cancel previous builds for this branch if they
                         # exist.
                         self.last_rev[unicode(mid)] = unicode(sha)
-                        self._accept_change(request)
+                        self._accept_change(request, branch['commit'])
                         yield self._add_change(project, request, branch['commit'])
                 else:
                     self._reject_change(request)
@@ -267,14 +267,16 @@ class GitlabMergeRequestPoller(GitlabPoller):
                         pass
         return False
 
-    def _accept_change(self, request):
+    def _accept_change(self, request, commit):
         if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
             log.msg('would accept change %d' % request['id'])
             return
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
         # TODO: How to handle branches with the same name over time?
         msg += ' You may monitor the status of testing [here](%s?%s)' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
-        self.api.createmergerequestewallnote(mr["project_id"], mr["id"], body=msg)
+
+        msg += '\n\nBranch-at: %s' % commit['id']
+        self.api.createmergerequestewallnote(request['project_id'], request['id'], body=msg)
 
     def _reject_change(self, request):
         if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
