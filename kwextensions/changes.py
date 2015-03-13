@@ -272,8 +272,9 @@ class GitlabMergeRequestPoller(GitlabPoller):
             log.msg('would accept change %d' % request['id'])
             return
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
+
         # TODO: How to handle branches with the same name over time?
-        msg += ' You may monitor the status of testing [here](%s?%s)' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
+        msg += ' Kitware developers may monitor the status of testing [here](%s?%s)' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
 
         msg += '\n\nBranch-at: %s' % commit['id']
         self.api.createmergerequestewallnote(request['project_id'], request['id'], body=msg)
