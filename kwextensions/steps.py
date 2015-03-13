@@ -82,6 +82,17 @@ def makeUploadFetchSubmoduleScript(**kwargs):
                         **kwargs)
     return step
 
+class FetchTags(ShellCommand):
+    def __init__(self, **kwargs):
+        ShellCommand.__init__(self,command=['git', 'fetch', '--tags', Interpolate('%(prop:upstream_repo)s')],
+                              haltOnFailure=True,
+                              flunkOnFailure=True,
+                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              description=["Fetching tags"],
+                              descriptionDone=["Fetched tags"],
+                              env={'GIT_SSL_NO_VERIFY': 'true'},
+                              **kwargs)
+
 class FetchUserSubmoduleForks(ShellCommand):
     def __init__(self, **kwargs):
         ShellCommand.__init__(self,command=makeUserForkCommand,

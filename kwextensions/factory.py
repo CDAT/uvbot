@@ -12,7 +12,8 @@ from kwextensions.steps import CTestDashboard,\
                                makeUploadFetchSubmoduleScript,\
                                FetchUserSubmoduleForks,\
                                makeUploadTestSubmoduleScript,\
-                               AreSubmodulesValid
+                               AreSubmodulesValid,\
+                               FetchTags
 
 update = Git(name="update",
         repourl=Property("repository"),
@@ -45,6 +46,7 @@ def get_ctest_buildfactory():
 
 catalystTestFactory = BuildFactory()
 catalystTestFactory.addStep(update)
+catalystTestFactory.addStep(FetchTags())
 catalystTestFactory.addStep(makeUploadFetchSubmoduleScript())
 catalystTestFactory.addStep(FetchUserSubmoduleForks())
 catalystTestFactory.addStep(DownloadCommonCTestScript())
