@@ -239,7 +239,7 @@ class CTestDashboard(ShellCommand):
         cdash_test_url = cdash_root + "/queryTests.php"
 
         query = cdash.Query(project=cdash_projectname)
-        query.add_filter(("buildname/string", cdash.StringOp.IS, buildid))
+        query.add_filter(("buildname/string", cdash.StringOp.STARTS_WITH, buildid))
         query.add_filter(("buildstarttime/date", cdash.DateOp.IS_AFTER, self.getProperty('cdash_time')))
 
         if self.warnCount:
