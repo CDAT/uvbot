@@ -4,13 +4,16 @@ from buildbot import config
 from twisted.python import log
 from twisted.internet import defer
 
-import gitlab
 import urllib
 from dateutil.parser import parse as dateparse
-import datetime
+from datetime import datetime, timedelta
+from operator import itemgetter
 import os
+import re
 import requests
-import json
+
+import cdash
+import trailers
 
 GUEST     = 10
 REPORTER  = 20
@@ -18,332 +21,416 @@ DEVELOPER = 30
 MASTER    = 40
 OWNER     = 50
 
-class Gitlab(gitlab.Gitlab):
-    def getsortedmergerequests(self, project_id, page=1, per_page=20, state=None):
-        """Returns merge requests sorted in descending order by update time"""
-        data = {'page': page, 'per_page': per_page, 'state': state,
-                'order_by': 'updated_at', 'sort': 'desc' }
 
-        request = requests.get('{}/{}/merge_requests'.format(self.projects_url, project_id),
-                               params=data, headers=self.headers, verify=self.verify_ssl)
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
-        else:
-            return False
+def _mkrequest(path, **defkwargs):
+    def func(self, *args, **kwargs):
+        data = defkwargs.copy()
+        data.update(kwargs)
 
-    def getprojectteammember(self, project_id, user_id):
-        """
-        Gets a project's team member's information.
+        return self.fetch(path.format(*args), **data)
 
-        @param project_id (required) - The ID or NAMESPACE/PROJECT_NAME of a project
-        @param user_id (required) - The ID of a user
-        {
-          "id": 1,
-          "username": "john_smith",
-          "email": "john@example.com",
-          "name": "John Smith",
-          "state": "active",
-          "created_at": "2012-05-23T08:00:58Z",
-          "access_level": 40
+    return func
+
+
+def _mkrequest_paged(path, **defkwargs):
+    def func(self, *args, **kwargs):
+        data = defkwargs.copy()
+        data.update(kwargs)
+
+        return self.fetch_all(path.format(*args), **data)
+
+    return func
+
+
+def _mkpost(path, **defkwargs):
+    def func(self, *args, **kwargs):
+        data = defkwargs.copy()
+        data.update(kwargs)
+
+        return self.post(path.format(*args), **data)
+
+    return func
+
+
+class Gitlab(object):
+    def __init__(self, host, token, verify_ssl=True):
+        self.urlbase = 'https://%s/api/v3' % host
+        self.headers = {
+            'PRIVATE-TOKEN': token,
         }
-        """
-        request = requests.get("{}/{}/members/{}".format(self.projects_url, project_id, user_id),
-                params={}, headers=self.headers,
-                verify=self.verify_ssl)
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
-        else:
+        self.verify_ssl = verify_ssl
+
+    def fetch(self, path, **kwargs):
+        url = '%s/%s' % (self.urlbase, path)
+        response = requests.get(url, headers=self.headers, verify=self.verify_ssl, params=kwargs)
+
+        if response.status_code != 200:
             return False
 
-    def getgroupmembers(self, group_id):
-        """
-        Get a list of group members viewable by the authenticated user.
-        @param group_id: The group ID.
-
-        @return
-        [
-          {
-            "id": 1,
-            "username": "raymond_smith",
-            "email": "ray@smith.org",
-            "name": "Raymond Smith",
-            "state": "active",
-            "created_at": "2012-10-22T14:13:35Z",
-            "access_level": 30
-          },
-          {
-            "id": 2,
-            "username": "john_doe",
-            "email": "joh@doe.org",
-            "name": "John Doe",
-            "state": "active",
-            "created_at": "2012-10-22T14:13:35Z",
-            "access_level": 30
-          }
-        ]
-        """
-        request = requests.get("{}/{}/members".format(self.groups_url, group_id),
-                params={}, headers=self.headers,
-                verify=self.verify_ssl)
-        if request.status_code == 200:
-            return json.loads(request.content.decode("utf-8"))
+        if callable(response.json):
+            return response.json()
         else:
+            return response.json
+
+    def fetch_all(self, path, **kwargs):
+        kwargs.update({
+            'page': 1,
+            'per_page': 100,
+        })
+
+        full = []
+        while True:
+            items = self.fetch(path, **kwargs)
+            if not items:
+                break
+            full += items
+            if len(items) < kwargs['per_page']:
+                break
+            kwargs['page'] += 1
+
+        return full
+
+    def post(self, path, **kwargs):
+        url = '%s/%s' % (self.urlbase, path)
+        response = requests.post(url, headers=self.headers, verify=self.verify_ssl, data=kwargs)
+
+        if response.status_code != 201:
             return False
+
+        if callable(response.json):
+            return response.json()
+        else:
+            return response.json
+
+    # Users
+    currentuser = _mkrequest('user')
+    getusers = _mkrequest_paged('users')
+    getuser = _mkrequest_paged('users/{}')
+
+    # Projects
+    getproject = _mkrequest('projects/{}')
+    getprojects = _mkrequest_paged('projects')
+    getprojectmembers = _mkrequest_paged('projects/{}/members')
+    getprojectteammember = _mkrequest('projects/{}/members/{}')
+    getbranch = _mkrequest('projects/{}/repository/branches/{}')
+
+    # Merge requests
+    getmergerequests = _mkrequest_paged('projects/{}/merge_requests')
+    getmergerequest = _mkrequest('projects/{}/merge_request/{}')
+    getsortedmergerequests = _mkrequest_paged('projects/{}/merge_requests',
+        order_by='updated_at',
+        sort='desc')
+    getmergerequestcomments = _mkrequest_paged('projects/{}/merge_request/{}/comments')
+    getmergerequestwallnotes = _mkrequest_paged('projects/{}/merge_requests/{}/notes')
+    getmergerequestchanges = _mkrequest('projects/{}/merge_request/{}/changes')
+    createmergerequestwallnote = _mkpost('projects/{}/merge_requests/{}/notes')
+
+    # Groups
+    getgroupmembers = _mkrequest_paged('groups/{}/members')
 
     def getaccesslevel(self, project_id, user_id):
-        """Returns the access level for a user with respect to a particular
-        project
-
-        @param project_id (required) - The ID or NAMESPACE/PROJECT_NAME of a project
-        @param user_id (required) - The ID of a user
-        """
-        pm = self.getprojectteammember(project_id, user_id)
-        if pm:
-            return int(pm["access_level"])
+        members = self.getprojectmembers(project_id)
 
         project = self.getproject(project_id)
-        if project and project.has_key("namespace"):
-            members = self.getgroupmembers(project["namespace"]["id"])
-            if not members: return 0
-            for m in members:
-                if m["id"] == user_id: return int(m["access_level"])
-        return 0
+        if project and 'namespace' in project:
+            group_members = self.getgroupmembers(project['namespace']['id'])
+            members += group_members
 
-class GitlabMergeRequestPoller(base.PollingChangeSource, StateMixin):
-    compare_attrs = ["rooturl", "token", "projects"]
+        access = 0
+        for perm in filter(lambda member: user_id == member['id'], members):
+            if perm['access_level'] > access:
+                access = perm['access_level']
+        return access
 
-    def __init__(self, rooturl, token, projects=[], verify_ssl=False, **kwargs):
-        """
-        @param rooturl: URL to the gitlab server e.g. https://kwgitlab.kitwarein.com
-        @type rooturl: string
+    def getaccesslevel_cache(self, cache, project_id, user_id):
+        key = '%d,%d' % (project_id, user_id)
+        if key not in cache:
+            cache[key] = self.getaccesslevel(project_id, user_id)
+        return cache[key]
 
-        @param token: secret token to access Gitlab API.
 
-        @param projects: list of fully qualifies projects names to
-        monitor e.g. ["ParaView/ParaView", "utkarsh.ayachit/WonderfulProject"]
+class GitlabPoller(base.PollingChangeSource, StateMixin):
+    compare_attrs = [
+        'host',
+        'token',
+        'projects',
+    ]
 
-        """
-        base.PollingChangeSource.__init__(self,
-                name="GitlabMergeRequestPoller(%s)" % rooturl, **kwargs)
+    def __init__(self, name, host, token, verify_ssl=False, **kwargs):
+        base.PollingChangeSource.__init__(self, name=name % host, **kwargs)
 
-        self.rooturl = rooturl
+        self.host = host
         self.token = token
-        self.projects = projects
         self.verify_ssl = verify_ssl
         self.api = None
-        self.lastRev = {}
+        self.last_rev = {}
 
     def startService(self):
-        self.api = Gitlab(self.rooturl, token=self.token, verify_ssl=self.verify_ssl)
-        if not self.api.currentuser():
-            log.err("while initializing GitlabMergeRequestPoller for" + self.rooturl)
+        self.api = Gitlab(self.host, token=self.token, verify_ssl=self.verify_ssl)
+        buildbot_user = self.api.currentuser()
+        if not buildbot_user:
+            log.err('cannot connect to gitlab instance %s' % self.host)
         else:
+            self.buildbot_id = buildbot_user['id']
             d = self.getState('lastRev', {})
-            def setLastRev(lastRev):
-                pass
-                # FIXME: remove this once we want to rememember between restarts
-                self.lastRev = lastRev
-            d.addCallback(setLastRev)
-            d.addCallback(lambda _:
-                    base.PollingChangeSource.startService(self))
-            d.addErrback(log.err, 'while initializing GitPoller repository')
+            def set_last_rev(last_rev):
+                self.last_rev = last_rev
+            d.addCallback(set_last_rev)
+            d.addCallback(lambda _: base.PollingChangeSource.startService(self))
+            d.addErrback(log.err, 'cannot initialize GitlabPoller')
             return d
 
+    def describe_files(self, files):
+        descs = []
+        for file_desc in files:
+            if file_desc['new_file']:
+                descs.append('Added %(new_path)s' % file_desc)
+            elif file_desc['deleted_file']:
+                descs.append('Deleted %(old_path)s' % file_desc)
+            elif file_desc['renamed_file']:
+                descs.append('Renamed %(old_path)s -> %(new_path)s' % file_desc)
+            else:
+                descs.append('Changed %(old_path)s' % file_desc)
+        return descs
+
+
+class GitlabMergeRequestPoller(GitlabPoller):
+    # TODO: add options for required access level.
+    def __init__(self, host, token, web_host, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
+        GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
+
+        self.web_host = web_host
+        self.projects = projects
+        self.cdash_host = cdash_host
+        self.cdash_projectnames = cdash_projectnames
+
+        # Special comment regular expressions.
+        self._branch_update_re = re.compile('^Added [1-9][0-9]* new commits?:\n\n(\* [0-9a-f]* - [^\n]*\n)*$')
+
+        self._BUILDBOT_PREFIX = '@buildbot '
+
     def describe(self):
-        str = ('GitlabMergeRequestPoller watching the remote git repository ' + self.rooturl)
+        msg = self.name
         if self.projects:
-            if not callable(self.projects):
-                str += ', projects: ' + ', '.join(self.projects)
+            msg += ' (%s)' % ', '.join(self.projects)
         if not self.master:
-            str += " [STOPPED - check log]"
-        return str
+            msg += ' [STOPPED --- check logs]'
+        return msg
 
     @defer.inlineCallbacks
     def poll(self):
-        "Iterate over all projects and poll them"
-        log.msg("Polling .................. ")
         for project in self.projects:
-            projectid = urllib.quote(project.lower(),"")
-            yield self._poll_project(projectid, project)
-        log.msg("Done polling")
-        yield self.setState('lastRev', self.lastRev)
+            pid = urllib.quote(project.lower(), '')
+            yield self._poll_project(pid, project)
+        yield self.setState('lastRev', self.last_rev)
 
     @defer.inlineCallbacks
-    def _poll_project(self, projectid, projectname):
-        # scan through open merge requests.
-        # - any merge request with 'request-builds' label will be authorized and
-        # scheduled for a build. We also remove the 'request-builds' label.
-        openmergerequests = self.api.getsortedmergerequests(projectid,
-                page=1, per_page=100, state='opened')
-        for mr in openmergerequests:
-            mid = mr["id"]
-            if 'do-tests' in mr["labels"]:
-                if self._authenticate_merge_request(mr):
-                    branch = self.api.getbranch(mr["source_project_id"], mr["source_branch"])
-                    sha = branch["commit"]["id"]
-                    # check if the merge request has updated since the last we
-                    # saw it.
-                    if self.lastRev.get(unicode(mid), None) != unicode(sha):
-                        self.lastRev[unicode(mid)] = unicode(sha)
-                        self._accept_change(mr)
-                        yield self._add_change(projectname, mr, branch['commit'])
-                else:
-                    self._reject_change(mr)
+    def _poll_project(self, pid, project):
+        requests = self.api.getsortedmergerequests(pid, state='opened')
+        for request in requests:
+            mid = request['id']
+            if 'buildbot' in request['labels']:
+                branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
 
-    def _authenticate_merge_request(self, mr):
-        if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
-            return False
-        project_id = mr["project_id"]
-        access_level = self.api.getaccesslevel(project_id, mr["author"]["id"])
-        if access_level >= DEVELOPER:
-            log.msg("Merge request is created by a 'developer'")
+                if not branch:
+                    # Branch is not accessible.
+                    continue
+
+                commit = branch['commit']
+
+                if self._check_merge_request(request, commit):
+                    # Check if the commit has changed since we last tested it.
+                    sha = commit['id']
+                    if self.last_rev.get(unicode(mid)) != unicode(sha):
+                        # TODO: cancel previous builds for this branch if they
+                        # exist.
+                        self.last_rev[unicode(mid)] = unicode(sha)
+                        self._accept_change(request, commit, project)
+                        yield self._add_change(project, request, commit)
+                else:
+                    self._reject_change(request)
+
+    def _strip_prefix(self, string, prefix):
+        return string[len(prefix):]
+
+    def _check_merge_request(self, request, commit):
+        pid = request['target_project_id']
+        access_cache = {}
+        access = self.api.getaccesslevel_cache(access_cache, pid, request['author']['id'])
+        if access >= DEVELOPER:
+            log.msg('accepting request %d because it is by a developer' % request['id'])
             return True
-        # Since the merge request creator is not a developer. We need to look at the
-        # comments to see if an authorized user said "enable-tests".
-        comments = self.api.getmergerequestcomments(project_id, mr["id"], page=1, per_page=2000)
+
+        # Look at comments for buildbot commands.
+        comments = self.api.getmergerequestwallnotes(pid, request['id'])
+
+        # Sort comments from newest to oldest.
+        comments.sort(key=itemgetter('id'), reverse=True)
+
         for comment in comments:
-            if comment["note"].find(":+1") != -1 and \
-                    self.api.getaccesslevel(project_id, comment["author"]["id"]) >= DEVELOPER:
-                log.msg("Merge request was not-created by a 'developer' but has a developer +1")
-                return True
-        log.msg("Merge request was not-created by a 'developer' nor has no +1")
+            body = comment['body']
+
+            if 'editable' in comment and not comment['editable']:
+                if self._branch_update_re.match(body):
+                    # TODO: use when receiving webhook notification.
+                    branch_update_found = True
+                # Ignore non-user comments.
+                continue
+
+            author = comment['author']
+            if author['id'] == self.buildbot_id:
+                cur_trailers = trailers.parse(body)
+
+                trailer_dict = {}
+                for key, value in cur_trailers:
+                    trailer_dict[key] = value
+
+                if trailer_dict.get('Branch-at') == commit['id']:
+                    # Comment is a scheduled build; don't look before this
+                    # comment.
+                    break
+                # Skip comments by buildbot.
+                continue
+
+            content = body.splitlines()
+            for line in content:
+                if line.startswith(self._BUILDBOT_PREFIX):
+                    # TODO: parse arguments from the command
+                    command = self._strip_prefix(line, self._BUILDBOT_PREFIX)
+                    command = command.strip()
+
+                    # XXX: Add buildbot commands here.
+                    if command == 'build' or \
+                       command == 'test':
+                        log.msg('found a command to build request %d' % request['id'])
+                        if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
+                            return True
+                    else:
+                        # TODO: mention that the command is not recognized?
+                        pass
+
         return False
 
-    def _accept_change(self, mr):
-        self.api.createmergerequestewallnote(mr["project_id"], mr["id"],
-                "**BUILDBOT**: Your merge request has been queued for testing. " \
-                "You can monitor the status [here](http://hera:8010/grid?%s)." % \
-                        urllib.urlencode({'branch': mr['source_branch']}))
+    def _accept_change(self, request, commit, project):
+        msg = '**BUILDBOT**: Your merge request has been queued for testing.'
 
-    def _reject_change(self, mr):
-        #self.api.createmergerequestewallnote(mr["project_id"], mr["id"],
-        #        "BUILDBOT: Builds not authorized! Contact a developer!!! :-1:")
+        # Add a link to CDash for test results.
+        if self.cdash_host and project in self.cdash_projectnames:
+            q = cdash.Query(self.cdash_projectnames[project])
+            q.add_filter(('buildname/string', cdash.StringOp.CONTAINS, commit['id'][:8]))
+            q.add_filter(('buildstarttime/date', cdash.DateOp.IS_AFTER,
+                    # pick yesterday, just to be safe.
+                    (datetime.now() + timedelta(days=-1))))
+            msg += ' You may view the test results [here](%s).' % q.get_url('%s/index.php' % self.cdash_host)
+
+        # TODO: How to handle branches with the same name over time?
+        msg += ' Kitware developers may monitor the status of testing [here](%s?%s).' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
+
+        msg += '\n\n%s%s' % (trailers.BRANCH_HEAD_PREFIX, commit['id'])
+
+        if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
+            log.msg('would accept change %d:\n\n%s' % (request['id'], msg))
+            return
+
+        self.api.createmergerequestewallnote(request['project_id'], request['id'], body=msg)
+
+    def _reject_change(self, request):
+        if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
+            log.msg('would reject change %d' % request['id'])
+            return
+        # TODO: Make a comment?
         pass
 
     @defer.inlineCallbacks
-    def _add_change(self, projectname, mr, commit):
-        source_project = self.api.getproject(mr["source_project_id"])
+    def _add_change(self, project, request, commit):
+        source_project_info = self.api.getproject(request['source_project_id'])
+        target_project_info = self.api.getproject(request['target_project_id'])
+
+        changes = self.api.getmergerequestchanges(target_project_info['id'], request['id'])
 
         yield self.master.addChange(
-                author = "%s <%s>" % (commit["author_name"], commit["author_email"]),
-                revision = commit["id"],
-                revlink = "%s/commit/%s" % (source_project['web_url'], commit['id']),
-                comments = mr["title"] + "\n\n" + mr["description"],
-                files = ["--coming soon--"],
-                category="merge-request",
-                # FIXME: add an option to simply use current timestamp
-                when_timestamp = datetime.datetime.now(), # dateparse(commit["authored_date"]),
-                branch = mr["source_branch"],
-                project = projectname,
-                repository = source_project["http_url_to_repo"],
-                src = "gitlab",
-                properties = {
-                    'source_project_id' : mr['source_project_id'],
-                    'source_branch' : mr['source_branch'],
-                    'merge_request_id' : mr['id'],
-                    'target_project_id' : mr['target_project_id'],
-                    'rooturl' : self.rooturl,
-                    'try_user_fork' : True,
-                    'owner' : source_project['owner']['username']
-                    }
-                )
+            author='%(author_name)s <%(author_email)s>' % commit,
+            revision=commit['id'],
+            revlink='%s/commit/%s' % (source_project_info['web_url'], commit['id']),
+            comments='%s\n\n%s' % (request['title'], request['description']),
+            files=self.describe_files(changes['changes']),
+            when_timestamp=datetime.now(),
+            branch=request['source_branch'],
+            project=project,
+            repository=source_project_info['http_url_to_repo'],
+            src='git',
+            properties={
+                'source_project_id': request['source_project_id'],
+                'source_branch': request['source_branch'],
+                'merge_request_id': request['id'],
+                'target_project_id': request['target_project_id'],
+                'rooturl': 'https://%s' % self.host,
+                'try_user_fork': True,
+                'owner': source_project_info['owner']['username'],
+                'cdash_url': self.cdash_host,
+                'cdash_projectnames': self.cdash_projectnames,
+            })
 
 
-class GitlabIntegrationBranchPoller(base.PollingChangeSource, StateMixin):
-    """
-    Polls integration branches for changes and tests them.
-    """
-    compare_attrs = ["rooturl", "token", "projects"]
+class GitlabIntegrationBranchPoller(GitlabPoller):
+    def __init__(self, host, token, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
+        GitlabPoller.__init__(self, 'GitlabIntegrationBranchPoller(%s)', host, token, **kwargs)
 
-    def __init__(self, rooturl, token, projects={}, verify_ssl=False, **kwargs):
-        """
-        @param rooturl: URL to the gitlab server e.g. https://kwgitlab.kitwarein.com
-        @type rooturl: string
-
-        @param token: secret token to access Gitlab API.
-
-        @param projects: dict of fully qualifies projects names with a list of branches
-        to monitor e.g. {
-            "ParaView/ParaView" : ["master", "next"],
-            "utkarsh.ayachit/WonderfulProject" : ["master"]
-        }
-        """
-        base.PollingChangeSource.__init__(self,
-                name="GitlabIntegrationBranchPoller(%s)"%rooturl, **kwargs)
-
-        self.rooturl = rooturl
-        self.token = token
         self.projects = projects
-        self.verify_ssl = verify_ssl
-        self.api = None
-        self.lastRev = {}
-
-    def startService(self):
-        self.api = Gitlab(self.rooturl, token=self.token, verify_ssl=self.verify_ssl)
-        if not self.api.currentuser():
-            log.err("while initializing GitlabIntegrationBranchPoller for" + self.rooturl)
-        else:
-            d = self.getState('lastRev', {})
-            def setLastRev(lastRev):
-                pass
-                # FIXME: remove this once we want to rememember between restarts
-                self.lastRev = lastRev
-            d.addCallback(setLastRev)
-            d.addCallback(lambda _:
-                    base.PollingChangeSource.startService(self))
-            d.addErrback(log.err, 'while initializing GitPoller repository')
-            return d
+        self.cdash_host = cdash_host
+        self.cdash_projectnames = cdash_projectnames
 
     def describe(self):
-        txt = ('GitlabIntegrationBranchPoller watching the remote git repository ' + self.rooturl)
+        msg = self.name
         if self.projects:
-            if not callable(self.projects):
-                txt += ', projects: ' + str(self.projects)
+            items = []
+            for project, branches in self.projects.items():
+                items.append('%s: %s' % (project, ', '.join(branches)))
+            msg += ' (%s)' % '; '.join(items)
         if not self.master:
-            txt += " [STOPPED - check log]"
-        return txt
+            msg += ' [STOPPED --- check logs]'
+        return msg
 
     @defer.inlineCallbacks
     def poll(self):
-        "Iterate over all projects and poll them"
-        log.msg("Polling .................. ")
-        for project, branches in self.projects.iteritems():
-            projectid = urllib.quote(project.lower(),"")
-            yield self._poll_project(projectid, project, branches)
-        log.msg("Done polling")
-        yield self.setState('lastRev', self.lastRev)
+        for project, branches in self.projects.items():
+            pid = urllib.quote(project.lower(), '')
+            yield self._poll_project(pid, project, branches)
+        yield self.setState('lastRev', self.last_rev)
 
     @defer.inlineCallbacks
-    def _poll_project(self, projectid, projectname, branches):
-        for branchname in branches:
-            branch = self.api.getbranch(projectid, branchname)
-            if not branch:
-                log.err("No such branch %s:%s" % (projectname, branch))
+    def _poll_project(self, pid, project, branches):
+        project_info = self.api.getproject(pid)
+
+        for branch in branches:
+            branch_info = self.api.getbranch(pid, branch)
+            if not branch_info:
+                log.err('no such branch %s for integration testing on %s' % (branch, project))
                 continue
-            commit = branch["commit"]
-            sha = commit["id"]
-            # check if the branch has updated since the last we saw it.
-            key = unicode("%s.%s" % (projectid, branchname))
+
+            commit = branch_info['commit']
+            sha = commit['id']
+
+            key = unicode('%s.%s' % (pid, branch))
             sha = unicode(sha)
 
-            project = self.api.getproject(projectid)
+            if self.last_rev.get(key) != sha:
+                self.last_rev[key] = sha
 
-            if self.lastRev.get(key, None) != sha:
-                self.lastRev[key] = sha
-                # TODO: should we do builds for each merge of just the latest state?
                 yield self.master.addChange(
-                        author = "%s <%s>" % (commit["author_name"], commit["author_email"]),
-                        revision = commit["id"],
-                        comments = commit["message"],
-                        files = ["--coming soon--"],
-                        category="integration-branch",
-                        # FIXME: add an option to simply use current timestamp
-                        when_timestamp = datetime.datetime.now(), # dateparse(commit["authored_date"]),
-                        branch = branchname,
-                        project = projectname,
-                        repository = project["http_url_to_repo"],
-                        src="gitlab",
-                        properties= {
-                            'rooturl' : self.rooturl,
-                            'try_user_fork' : False
-                        })
+                    author='%(author_name)s <%(author_email)s>' % commit,
+                    revision=commit['id'],
+                    comments=commit['message'],
+                    # TODO: get the files changed.
+                    files=['TODO'],
+                    when_timestamp=datetime.now(),
+                    branch=branch,
+                    project=project,
+                    repository=project_info['http_url_to_repo'],
+                    src='git',
+                    properties={
+                        'rooturl': 'https://%s' % self.host,
+                        'try_user_fork': False,
+                        'cdash_url': self.cdash_host,
+                        'cdash_projectnames': self.cdash_projectnames,
+                    })

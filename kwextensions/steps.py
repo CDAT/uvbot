@@ -7,8 +7,8 @@ from buildbot.steps.transfer import FileDownload, StringDownload
 
 from buildbot.status.results import FAILURE, SUCCESS, WARNINGS
 from twisted.python import log as twisted_log
-from urllib import urlencode
 from datetime import datetime, timedelta
+import cdash
 
 Gitlab_Base_URL = "https://kwgitlab.kitwarein.com"
 
@@ -55,11 +55,12 @@ def makeUserForkCommand(props):
     cmd = ''
     if props.hasProperty('username') and props.hasProperty('try_user_fork') and\
             props.getProperty('try_user_fork') == True:
-        argList = ['git', 'submodule', 'foreach', 'cmake']
+        argList = ['git', 'submodule', 'foreach',]
+        cmakeRoot = props.getProperty('cmakeroot')
         username = props.getProperty('username')
         basedir = props.getProperty('builddir')
         cmakefile = '%s/fetch_submodule.cmake' % basedir
-        argList.append('-Dusername:STRING=%s' % username)
+        argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
         argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
         argList += ['-P', cmakefile]
         cmd = " ".join(argList) + ' && git submodule update --init'
@@ -105,8 +106,10 @@ def makeUploadTestSubmoduleScript(**kwargs):
 
 @properties.renderer
 def makeSubmoduleTestCommand(props):
-    cmd = ['git', 'submodule', 'foreach', 'cmake', '-P']
+    cmd = ['git', 'submodule', 'foreach',]
+    cmakeRoot = props.getProperty('cmakeroot')
     builddir = props.getProperty('builddir')
+    cmd += ['%s/bin/cmake' % cmakeRoot, '-P',]
     cmd.append('%s/test_submodule.cmake' % builddir)
     return cmd
 
@@ -217,46 +220,26 @@ class CTestDashboard(ShellCommand):
         buildid = "%s-build%s-%s" % (shortrevision, buildnumber, buildername)
         project = self.getProperty("project")
         cdash_root = self.getProperty("cdash_url")
-        cdash_projectname = self.getProperty("cdash_project_names")[project]
+        cdash_projectname = self.getProperty("cdash_projectnames")[project]
 
         cdash_index_url = cdash_root + "/index.php"
         cdash_test_url = cdash_root + "/queryTests.php"
 
-        common_query = {}
-        common_query["project"] = cdash_projectname
-        common_query["showfilters"] = 0
-        common_query["limit"] = 100
-        common_query["showfeed"] = 0
-
-        build_dashboard_query = {}
-        build_dashboard_query.update(common_query)
-        build_dashboard_query["filtercount"] = 2
-        build_dashboard_query["field1"] = "buildname/string"
-        build_dashboard_query["compare1"] = 61
-        build_dashboard_query["value1"] = buildid
-        build_dashboard_query["field2"] = "buildstarttime/date"
-        build_dashboard_query["compare2"] = 83
-        # pick yesterday, justo be safe.
-        build_dashboard_query["value2"] = \
-                (datetime.now() + timedelta(days=-1)).strftime("%Y%m%d")
+        query = cdash.Query(project=cdash_projectname)
+        query.add_filter(("buildname/string", cdash.StringOp.IS, buildid))
+        query.add_filter(("buildstarttime/date", cdash.DateOp.IS_AFTER,
+            # pick yesterday, just to be safe.
+            (datetime.now() + timedelta(days=-1))))
+        self.addURL("cdash" % self.warnCount, query.get_url(cdash_index_url))
 
         if self.warnCount:
-            self.addURL("warnings (%d)" % self.warnCount,
-                    cdash_index_url + "?" + urlencode(build_dashboard_query))
+            self.addURL("warnings (%d)" % self.warnCount, query.get_url(cdash_index_url))
         if self.errorCount:
-            self.addURL("error (%d)" % self.errorCount,
-                    cdash_index_url + "?" + urlencode(build_dashboard_query))
+            self.addURL("error (%d)" % self.errorCount, query.get_url(cdash_index_url))
         if self.failedTestsCount:
-            test_query = {}
-            test_query.update(build_dashboard_query)
-            test_query["filtercount"] = 3
-            test_query["filtercombine"] = "and"
-            test_query["field3"] = "status/string"
-            test_query["compare3"] = "61"
-            test_query["value3"] = "Failed"
+            query.add_filter(("status/string", cdash.StringOp.IS, "Failed"))
             self.addURL('%d failed tests' % self.failedTestsCount,
-                    cdash_test_url + "?" + urlencode(test_query))
-        self.addURL("cdash", cdash_index_url + "?" + urlencode(build_dashboard_query))
+                    query.get_url(cdash_test_url))
 
     def evaluateCommand(self, cmd):
         """return command state"""

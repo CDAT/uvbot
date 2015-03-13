@@ -1,5 +1,6 @@
 import projects
 from projects import project1
+from . import slave
 
 __all__ = [
     'BUILDERS',
@@ -84,13 +85,11 @@ buildsets = [
 # The 'projects' module contains a `make_builders` function which takes the
 # project and buildsets and generates the proper build name and CMake
 # configuration for each.
-BUILDERS = projects.make_builders(project1, buildsets,
+BUILDERS = projects.make_builders(slave.SLAVE, project1, buildsets,
     # The base properties to build upon.
     defprops=defprops,
     # The CMake variables to build upon.
     defconfig=defconfig,
-    # The slave which should build these (should match the slave in this directory).
-    slavenames=['blight'],
     # Other keyword arguments are passed to the BuilderConfig constructor.
     # Important ones may include 'category' for putting the builds into a
     # category for separating the builds out in the view and 'env' for
@@ -127,9 +126,8 @@ specialbuildsets = [
 ]
 
 # Make sure to *append* these new buildsets.
-BUILDERS += projects.make_builders(project1, specialbuildsets,
+BUILDERS += projects.make_builders(slave.SLAVE, project1, specialbuildsets,
     defprops=specialprops,
     defconfig=defconfig,
-    slavenames=['blight'],
     env=qt5env
 )

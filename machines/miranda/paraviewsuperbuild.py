@@ -1,5 +1,6 @@
 import projects
 from projects import paraviewsuperbuild
+from . import slave
 
 __all__ = [
     'BUILDERS',
@@ -92,10 +93,10 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(paraviewsuperbuild, buildsets,
+BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=projects.merge_config(defprops, vs9x64props),
     defconfig=projects.merge_config(defconfig, vs9x64config),
-    slavenames=['miranda'],
+    dirlen=8,
     env=projects.merge_config(defenv, vs9x64env)
 )
 
@@ -109,9 +110,9 @@ buildsets = [
     },
 ]
 
-BUILDERS.extend(projects.make_builders(paraviewsuperbuild, buildsets,
+BUILDERS.extend(projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=projects.merge_config(defprops, vs9x32props),
     defconfig=projects.merge_config(defconfig, vs9x32config),
-    slavenames=['miranda'],
+    dirlen=8,
     env=projects.merge_config(defenv, vs9x32env)
 ))

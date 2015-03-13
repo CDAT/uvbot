@@ -1,5 +1,6 @@
 import projects
 from projects import paraview
+from . import slave
 
 __all__ = [
     'BUILDERS',
@@ -40,9 +41,8 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(paraview, buildsets,
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
-    slavenames=['neodymius'],
     env=env
 )

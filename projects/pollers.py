@@ -11,6 +11,7 @@ __all__ = [
 
 REPOS = []
 BRANCHES = {}
+CDASH_PROJECTNAMES = {}
 
 
 def _add_project_poll(poll):
@@ -19,6 +20,9 @@ def _add_project_poll(poll):
 
     global BRANCHES
     BRANCHES[poll.REPO] = poll.BRANCHES
+
+    global CDASH_PROJECTNAMES
+    CDASH_PROJECTNAMES[poll.REPO] = poll.CDASH_PROJECTNAME
 
 
 _add_project_poll(paraview.poll)
@@ -29,17 +33,24 @@ def make_pollers(secrets):
     pollers = [
         # Poll for merge requests.
         GitlabMergeRequestPoller(
-            rooturl=secrets['gitlab_rooturl'],
+            host=secrets['gitlab_host'],
             token=secrets['gitlab_api_token'],
+            web_host=secrets['web_status_url'],
             projects=REPOS,
+            cdash_host=secrets['cdash_url'],
+            cdash_projectnames=CDASH_PROJECTNAMES,
+            verify_ssl=False,
             pollInterval=10*60, # in seconds
             pollAtLaunch=True),
 
         # Poll for changes to the integration branches.
         GitlabIntegrationBranchPoller(
-            rooturl=secrets['gitlab_rooturl'],
+            host=secrets['gitlab_host'],
             token=secrets['gitlab_api_token'],
             projects=BRANCHES,
+            cdash_host=secrets['cdash_url'],
+            cdash_projectnames=CDASH_PROJECTNAMES,
+            verify_ssl=False,
             pollInterval=10*60, # in seconds
             pollAtLaunch=True),
     ]
