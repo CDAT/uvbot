@@ -148,14 +148,14 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
         'projects',
     ]
 
-    # TODO: add option for which user is buildbot.
-    def __init__(self, name, host, token, verify_ssl=False, **kwargs):
+    def __init__(self, name, host, token, verify_ssl=False, buildbot_id=None, **kwargs):
         base.PollingChangeSource.__init__(self, name=name % host, **kwargs)
 
         self.host = host
         self.token = token
         self.verify_ssl = verify_ssl
         self.api = None
+        self.buildbot_id = buildbot_id
         self.last_rev = {}
 
     def startService(self):
@@ -246,9 +246,9 @@ class GitlabMergeRequestPoller(GitlabPoller):
         comments = self.api.getmergerequestcomments(pid, request['id'])
         for comment in comments:
             author = comment['author']
-            if False: # TODO: author is buildbot
-                if True: # TODO: comment is a scheduled build; don't look
-                         # before this comment.
+            if author['id'] == self.buildbot_id:
+                if True: # TODO: check if the comment is for the expected
+                         # commit.
                     break
                 # Skip comments by buildbot.
                 continue

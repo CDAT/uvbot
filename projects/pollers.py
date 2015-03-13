@@ -40,6 +40,7 @@ def make_pollers(secrets):
             cdash_host=secrets['cdash_url'],
             cdash_projectnames=CDASH_PROJECTNAMES,
             verify_ssl=False,
+            buildbot_id=secrets['buildbot_id'],
             pollInterval=10*60, # in seconds
             pollAtLaunch=True),
 
@@ -51,6 +52,7 @@ def make_pollers(secrets):
             cdash_host=secrets['cdash_url'],
             cdash_projectnames=CDASH_PROJECTNAMES,
             verify_ssl=False,
+            buildbot_id=secrets['buildbot_id'],
             pollInterval=10*60, # in seconds
             pollAtLaunch=True),
     ]
