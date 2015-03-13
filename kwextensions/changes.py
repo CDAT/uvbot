@@ -10,7 +10,9 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 import os
 import requests
+
 import cdash
+import trailers
 
 GUEST     = 10
 REPORTER  = 20
@@ -220,11 +222,12 @@ class GitlabMergeRequestPoller(GitlabPoller):
         for request in requests:
             mid = request['id']
             if 'buildbot' in request['labels']:
-                if self._check_merge_request(request):
-                    branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
-                    commit = branch['commit']
-                    sha = commit['id']
+                branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
+                commit = branch['commit']
+
+                if self._check_merge_request(request, commit):
                     # Check if the commit has changed since we last tested it.
+                    sha = commit['id']
                     if self.last_rev.get(unicode(mid)) != unicode(sha):
                         # TODO: cancel previous builds for this branch if they
                         # exist.
@@ -237,7 +240,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
     def _strip_prefix(string, prefix):
         return string[len(prefix):]
 
-    def _check_merge_request(self, request):
+    def _check_merge_request(self, request, commit):
         pid = request['project_id']
         access_cache = {}
         access = self.api.getaccesslevel_cache(access_cache, pid, request['author']['id'])
@@ -252,10 +255,19 @@ class GitlabMergeRequestPoller(GitlabPoller):
         comments.sort(key=itemgetter('id'), reverse=True)
 
         for comment in comments:
+            body = comment['body']
+
             author = comment['author']
             if author['id'] == self.buildbot_id:
-                if True: # TODO: check if the comment is for the expected
-                         # commit.
+                trailers = trailers.parse(body)
+
+                trailer_dict = {}
+                for key, value in trailers:
+                    trailer_dict[key] = value
+
+                if trailer['Branch-at'] == commit['id']:
+                    # Comment is a scheduled build; don't look before this
+                    # comment.
                     break
                 # Skip comments by buildbot.
                 continue
@@ -294,7 +306,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
         # TODO: How to handle branches with the same name over time?
         msg += ' Kitware developers may monitor the status of testing [here](%s?%s).' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
 
-        msg += '\n\nBranch-at: %s' % commit['id']
+        msg += '\n\n%s%s' % (trailers.BRANCH_HEAD_PREFIX, commit['id'])
 
         if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
             log.msg('would accept change %d:\n\n%s' % (request['id'], msg))
