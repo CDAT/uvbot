@@ -62,7 +62,7 @@ class Gitlab(object):
 
     def fetch(self, path, **kwargs):
         url = '%s/%s' % (self.urlbase, path)
-        response = requests.get(url, headers=self.headers, verify=self.verify_ssl, **kwargs)
+        response = requests.get(url, headers=self.headers, verify=self.verify_ssl, params=kwargs)
 
         if response.status_code != 200:
             return False
@@ -80,7 +80,7 @@ class Gitlab(object):
 
         full = []
         while True:
-            items = self.fetch(path, params=kwargs)
+            items = self.fetch(path, **kwargs)
             if not items:
                 break
             full += items
