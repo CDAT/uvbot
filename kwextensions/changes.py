@@ -116,11 +116,12 @@ class Gitlab(object):
 
     # Merge requests
     getmergerequests = _mkrequest_paged('projects/{}/merge_requests')
+    getmergerequest = _mkrequest('projects/{}/merge_request/{}')
     getsortedmergerequests = _mkrequest_paged('projects/{}/merge_requests',
         order_by='updated_at',
         sort='desc')
     getmergerequestcomments = _mkrequest_paged('projects/{}/merge_request/{}/comments')
-    getmergerequestwallnotes = _mkrequest_paged('projects/{}/merge_request/{}/notes')
+    getmergerequestwallnotes = _mkrequest_paged('projects/{}/merge_requests/{}/notes')
     getmergerequestchanges = _mkrequest('projects/{}/merge_request/{}/changes')
     createmergerequestwallnote = _mkpost('projects/{}/merge_requests/{}/notes')
 
