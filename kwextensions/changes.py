@@ -153,21 +153,22 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
         'projects',
     ]
 
-    def __init__(self, name, host, token, verify_ssl=False, buildbot_id=None, **kwargs):
+    def __init__(self, name, host, token, verify_ssl=False, **kwargs):
         base.PollingChangeSource.__init__(self, name=name % host, **kwargs)
 
         self.host = host
         self.token = token
         self.verify_ssl = verify_ssl
         self.api = None
-        self.buildbot_id = buildbot_id
         self.last_rev = {}
 
     def startService(self):
         self.api = Gitlab(self.host, token=self.token, verify_ssl=self.verify_ssl)
-        if not self.api.currentuser():
+        buildbot_user = self.api.currentuser()
+        if not buildbot_user:
             log.err('cannot connect to gitlab instance %s' % self.host)
         else:
+            self.buildbot_id = buildbot_user['id']
             d = self.getState('lastRev', {})
             def set_last_rev(last_rev):
                 self.last_rev = last_rev
