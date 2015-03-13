@@ -354,6 +354,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
             author='%(author_name)s <%(author_email)s>' % commit,
             revision=commit['id'],
             revlink='%s/commit/%s' % (source_project_info['web_url'], commit['id']),
+            category='merge-request',
             comments='%s\n\n%s' % (request['title'], request['description']),
             files=self.describe_files(changes['changes']),
             when_timestamp=datetime.now(),
@@ -422,6 +423,7 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                 yield self.master.addChange(
                     author='%(author_name)s <%(author_email)s>' % commit,
                     revision=commit['id'],
+                    category='integration-branch',
                     comments=commit['message'],
                     # TODO: get the files changed.
                     files=['TODO'],
