@@ -231,6 +231,11 @@ class GitlabMergeRequestPoller(GitlabPoller):
             mid = request['id']
             if 'buildbot' in request['labels']:
                 branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
+
+                if not branch:
+                    # Branch is not accessible.
+                    continue
+
                 commit = branch['commit']
 
                 if self._check_merge_request(request, commit):
