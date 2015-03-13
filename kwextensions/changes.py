@@ -279,13 +279,13 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
             author = comment['author']
             if author['id'] == self.buildbot_id:
-                trailers = trailers.parse(body)
+                cur_trailers = trailers.parse(body)
 
                 trailer_dict = {}
-                for key, value in trailers:
+                for key, value in cur_trailers:
                     trailer_dict[key] = value
 
-                if trailer['Branch-at'] == commit['id']:
+                if trailer_dict.get('Branch-at') == commit['id']:
                     # Comment is a scheduled build; don't look before this
                     # comment.
                     break
