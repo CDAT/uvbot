@@ -332,7 +332,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
             log.msg('would accept change %d:\n\n%s' % (request['id'], msg))
             return
 
-        self.api.createmergerequestewallnote(request['project_id'], request['id'], body=msg)
+        self.api.createmergerequestwallnote(request['project_id'], request['id'], body=msg)
 
     def _reject_change(self, request):
         if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
