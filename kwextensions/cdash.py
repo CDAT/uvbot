@@ -41,7 +41,8 @@ class Query(object):
             idx = i + 1
             field, compare, value = self.__filters[i]
             if isinstance(value, datetime):
-                value = value.strftime('%Y%m%d')
+                # XXX: this is localtime because cdash doesn't understand 'Z' suffix
+                value = value.strftime('%Y%m%dT%H%M%S')
             q = { 'field%d' % idx : field,
                   'compare%d' % idx : compare,
                   'value%d' % idx : value
