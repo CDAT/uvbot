@@ -186,7 +186,7 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
 
 
 class GitlabMergeRequestPoller(GitlabPoller):
-    BUILDBOT_PREFIX = '@buildbot: '
+    BUILDBOT_PREFIX = '@buildbot '
 
     # TODO: add options for required access level.
     def __init__(self, host, token, web_host, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
