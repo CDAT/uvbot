@@ -254,7 +254,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
         return string[len(prefix):]
 
     def _check_merge_request(self, request, commit):
-        pid = request['project_id']
+        pid = request['target_project_id']
         access_cache = {}
         access = self.api.getaccesslevel_cache(access_cache, pid, request['author']['id'])
         if access >= DEVELOPER:
