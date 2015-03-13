@@ -285,19 +285,21 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
     @defer.inlineCallbacks
     def _add_change(self, project, request, commit):
-        project_info = self.api.getproject(request['source_project_id'])
+        source_project_info = self.api.getproject(request['source_project_id'])
+        target_project_info = self.api.getproject(request['target_project_id'])
 
-        changes = self.api.getmergerequestchanges(pid, request['id'])
+        changes = self.api.getmergerequestchanges(target_project_info['id'], request['id'])
+
         yield self.master.addChange(
             author='%(author_name)s <%(author_email)s>' % commit,
             revision=commit['id'],
-            revlink='%s/commit/%s' % (project_info['web_url'], commit['id']),
+            revlink='%s/commit/%s' % (source_project_info['web_url'], commit['id']),
             comments='%s\n\n%s' % (request['title'], request['description']),
-            files=self.describe_files(changes['files']),
+            files=self.describe_files(changes['changes']),
             when_timestamp=datetime.datetime.now(),
             branch=request['source_branch'],
             project=project,
-            repository=project_info['http_url_to_repo'],
+            repository=source_project_info['http_url_to_repo'],
             src='git',
             properties={
                 'source_project_id': request['source_project_id'],
@@ -306,7 +308,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'target_project_id': request['target_project_id'],
                 'rooturl': 'https://%s' % self.host,
                 'try_user_fork': True,
-                'owner': project_info['owner']['username']
+                'owner': source_project_info['owner']['username']
             })
 
 
