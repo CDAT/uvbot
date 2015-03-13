@@ -165,8 +165,6 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
         else:
             d = self.getState('lastRev', {})
             def set_last_rev(last_rev):
-                pass
-                # FIXME: remove this once we want to rememember between restarts
                 self.last_rev = last_rev
             d.addCallback(set_last_rev)
             d.addCallback(lambda _: base.PollingChangeSource.startService(self))
