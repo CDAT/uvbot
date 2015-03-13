@@ -55,11 +55,12 @@ def makeUserForkCommand(props):
     cmd = ''
     if props.hasProperty('username') and props.hasProperty('try_user_fork') and\
             props.getProperty('try_user_fork') == True:
-        argList = ['git', 'submodule', 'foreach', 'cmake']
+        argList = ['git', 'submodule', 'foreach',]
+        cmakeRoot = props.getProperty('cmakeroot')
         username = props.getProperty('username')
         basedir = props.getProperty('builddir')
         cmakefile = '%s/fetch_submodule.cmake' % basedir
-        argList.append('-Dusername:STRING=%s' % username)
+        argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
         argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
         argList += ['-P', cmakefile]
         cmd = " ".join(argList) + ' && git submodule update --init'
@@ -105,8 +106,10 @@ def makeUploadTestSubmoduleScript(**kwargs):
 
 @properties.renderer
 def makeSubmoduleTestCommand(props):
-    cmd = ['git', 'submodule', 'foreach', 'cmake', '-P']
+    cmd = ['git', 'submodule', 'foreach',]
+    cmakeRoot = props.getProperty('cmakeroot')
     builddir = props.getProperty('builddir')
+    cmd += ['%s/bin/cmake' % cmakeRoot, '-P',]
     cmd.append('%s/test_submodule.cmake' % builddir)
     return cmd
 
