@@ -256,8 +256,9 @@ class GitlabMergeRequestPoller(GitlabPoller):
             for line in content:
                 if line.startswith(BUILDBOT_PREFIX):
                     if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
-                        command = self._strip_prefix(line, BUILDBOT_PREFIX)
                         # TODO: parse arguments from the command
+                        command = self._strip_prefix(line, BUILDBOT_PREFIX)
+                        command = command.strip()
 
                         # XXX: Add buildbot commands here.
                         if command == 'build':
