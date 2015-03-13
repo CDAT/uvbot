@@ -9,6 +9,7 @@ from dateutil.parser import parse as dateparse
 from datetime import datetime, timedelta
 from operator import itemgetter
 import os
+import re
 import requests
 
 import cdash
@@ -201,6 +202,9 @@ class GitlabMergeRequestPoller(GitlabPoller):
         self.cdash_host = cdash_host
         self.cdash_projectnames = cdash_projectnames
 
+        # Special comment regular expressions.
+        self._branch_update_re = re.compile('^Added [1-9][0-9]* new commits?:\n\n(\* [0-9a-f]* - [^\n]*\n)*$')
+
     def describe(self):
         msg = self.name
         if self.projects:
@@ -256,6 +260,13 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
         for comment in comments:
             body = comment['body']
+
+            if 'editable' in comment and not comment['editable']:
+                if self._branch_update_re.match(body):
+                    # TODO: use when receiving webhook notification.
+                    branch_update_found = True
+                # Ignore non-user comments.
+                continue
 
             author = comment['author']
             if author['id'] == self.buildbot_id:
