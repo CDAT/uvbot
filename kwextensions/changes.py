@@ -190,7 +190,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
     # TODO: add options for required access level.
     def __init__(self, host, token, web_host, projects=[], **kwargs):
-        GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token)
+        GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
 
         self.web_host = web_host
         self.projects = projects
