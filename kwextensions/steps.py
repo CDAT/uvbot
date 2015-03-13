@@ -58,7 +58,7 @@ def makeUserForkCommand(props):
         argList = ['git', 'submodule', 'foreach',]
         cmakeRoot = props.getProperty('cmakeroot')
         username = props.getProperty('owner')
-        basedir = props.getProperty('builddir')
+        basedir = props.getProperty('builddir').replace('\\', '/')
         cmakefile = '%s/fetch_submodule.cmake' % basedir
         argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
         argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
