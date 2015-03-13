@@ -29,17 +29,20 @@ def make_pollers(secrets):
     pollers = [
         # Poll for merge requests.
         GitlabMergeRequestPoller(
-            rooturl=secrets['gitlab_rooturl'],
+            host=secrets['gitlab_host'],
             token=secrets['gitlab_api_token'],
+            web_host=secrets['web_status_url'],
             projects=REPOS,
+            verify_ssl=False,
             pollInterval=10*60, # in seconds
             pollAtLaunch=True),
 
         # Poll for changes to the integration branches.
         GitlabIntegrationBranchPoller(
-            rooturl=secrets['gitlab_rooturl'],
+            host=secrets['gitlab_host'],
             token=secrets['gitlab_api_token'],
             projects=BRANCHES,
+            verify_ssl=False,
             pollInterval=10*60, # in seconds
             pollAtLaunch=True),
     ]
