@@ -1,4 +1,5 @@
 import copy
+import hashlib
 
 from buildbot.config import BuilderConfig
 
@@ -62,7 +63,7 @@ def build_config(project, defconfig={}, features=(), *args, **kwargs):
     return (name, config)
 
 
-def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, **kwargs):
+def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, dirlen=0, **kwargs):
     configs = {}
     for buildset in buildsets:
         name, conf = build_config(project, defconfig=defconfig, **buildset)
@@ -75,6 +76,9 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
     for name, config in configs.items():
         props = defprops.copy()
         props['configure_options:builderconfig'] = config
+
+        if dirlen:
+            kwargs['slavebuilddir'] = hashlib.md5(name).hexdigest()[:dirlen]
 
         builders.append(BuilderConfig(
             name='%s-%s' % (slave.slavename, name),
