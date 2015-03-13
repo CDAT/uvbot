@@ -104,6 +104,8 @@ class Gitlab(object):
 
     # Users
     currentuser = _mkrequest('user')
+    getusers = _mkrequest_paged('users')
+    getuser = _mkrequest_paged('users/{}')
 
     # Projects
     getproject = _mkrequest('projects/{}')
