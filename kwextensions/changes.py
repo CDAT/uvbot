@@ -6,7 +6,7 @@ from twisted.internet import defer
 
 import urllib
 from dateutil.parser import parse as dateparse
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import requests
 import cdash
@@ -278,10 +278,10 @@ class GitlabMergeRequestPoller(GitlabPoller):
         # Add a link to CDash for test results.
         if self.cdash_host and project in self.cdash_projectnames:
             q = cdash.Query(self.cdash_projectnames[project])
-            q.add_filter('buildname/string', cdash.StringOp.CONTAINS, commit['id'][:8])
-            q.add_filter('buildstarttime/date', cdash.DateOp.IS_AFTER,
+            q.add_filter(('buildname/string', cdash.StringOp.CONTAINS, commit['id'][:8]))
+            q.add_filter(('buildstarttime/date', cdash.DateOp.IS_AFTER,
                     # pick yesterday, just to be safe.
-                    (datetime.now() + timedelta(days=-1)))
+                    (datetime.now() + timedelta(days=-1))))
             msg += ' You may view the test results [here](%s).' % q.get_url('%s/index.php' % self.cdash_host)
 
         # TODO: How to handle branches with the same name over time?
