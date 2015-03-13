@@ -302,6 +302,8 @@ class GitlabMergeRequestPoller(GitlabPoller):
                     # XXX: Add buildbot commands here.
                     if command == 'build' or \
                        command == 'test':
+                        # TODO: need to remove previous build entries for this;
+                        # basically "force build" this changeset.
                         log.msg('found a command to build request %d' % request['id'])
                         if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
                             return True
