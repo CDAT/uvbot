@@ -256,7 +256,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
             return True
 
         # Look at comments for buildbot commands.
-        comments = self.api.getmergerequestnotes(pid, request['id'])
+        comments = self.api.getmergerequestwallnotes(pid, request['id'])
 
         # Sort comments from newest to oldest.
         comments.sort(key=itemgetter('id'), reverse=True)
