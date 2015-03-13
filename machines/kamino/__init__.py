@@ -1,14 +1,12 @@
 r'''
-    Machine: nemesis.kitwarein.com
-    Owner: ben.boeckel@kitware.com
+    Machine: kamino.kitwarein.com
+    Owner: dave.demarle@kitware.com
 '''
 
 from . import slave
-from . import paraview
 from . import vtk
 
 BUILDERS = {
-    'ParaView': paraview.BUILDERS,
     'VTK': vtk.BUILDERS,
 }
 

@@ -7,7 +7,7 @@ __all__ = [
     'FEATURES',
 ]
 
-NAME = 'paraview'
+NAME = 'vtk'
 
 OPTIONS = {
     'os': {
@@ -29,15 +29,16 @@ OPTIONS = {
         },
         'debug': {
             'CMAKE_BUILD_TYPE:STRING': 'Debug',
-            'PARAVIEW_COLLABORATION_TESTING:BOOL': 'OFF',
+        },
+        'relwithdebinfo': {
+            'CMAKE_BUILD_TYPE:STRING': 'RelWithDebInfo',
         },
     },
 }
-OPTIONORDER = ('os', 'libtype', 'buildtype')
+OPTIONORDER = ('os', 'libtype', 'buildtype',)
 
 FEATURES = {
     'python': {
-        'PARAVIEW_ENABLE_PYTHON:BOOL': ('OFF', 'ON'),
         'VTK_WRAP_PYTHON:BOOL': ('OFF', 'ON'),
     },
     'tcl': {
@@ -49,22 +50,20 @@ FEATURES = {
     'kits': {
         'VTK_ENABLE_KITS:BOOL': ('OFF', 'ON'),
     },
-    'gui': {
-        'PARAVIEW_BUILD_QT_GUI:BOOL': ('OFF', 'ON'),
-    },
     'mpi': {
-        'PARAVIEW_USE_MPI:BOOL': ('OFF', 'ON'),
+        'VTK_Group_MPI:BOOL': ('OFF', 'ON'),
+    },
+    'qt': {
+        'VTK_Group_Qt:STRING': ('OFF', 'ON'),
     },
     'qt5': {
-        'PARAVIEW_QT_VERSION:STRING': ('4', '5'),
-    },
-    'unified': {
-        'PARAVIEW_USE_UNIFIED_BINDINGS:BOOL': ('OFF', 'ON'),
+        'VTK_QT_VERSION:STRING': ('4', '5'),
     },
     'opengl2': {
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     },
     'icc': {},
     'vs': {},
-    '32bit': {},
+    'asan': {},
+    'ubsan': {},
 }
