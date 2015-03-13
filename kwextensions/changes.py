@@ -295,19 +295,17 @@ class GitlabMergeRequestPoller(GitlabPoller):
             content = body.splitlines()
             for line in content:
                 if line.startswith(self._BUILDBOT_PREFIX):
-                    if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
-                        # TODO: parse arguments from the command
-                        command = self._strip_prefix(line, self._BUILDBOT_PREFIX)
-                        command = command.strip()
+                    # TODO: parse arguments from the command
+                    command = self._strip_prefix(line, self._BUILDBOT_PREFIX)
+                    command = command.strip()
 
-                        # XXX: Add buildbot commands here.
-                        if command == 'build':
+                    # XXX: Add buildbot commands here.
+                    if command == 'build':
+                        log.msg('found a command to build request %d' % request['id'])
+                        if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
                             return True
-                        else:
-                            # TODO: mention that the command is not recognized?
-                            pass
                     else:
-                        # TODO: mention that the command is ignored?
+                        # TODO: mention that the command is not recognized?
                         pass
 
         return False
