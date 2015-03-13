@@ -270,9 +270,6 @@ class GitlabMergeRequestPoller(GitlabPoller):
         return False
 
     def _accept_change(self, request, commit, project):
-        if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
-            log.msg('would accept change %d' % request['id'])
-            return
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
 
         # Add a link to CDash for test results.
@@ -288,6 +285,11 @@ class GitlabMergeRequestPoller(GitlabPoller):
         msg += ' Kitware developers may monitor the status of testing [here](%s?%s).' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
 
         msg += '\n\nBranch-at: %s' % commit['id']
+
+        if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
+            log.msg('would accept change %d:\n\n%s' % (request['id'], msg))
+            return
+
         self.api.createmergerequestewallnote(request['project_id'], request['id'], body=msg)
 
     def _reject_change(self, request):
