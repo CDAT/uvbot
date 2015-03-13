@@ -18,7 +18,7 @@ string(REGEX MATCH "[^ \t]+[ \t]+([^ \t]+)[ \t]+[^\t ]+" myurl "${line}")
 string(REGEX MATCH "[^/]+$" repoName "${CMAKE_MATCH_1}")
 
 # used for testing before submodules moved to gitlab with lowercase origin URLS
-#string(TOLOWER "${repoName}" repoName)
+string(TOLOWER "${repoName}" repoName)
 
 set(userFork "${url_prefix}/${username}/${repoName}")
 
