@@ -336,7 +336,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
     def _reject_change(self, request):
         if 'KW_BUILDBOT_PRODUCTION' not in os.environ:
-            log.msg('would accept change %d' % request['id'])
+            log.msg('would reject change %d' % request['id'])
             return
         # TODO: Make a comment?
         pass
