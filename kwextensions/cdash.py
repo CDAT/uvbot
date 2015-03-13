@@ -22,7 +22,7 @@ class Query(object):
         self.limit = 100
         self.showfeed = 0
         self.__filtercombine = filtercombine
-        self.__filters = filters
+        self.__filters = filters[:]
 
     def add_filter(self, filter, op='and'):
         if self.__filters and self.__filtercombine != op:
