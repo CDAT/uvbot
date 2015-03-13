@@ -37,8 +37,8 @@ mergeRequestBasicTestsFactory.addStep(
 mergeRequestBasicTestsFactory.addStep(CTestDashboard(
     timeout=60*60*2 # 2 hrs. Superbuilds can take a while without producing any output.
     ))
-mergeRequestBasicTestsFactory.addStep(makeUploadTestSubmoduleScript())
-mergeRequestBasicTestsFactory.addStep(AreSubmodulesValid())
+#mergeRequestBasicTestsFactory.addStep(makeUploadTestSubmoduleScript())
+#mergeRequestBasicTestsFactory.addStep(AreSubmodulesValid())
 
 def get_ctest_buildfactory():
     return mergeRequestBasicTestsFactory
@@ -54,8 +54,8 @@ catalystTestFactory.addStep(
         SetProperty(property="ctest_dashboard_script",
             value=Interpolate('%(prop:builddir)s/catalyst.common.ctest')))
 catalystTestFactory.addStep(CTestDashboard())
-catalystTestFactory.addStep(makeUploadTestSubmoduleScript())
-catalystTestFactory.addStep(AreSubmodulesValid())
+#catalystTestFactory.addStep(makeUploadTestSubmoduleScript())
+#catalystTestFactory.addStep(AreSubmodulesValid())
 
 def get_catalyst_buildfactory():
     return catalystTestFactory
