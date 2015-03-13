@@ -52,19 +52,19 @@ def makeCTestDashboardCommand(props):
 @properties.renderer
 def makeUserForkCommand(props):
     repo = props.getProperty('repository')
-    cmd = ''
-    if props.hasProperty('username') and props.hasProperty('try_user_fork') and\
+    cmd = []
+    if props.hasProperty('owner') and props.hasProperty('try_user_fork') and\
             props.getProperty('try_user_fork') == True:
         argList = ['git', 'submodule', 'foreach',]
         cmakeRoot = props.getProperty('cmakeroot')
-        username = props.getProperty('username')
+        username = props.getProperty('owner')
         basedir = props.getProperty('builddir')
         cmakefile = '%s/fetch_submodule.cmake' % basedir
         argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
         argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
         argList += ['-P', cmakefile]
-        cmd = " ".join(argList) + ' && git submodule update --init'
-    return cmd
+        cmd = argList + ['&&', 'git', 'submodule', 'update', '--init']
+    return ' '.join(cmd)
 
 def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
