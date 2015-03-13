@@ -195,8 +195,6 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
 
 
 class GitlabMergeRequestPoller(GitlabPoller):
-    BUILDBOT_PREFIX = '@buildbot '
-
     # TODO: add options for required access level.
     def __init__(self, host, token, web_host, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
         GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
@@ -208,6 +206,8 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
         # Special comment regular expressions.
         self._branch_update_re = re.compile('^Added [1-9][0-9]* new commits?:\n\n(\* [0-9a-f]* - [^\n]*\n)*$')
+
+        self._BUILDBOT_PREFIX = '@buildbot '
 
     def describe(self):
         msg = self.name
@@ -294,10 +294,10 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
             content = comment['note'].splitlines()
             for line in content:
-                if line.startswith(BUILDBOT_PREFIX):
+                if line.startswith(self._BUILDBOT_PREFIX):
                     if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
                         # TODO: parse arguments from the command
-                        command = self._strip_prefix(line, BUILDBOT_PREFIX)
+                        command = self._strip_prefix(line, self._BUILDBOT_PREFIX)
                         command = command.strip()
 
                         # XXX: Add buildbot commands here.
@@ -309,6 +309,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                     else:
                         # TODO: mention that the command is ignored?
                         pass
+
         return False
 
     def _accept_change(self, request, commit, project):
