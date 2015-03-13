@@ -300,7 +300,8 @@ class GitlabMergeRequestPoller(GitlabPoller):
                     command = command.strip()
 
                     # XXX: Add buildbot commands here.
-                    if command == 'build':
+                    if command == 'build' or \
+                       command == 'test':
                         log.msg('found a command to build request %d' % request['id'])
                         if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
                             return True
