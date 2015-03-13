@@ -250,7 +250,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 else:
                     self._reject_change(request)
 
-    def _strip_prefix(string, prefix):
+    def _strip_prefix(self, string, prefix):
         return string[len(prefix):]
 
     def _check_merge_request(self, request, commit):
