@@ -1,9 +1,10 @@
+from importlib import import_module
 import copy
 import hashlib
+import itertools
+import urllib
 
 from buildbot.config import BuilderConfig
-
-from kwextensions import factory
 
 
 __all__ = [
@@ -73,11 +74,15 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
         name, conf = build_config(project, defconfig=defconfig, **buildset)
         configs[name] = conf
 
-    if myfactory is None:
-        myfactory = factory.get_ctest_buildfactory()
+    if not myfactory is None:
+        raise RuntimeError("'myfactory' is no longer supported!")
+
+    # import factory module for the provided project.
+    print project
+    factory = import_module("%s.factory" % project.__name__)
 
     builders = []
-    for name, config in configs.items():
+    for (name, config), buildset in itertools.izip(configs.items(), buildsets):
         props = defprops.copy()
         props['configure_options:builderconfig'] = config
 
@@ -86,7 +91,7 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
 
         builders.append(BuilderConfig(
             name='%s-%s-%s' % (project.NAME, slave.slavename, name),
-            factory=myfactory,
+            factory=factory.get_factory(buildset),
             properties=props,
             slavenames=[slave.slavename],
             **kwargs
@@ -122,3 +127,16 @@ def merge_config(base, *args):
                 output[k] = v
 
     return output
+
+
+def get_codebase(project=None, poll=None, secrets={}):
+    """Returns the defaults to use for the projects code base"""
+    if poll is None:
+        poll = import_module("%s.poll" % project.__name__)
+    return {
+        poll.REPO : {
+            "repository" : "https://%s/%s" % (secrets['gitlab_host'], urllib.quote(poll.REPO.lower(), '')),
+            "branch" : "master",
+            "revision" : None,
+        }
+    }

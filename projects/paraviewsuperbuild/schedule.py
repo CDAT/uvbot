@@ -3,8 +3,9 @@ from buildbot.changes import filter
 
 
 from . import poll
+import projects
+from projects import paraview
 from projects.paraview.poll import REPO as PARAVIEW_REPO
-import urllib
 
 __all__ = [
     'make_schedulers',
@@ -15,19 +16,9 @@ def make_schedulers(buildnames, secrets):
     # Setup defaults to use for all the codebases.
     # Note, this also acts as a change filter and hence must
     # include defaults for all relevant codebases.
-    codebases = {
-        PARAVIEW_REPO : {
-            "repository" : "%s/%s" % (secrets['gitlab_host'], urllib.quote(PARAVIEW_REPO.lower(), '')),
-            "branch" : "master",
-            "revision" : None,
-            },
-        poll.REPO : {
-            "repository" : "%s/%s" % (secrets['gitlab_host'], urllib.quote(poll.REPO.lower(), '')),
-            "branch" : "master",
-            "revision" : None,
-            },
-        }
-
+    codebases = {}
+    codebases.update(projects.get_codebase(project=paraview, secrets=secrets))
+    codebases.update(projects.get_codebase(poll=poll, secrets=secrets))
     return [
         AnyBranchScheduler(
             name='ParaViewSuperbuild Merge Request Scheduler',

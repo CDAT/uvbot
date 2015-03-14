@@ -3,7 +3,7 @@ from buildbot.changes import filter
 
 
 from . import poll
-
+import projects
 
 __all__ = [
     'make_schedulers',
@@ -11,6 +11,7 @@ __all__ = [
 
 
 def make_schedulers(buildnames, secrets):
+    codebases = projects.get_codebase(poll=poll, secrets=secrets)
     return [
         AnyBranchScheduler(
             name='ParaView Merge Request Scheduler',
@@ -20,7 +21,8 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaView 'merge-request' created/changed.",
-            codebases={poll.REPO: {}}),
+            codebases=codebases,
+            ),
         AnyBranchScheduler(
             name='ParaView Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -30,5 +32,6 @@ def make_schedulers(buildnames, secrets):
             builderNames=buildnames,
             reason="ParaView 'master' changed.",
             properties={ "ctest_empty_binary_directory" : True },
-            codebases={poll.REPO: {}}),
+            codebases=codebases,
+            ),
     ]

@@ -1,10 +1,10 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
 from buildbot.schedulers.forcesched import ForceScheduler, ChoiceStringParameter, UserNameParameter, FixedParameter
 from buildbot.changes import filter
-
+import urllib
 
 from . import poll
-
+import projects
 
 __all__ = [
     'make_schedulers',
@@ -12,6 +12,7 @@ __all__ = [
 
 
 def make_schedulers(buildnames, secrets):
+    codebases = projects.get_codebase(poll=poll, secrets=secrets)
     return [
         AnyBranchScheduler(
             name='ParaView-Catalyst Merge Request Scheduler',
@@ -21,7 +22,7 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaView 'merge-request' created/changed.",
-            codebases={poll.REPO: {}},
+            codebases=codebases,
             ),
         AnyBranchScheduler(
             name='ParaView-Catalyst Integration Branch Scheduler',
@@ -31,17 +32,12 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaView 'master' changed.",
-            codebases={poll.REPO: {}},
+            codebases=codebases,
             ),
         ForceScheduler(
             name='Force Build Catalyst',
             builderNames=buildnames,
-            branch=FixedParameter(name='branch', default='master'),
             username=UserNameParameter(label='your name:<br>', size=80),
-            project=FixedParameter(name='project',default='Catalyst'),
-            revision=FixedParameter(name='revision',default=''),
-            repository=FixedParameter(name='repository',
-                 default='https://kwgitlab.kitwarein.com/paraview/paraview.git'),
-            codebases={poll.REPO: {}},
+            codebases=codebases,
             ),
     ]

@@ -3,7 +3,7 @@ from buildbot.changes import filter
 
 
 from . import poll
-
+import projects
 
 __all__ = [
     'make_schedulers',
@@ -11,6 +11,7 @@ __all__ = [
 
 
 def make_schedulers(buildnames, secrets):
+    codebases = projects.get_codebase(poll=poll, secrets=secrets)
     return [
         AnyBranchScheduler(
             name='VTK Merge Request Scheduler',
@@ -19,7 +20,7 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            codebases={poll.REPO: {}},
+            codebases=codebases,
             ),
         AnyBranchScheduler(
             name='VTK Integration Branch Scheduler',
@@ -28,6 +29,6 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            codebases={poll.REPO: {}},
+            codebases=codebases,
             ),
     ]
