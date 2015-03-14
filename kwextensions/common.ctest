@@ -9,6 +9,7 @@
 #                           CTEST_BUILD_NAME
 #                           CTEST_SITE
 #                           CTEST_BUILD_FLAGS
+#                           ctest_use_empty_binary_directory
 #
 # ctest_stages: all, configure, build, test
 
@@ -21,6 +22,12 @@ endif()
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
+
+# if we're told to start with an empty binary dir, we do it.
+if (ctest_use_empty_binary_directory)
+    message("Emptying binary directory ...")
+    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+endif()
 
 ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
 

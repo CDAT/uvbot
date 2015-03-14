@@ -27,5 +27,6 @@ def make_schedulers(buildnames):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaView 'master' changed."),
+            reason="ParaView 'master' changed.",
+            properties={ "ctest_empty_binary_directory" : True }),
     ]
