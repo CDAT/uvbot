@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-def make_schedulers(buildnames):
+def make_schedulers(buildnames, secrets):
     return [
         AnyBranchScheduler(
             name='ParaView-Catalyst Merge Request Scheduler',

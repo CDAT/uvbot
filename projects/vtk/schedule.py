@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-def make_schedulers(buildnames):
+def make_schedulers(buildnames, secrets):
     return [
         AnyBranchScheduler(
             name='VTK Merge Request Scheduler',

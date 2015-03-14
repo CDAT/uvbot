@@ -23,7 +23,7 @@ SCHEDULES = {
 }
 
 
-def make_schedulers(project_builders):
+def make_schedulers(project_builders, secrets):
     schedulers = []
 
     for project, builders in project_builders.items():
@@ -31,6 +31,6 @@ def make_schedulers(project_builders):
             raise RuntimeError('no schedule for %s' % project)
 
         buildnames = list(set([b.name for b in builders]))
-        schedulers += SCHEDULES[project].make_schedulers(buildnames)
+        schedulers += SCHEDULES[project].make_schedulers(buildnames, secrets)
 
     return schedulers
