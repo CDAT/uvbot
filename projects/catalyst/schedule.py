@@ -20,7 +20,9 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaView 'merge-request' created/changed."),
+            reason="ParaView 'merge-request' created/changed.",
+            codebases={poll.REPO: {}},
+            ),
         AnyBranchScheduler(
             name='ParaView-Catalyst Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -28,7 +30,9 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaView 'master' changed."),
+            reason="ParaView 'master' changed.",
+            codebases={poll.REPO: {}},
+            ),
         ForceScheduler(
             name='Force Build Catalyst',
             builderNames=buildnames,
@@ -38,5 +42,6 @@ def make_schedulers(buildnames, secrets):
             revision=FixedParameter(name='revision',default=''),
             repository=FixedParameter(name='repository',
                  default='https://kwgitlab.kitwarein.com/paraview/paraview.git'),
+            codebases={poll.REPO: {}},
             ),
     ]

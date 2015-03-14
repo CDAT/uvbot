@@ -19,7 +19,8 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaView 'merge-request' created/changed."),
+            reason="ParaView 'merge-request' created/changed.",
+            codebases={poll.REPO: {}}),
         AnyBranchScheduler(
             name='ParaView Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -28,5 +29,6 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaView 'master' changed.",
-            properties={ "ctest_empty_binary_directory" : True }),
+            properties={ "ctest_empty_binary_directory" : True },
+            codebases={poll.REPO: {}}),
     ]

@@ -18,12 +18,16 @@ def make_schedulers(buildnames, secrets):
                 category='merge-request',
                 project=poll.REPO),
             treeStableTimer=None,
-            builderNames=buildnames),
+            builderNames=buildnames,
+            codebases={poll.REPO: {}},
+            ),
         AnyBranchScheduler(
             name='VTK Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
                 category='integration-branch',
                 project=poll.REPO),
             treeStableTimer=None,
-            builderNames=buildnames),
+            builderNames=buildnames,
+            codebases={poll.REPO: {}},
+            ),
     ]
