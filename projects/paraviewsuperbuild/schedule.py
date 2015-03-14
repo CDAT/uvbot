@@ -19,7 +19,10 @@ def make_schedulers(buildnames):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaViewSuperbuild 'merge-request' created/changed."),
+            reason="ParaViewSuperbuild 'merge-request' created/changed.",
+            # For superbuilds, merge requets on superbuild itself should always
+            # trigger a clean build, I suppose.
+            properties={ "ctest_empty_binary_directory" : True }),
         AnyBranchScheduler(
             name='ParaViewSuperbuild Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -27,7 +30,8 @@ def make_schedulers(buildnames):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaViewSuperbuild 'master' changed."),
+            reason="ParaViewSuperbuild 'master' changed.",
+            properties={ "ctest_empty_binary_directory" : True }),
         AnyBranchScheduler(
             name='ParaViewSuperbuild ParaView Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -35,5 +39,6 @@ def make_schedulers(buildnames):
                 project=PARAVIEW_REPO),
             treeStableTimer=None,
             builderNames=buildnames,
-            reason="ParaView 'master' changed."),
+            reason="ParaView 'master' changed.",
+            properties={ "ctest_empty_binary_directory" : True }),
     ]

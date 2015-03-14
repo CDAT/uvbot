@@ -296,7 +296,10 @@ def _get_configure_options(props):
 
 @properties.renderer
 def makeExtraOptionsString(props):
-    props_dict = {'prop:model' : 'Experimental'}
+    props_dict = {
+        'prop:model' : 'Experimental',
+        'prop:ctest_empty_binary_directory': False
+        }
     for (key, (value, source)) in props.asDict().iteritems():
         if isinstance(value, str):
             value = value.replace("\\", '/')
@@ -333,6 +336,8 @@ def makeExtraOptionsString(props):
             set (ctest_test_include_labels "%(ctest_test_include_labels)s")
 
             set (ctest_upload_file_patterns "%(ctest_upload_file_patterns)s")
+
+            set (ctest_use_empty_binary_directory "%(prop:ctest_empty_binary_directory)s")
             """ % props_dict
 
 class CTestExtraOptionsDownload(StringDownload):
