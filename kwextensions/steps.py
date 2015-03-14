@@ -48,25 +48,29 @@ def makeCTestDashboardCommand(props):
     command_prefix.extend(command)
     return command_prefix
 
-# Generates the command to fetch the user's fork of submodules
-@properties.renderer
-def makeUserForkCommand(props):
-    repo = props.getProperty('repository')
-    cmd = []
-    if props.hasProperty('owner') and props.hasProperty('try_user_fork') and\
-            props.getProperty('try_user_fork') == True:
-        argList = ['git', 'submodule', 'foreach',]
-        cmakeRoot = props.getProperty('cmakeroot')
-        username = props.getProperty('owner')
-        basedir = props.getProperty('builddir').replace('\\', '/')
-        cmakefile = '%s/fetch_submodule.cmake' % basedir
-        argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
-        argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
-        argList += ['-P', cmakefile]
-        cmd = argList + ['&&', 'git', 'submodule', 'update', '--init']
-        # Copy into got_revision since Update failed
-        props.setProperty('got_revision', props.getProperty('revision'), 'UserFork')
-    return ' '.join(cmd)
+def makeUserForkCommandWrapper(codebase):
+    # TODO: I'm sure I need to use the codebase to determine the
+    # repository...just don't know how yet :/
+    # Generates the command to fetch the user's fork of submodules
+    @properties.renderer
+    def makeUserForkCommand(props):
+        repo = props.getProperty('repository')
+        cmd = []
+        if props.hasProperty('owner') and props.hasProperty('try_user_fork') and\
+                props.getProperty('try_user_fork') == True:
+            argList = ['git', 'submodule', 'foreach',]
+            cmakeRoot = props.getProperty('cmakeroot')
+            username = props.getProperty('owner')
+            basedir = props.getProperty('builddir').replace('\\', '/')
+            cmakefile = '%s/fetch_submodule.cmake' % basedir
+            argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
+            argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
+            argList += ['-P', cmakefile]
+            cmd = argList + ['&&', 'git', 'submodule', 'update', '--init']
+            # Copy into got_revision since Update failed
+            props.setProperty('got_revision', props.getProperty('revision'), 'UserFork')
+        return ' '.join(cmd)
+    return makeUserForkCommand
 
 def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
@@ -89,19 +93,19 @@ class FetchTags(ShellCommand):
         ShellCommand.__init__(self,command=['git', 'fetch', '--tags', Interpolate('%(prop:upstream_repo)s')],
                               haltOnFailure=True,
                               flunkOnFailure=True,
-                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              workdir=Interpolate('%(prop:builddir)s/%(prop:sourcedir:-source)s'),
                               description=["Fetching tags"],
                               descriptionDone=["Fetched tags"],
                               env={'GIT_SSL_NO_VERIFY': 'true'},
                               **kwargs)
 
 class FetchUserSubmoduleForks(ShellCommand):
-    def __init__(self, **kwargs):
-        ShellCommand.__init__(self,command=makeUserForkCommand,
+    def __init__(self, codebase='', **kwargs):
+        ShellCommand.__init__(self, command=makeUserForkCommandWrapper(codebase),
                               haltOnFailure=True,
                               flunkOnFailure=True,
                               doStepIf=failureForSubmodule,
-                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              workdir=Interpolate('%(prop:builddir)s/%(prop:sourcedir:-source)s'),
                               description=["Trying user's submodule forks..."],
                               descriptionDone=["Tried user's submodule forks"],
                               env={'GIT_SSL_NO_VERIFY': 'true'},
@@ -154,7 +158,7 @@ class AreSubmodulesValid(ShellCommand):
         self.myLogger = TestScriptOutputLogger()
         ShellCommand.__init__(self,command = makeSubmoduleTestCommand,
                               alwaysRun=True,
-                              workdir=Interpolate('%(prop:builddir)s/source'),
+                              workdir=Interpolate('%(prop:builddir)s/%(prop:sourcedir:-source)s'),
                               description=['Testing if submodules are merged'],
                               descriptionDone=['Are submodules merged'],
                               **kwargs)
@@ -298,7 +302,8 @@ def _get_configure_options(props):
 def makeExtraOptionsString(props):
     props_dict = {
         'prop:model' : 'Experimental',
-        'prop:ctest_empty_binary_directory': False
+        'prop:ctest_empty_binary_directory': False,
+        'prop:sourcedir' : "source",
         }
     for (key, (value, source)) in props.asDict().iteritems():
         if isinstance(value, str):
@@ -312,7 +317,7 @@ def makeExtraOptionsString(props):
     return """
             # Essential options.
             set (CTEST_COMMAND "%(prop:cmakeroot)s/bin/ctest")
-            set (CTEST_SOURCE_DIRECTORY "%(prop:builddir)s/source")
+            set (CTEST_SOURCE_DIRECTORY "%(prop:builddir)s/%(prop:sourcedir)s")
             set (CTEST_BINARY_DIRECTORY "%(prop:builddir)s/build")
             set (CTEST_CMAKE_GENERATOR "%(prop:generator)s")
 
@@ -341,9 +346,11 @@ def makeExtraOptionsString(props):
             """ % props_dict
 
 class CTestExtraOptionsDownload(StringDownload):
-    def __init__(self, s=None, slavedest=None, **kwargs):
+    DefaultRenderer = makeExtraOptionsString
+
+    def __init__(self, s=makeExtraOptionsString, slavedest=None, **kwargs):
         StringDownload.__init__(self,
-                s=makeExtraOptionsString,
+                s=s,
                 slavedest=Interpolate("%(prop:builddir)s/ctest_extra_options.cmake"),
                 **kwargs)
 

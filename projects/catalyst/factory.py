@@ -12,28 +12,19 @@ from kwextensions.steps import CTestDashboard,\
                                DownloadCataystCTestScript,\
                                DownloadLauncher,\
                                CTestExtraOptionsDownload,\
-                               makeUploadFetchSubmoduleScript,\
-                               FetchUserSubmoduleForks,\
-                               makeUploadTestSubmoduleScript,\
-                               AreSubmodulesValid,\
                                FetchTags
+
+from projects.paraview.factory import get_source_steps as get_paraview_source_steps
 
 def get_factory(buildset):
     """Argument is the selected buildset. That could be used to build the
     factory as needed."""
-    update = Git(name="update",
-        repourl=Property("repository"),
-        mode='incremental',
-        submodules=True,
-        workdir="source",
-        reference=Property("referencedir"),
-        haltOnFailure = False,
-        env={'GIT_SSL_NO_VERIFY': 'true'})
     factory = BuildFactory()
-    factory.addStep(update)
+
+    # add source steps to checkout paraview
+    for step in get_paraview_source_steps():
+        factory.addStep(step)
     factory.addStep(FetchTags())
-    factory.addStep(makeUploadFetchSubmoduleScript())
-    factory.addStep(FetchUserSubmoduleForks())
     factory.addStep(DownloadCommonCTestScript())
     factory.addStep(DownloadCataystCTestScript())
     factory.addStep(CTestExtraOptionsDownload())
@@ -41,6 +32,4 @@ def get_factory(buildset):
             SetProperty(property="ctest_dashboard_script",
                 value=Interpolate('%(prop:builddir)s/catalyst.common.ctest')))
     factory.addStep(CTestDashboard())
-    #factory.addStep(makeUploadTestSubmoduleScript())
-    #factory.addStep(AreSubmodulesValid())
     return factory

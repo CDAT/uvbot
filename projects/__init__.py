@@ -77,7 +77,6 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
         raise RuntimeError("'myfactory' is no longer supported!")
 
     # import factory module for the provided project.
-    print project
     factory = import_module("%s.factory" % project.__name__)
 
     builders = []
