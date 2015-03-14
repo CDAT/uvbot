@@ -361,6 +361,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
             branch=request['source_branch'],
             project=project,
             repository=source_project_info['http_url_to_repo'],
+            codebase=project,
             src='git',
             properties={
                 'source_project_id': request['source_project_id'],
@@ -433,6 +434,7 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                     branch=branch,
                     project=project,
                     repository=project_info['http_url_to_repo'],
+                    codebase=project,
                     src='git',
                     properties={
                         'rooturl': 'https://%s' % self.host,
