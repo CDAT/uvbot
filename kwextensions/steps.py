@@ -242,6 +242,9 @@ class CTestDashboard(ShellCommand):
         query.add_filter(("buildname/string", cdash.StringOp.STARTS_WITH, buildid))
         query.add_filter(("buildstarttime/date", cdash.DateOp.IS_AFTER, self.getProperty('cdash_time')))
 
+        # add a link to summary on cdash.
+        self.addURL("cdash", query.get_url(cdash_index_url))
+
         if self.warnCount:
             self.addURL("warnings (%d)" % self.warnCount, query.get_url(cdash_index_url))
         if self.errorCount:
