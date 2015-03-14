@@ -2,7 +2,6 @@ from importlib import import_module
 import copy
 import hashlib
 import itertools
-import urllib
 
 from buildbot.config import BuilderConfig
 
@@ -134,9 +133,20 @@ def get_codebase(project=None, poll=None, secrets={}):
     if poll is None:
         poll = import_module("%s.poll" % project.__name__)
     return {
-        poll.REPO : {
-            "repository" : "https://%s/%s" % (secrets['gitlab_host'], urllib.quote(poll.REPO.lower(), '')),
+        get_codebase_name(poll.REPO) : {
+            "repository" : "https://%s/%s.git" % (secrets['gitlab_host'], poll.REPO.lower()),
             "branch" : "master",
             "revision" : None,
         }
     }
+
+def get_codebase_name(projectname):
+    # evidently codebase names must be alpha-numeric, so we just strip non-alpha
+    # numeric characters from the project name.
+    return "".join([x for x in projectname if x.isalnum()])
+
+def codebaseGenerator(chdict):
+    """Returns a codebase identifier for a given change."""
+    # evidently codebase names must be alpha-numeric, so we just strip non-alpha
+    # numeric characters from the project name.
+    return get_codebase_name(str(chdict["project"]))
