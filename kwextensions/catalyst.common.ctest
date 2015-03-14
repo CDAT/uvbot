@@ -103,27 +103,26 @@ endfunction()
 set(CATALYST_EDITIONS "Base")
 do_catalyst_dashboard("${CATALYST_EDITIONS}")
 
-#set(CATALYST_EDITIONS "Base" "Essentials")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+set(CATALYST_EDITIONS "Base" "Essentials")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
 
-# TODO: enable once base starts working.
-#set(CATALYST_EDITIONS "Base" "Essentials" "Extras")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
-#
-#set(CATALYST_EDITIONS "Base" "Essentials" "Extras" "Rendering-Base")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
-#
-#set(CATALYST_EDITIONS "Base" "Enable-Python")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
-#
-#set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
-#
-#set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
-#
-#set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras" "Rendering-Base" "Rendering-Base-Python")
-#do_catalyst_dashboard("${CATALYST_EDITIONS}")
+set(CATALYST_EDITIONS "Base" "Essentials" "Extras")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+set(CATALYST_EDITIONS "Base" "Essentials" "Extras" "Rendering-Base")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+set(CATALYST_EDITIONS "Base" "Enable-Python")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
+
+set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras" "Rendering-Base" "Rendering-Base-Python")
+do_catalyst_dashboard("${CATALYST_EDITIONS}")
 
 # ctest_* commands are in a function, so the magic variable they use to trigger
 # this condition is not available here. Instead, set it explicitly.
