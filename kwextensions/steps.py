@@ -181,9 +181,11 @@ class CTestDashboard(ShellCommand):
     name="build-n-test"
     description="building-n-testing"
     descriptionDone="built and tested"
-    def __init__(self, command=None, **kwargs):
+    def __init__(self, cdash_projectname, command=None, **kwargs):
         self.warnCount = 0
         self.errorCount = 0
+        self.cdash_projectname = cdash_projectname
+
         # TODO: we maybe can convert all these arguments to be passed in through
         # the ctest_extra_options file.
         ShellCommand.__init__(self,
@@ -233,9 +235,8 @@ class CTestDashboard(ShellCommand):
                 break
 
         ctest_build_name = self.getProperty("ctest_build_name")
-        project = self.getProperty("project")
         cdash_root = self.getProperty("cdash_url")
-        cdash_projectname = self.getProperty("cdash_projectnames")[project]
+        cdash_projectname = self.cdash_projectname
 
         cdash_index_url = cdash_root + "/index.php"
         cdash_test_url = cdash_root + "/queryTests.php"
