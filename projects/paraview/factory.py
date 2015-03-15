@@ -16,7 +16,9 @@ from kwextensions.steps import CTestDashboard,\
                                makeUploadFetchSubmoduleScript,\
                                FetchUserSubmoduleForks,\
                                makeUploadTestSubmoduleScript,\
-                               AreSubmodulesValid
+                               AreSubmodulesValid,\
+                               SetGotRevision,\
+                               SetCTestBuildNameProperty
 
 import projects
 from . import poll
@@ -39,7 +41,8 @@ def get_source_steps(sourcedir="source"):
     steps.append(update)
     steps.append(SetProperty(name="SetParaViewSourceDir", property="sourcedir", value=sourcedir))
     steps.append(makeUploadFetchSubmoduleScript())
-    steps.append(FetchUserSubmoduleForks(codebase=codebase))
+    steps.append(FetchUserSubmoduleForks())
+    steps.append(SetGotRevision(codebase=codebase, workdir=sourcedir))
     return steps
 
 
@@ -47,12 +50,15 @@ def get_factory(buildset):
     """Argument is the selected buildset. That could be used to build the
     factory as needed."""
 
+    codebase = projects.get_codebase_name(poll.REPO)
+
     factory = BuildFactory()
 
     # add all source checkout steps.
     for step in get_source_steps():
         factory.addStep(step)
 
+    factory.addStep(SetCTestBuildNameProperty(codebases=[codebase]))
     factory.addStep(DownloadCommonCTestScript())
     factory.addStep(CTestExtraOptionsDownload())
     if buildset["os"] == "windows":

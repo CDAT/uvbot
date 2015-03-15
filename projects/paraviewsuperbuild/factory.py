@@ -10,6 +10,7 @@ from buildbot.steps.source.git import Git
 from buildbot.process import properties
 
 from projects.paraview.factory import get_source_steps as get_paraview_source_steps
+from projects.paraview import poll as paraview_poll
 
 import projects
 from . import poll
@@ -18,7 +19,8 @@ from kwextensions.steps import CTestDashboard,\
                                DownloadCommonCTestScript,\
                                DownloadCataystCTestScript,\
                                DownloadLauncher,\
-                               CTestExtraOptionsDownload
+                               CTestExtraOptionsDownload,\
+                               SetCTestBuildNameProperty
 
 @properties.renderer
 def _extra(props):
@@ -58,6 +60,9 @@ def get_factory(buildset):
     factory as needed."""
     factory = BuildFactory()
 
+    codebases = [projects.get_codebase_name(poll.REPO),
+                 projects.get_codebase_name(paraview_poll.REPO)]
+
     # Add steps to checkout ParaView codebase.
     for step in get_paraview_source_steps(sourcedir="source-paraview"):
         factory.addStep(step)
@@ -66,6 +71,7 @@ def get_factory(buildset):
     for step in get_source_steps():
         factory.addStep(step)
 
+    factory.addStep(SetCTestBuildNameProperty(codebases=codebases))
     factory.addStep(DownloadCommonCTestScript())
     factory.addStep(CTestExtraOptionsDownload(
         s=Interpolate("%(kw:default)s%(kw:extra)s",

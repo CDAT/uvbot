@@ -1,9 +1,11 @@
 from buildbot.steps.source.git import Git
 from buildbot.process import properties
 from buildbot.process.buildstep import LogLineObserver
-from buildbot.steps.shell import ShellCommand, WarningCountingShellCommand
+from buildbot.steps.shell import ShellCommand, WarningCountingShellCommand, SetPropertyFromCommand
+from buildbot.steps.master import SetProperty
 from buildbot.process.properties import Property, Interpolate
 from buildbot.steps.transfer import FileDownload, StringDownload
+from zope.interface import implements
 
 from buildbot.status.results import FAILURE, SUCCESS, WARNINGS
 from twisted.python import log as twisted_log
@@ -13,20 +15,7 @@ import cdash
 Gitlab_Base_URL = "https://kwgitlab.kitwarein.com"
 
 import re
-class GitWithSubmodules(Git):
-    """
-    Extends buildbot's Git to fetch submodule objects
-    from forked repos.
 
-    Grrr...this is harder!  Let's just assume for now that one's submodule
-    changes needs to be merged upstream before the dependent projects can be
-    tested :(.
-    """
-    def __init__(self, submodules=False, **kwargs):
-        self.handleSubmodules = submodules
-        # Don't let superclass handle the submodules since it can't do it well.
-        # We'll handle it here.
-        Git.__init__(self, submodules=False, **kwargs)
 
 @properties.renderer
 def makeCTestDashboardCommand(props):
@@ -48,29 +37,22 @@ def makeCTestDashboardCommand(props):
     command_prefix.extend(command)
     return command_prefix
 
-def makeUserForkCommandWrapper(codebase):
-    # TODO: I'm sure I need to use the codebase to determine the
-    # repository...just don't know how yet :/
-    # Generates the command to fetch the user's fork of submodules
-    @properties.renderer
-    def makeUserForkCommand(props):
-        repo = props.getProperty('repository')
-        cmd = []
-        if props.hasProperty('owner') and props.hasProperty('try_user_fork') and\
-                props.getProperty('try_user_fork') == True:
-            argList = ['git', 'submodule', 'foreach',]
-            cmakeRoot = props.getProperty('cmakeroot')
-            username = props.getProperty('owner')
-            basedir = props.getProperty('builddir').replace('\\', '/')
-            cmakefile = '%s/fetch_submodule.cmake' % basedir
-            argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
-            argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
-            argList += ['-P', cmakefile]
-            cmd = argList + ['&&', 'git', 'submodule', 'update', '--init']
-            # Copy into got_revision since Update failed
-            props.setProperty('got_revision', props.getProperty('revision'), 'UserFork')
-        return ' '.join(cmd)
-    return makeUserForkCommand
+# Generates the command to fetch the user's fork of submodules
+@properties.renderer
+def makeUserForkCommand(props):
+    cmd = []
+    if props.hasProperty('owner') and props.hasProperty('try_user_fork') and\
+            props.getProperty('try_user_fork') == True:
+        argList = ['git', 'submodule', 'foreach',]
+        cmakeRoot = props.getProperty('cmakeroot')
+        username = props.getProperty('owner')
+        basedir = props.getProperty('builddir').replace('\\', '/')
+        cmakefile = '%s/fetch_submodule.cmake' % basedir
+        argList += ['%s/bin/cmake' % cmakeRoot, '-Dusername:STRING=%s' % username,]
+        argList.append('-Durl_prefix:STRING=%s' % Gitlab_Base_URL)
+        argList += ['-P', cmakefile]
+        cmd = argList + ['&&', 'git', 'submodule', 'update', '--init']
+    return ' '.join(cmd)
 
 def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
@@ -100,8 +82,8 @@ class FetchTags(ShellCommand):
                               **kwargs)
 
 class FetchUserSubmoduleForks(ShellCommand):
-    def __init__(self, codebase='', **kwargs):
-        ShellCommand.__init__(self, command=makeUserForkCommandWrapper(codebase),
+    def __init__(self, **kwargs):
+        ShellCommand.__init__(self,command=makeUserForkCommand,
                               haltOnFailure=True,
                               flunkOnFailure=True,
                               doStepIf=failureForSubmodule,
@@ -110,6 +92,25 @@ class FetchUserSubmoduleForks(ShellCommand):
                               descriptionDone=["Tried user's submodule forks"],
                               env={'GIT_SSL_NO_VERIFY': 'true'},
                               **kwargs)
+
+class SetGotRevision(SetPropertyFromCommand):
+    """Command used to setup got-revision. This is needed since the Source step
+    may fail to setup got_revision when dealing with submodules.
+    This step is needed any time you have a Source step that doesn't
+    haltOnFailure."""
+    def __init__(self, codebase='', **kwargs):
+        self.codebase = codebase
+        SetPropertyFromCommand.__init__(self,
+                property="got_revision",
+                command=["git", "rev-parse", "HEAD"], **kwargs)
+
+    def setProperty(self, propname, value, source):
+        """Overridden to set got revision for codebase, if applicable"""
+        if self.codebase != '':
+            property_dict = self.getProperty(propname, {})
+            property_dict[self.codebase] = value
+            return SetPropertyFromCommand.setProperty(self, propname, property_dict, source)
+        return SetPropertyFromCommand.setProperty(self, propname, value, source)
 
 def makeUploadTestSubmoduleScript(**kwargs):
     import os
@@ -231,10 +232,7 @@ class CTestDashboard(ShellCommand):
             if read_warning_summary and read_error_summary and read_test_summary:
                 break
 
-        buildnumber = self.getProperty("buildnumber")
-        buildername = self.getProperty("buildername")
-        shortrevision = self.getProperty('got_revision')[0:8]
-        buildid = "%s-build%s-%s" % (shortrevision, buildnumber, buildername)
+        ctest_build_name = self.getProperty("ctest_build_name")
         project = self.getProperty("project")
         cdash_root = self.getProperty("cdash_url")
         cdash_projectname = self.getProperty("cdash_projectnames")[project]
@@ -243,7 +241,7 @@ class CTestDashboard(ShellCommand):
         cdash_test_url = cdash_root + "/queryTests.php"
 
         query = cdash.Query(project=cdash_projectname)
-        query.add_filter(("buildname/string", cdash.StringOp.STARTS_WITH, buildid))
+        query.add_filter(("buildname/string", cdash.StringOp.STARTS_WITH, ctest_build_name))
         query.add_filter(("buildstarttime/date", cdash.DateOp.IS_AFTER, self.getProperty('cdash_time')))
 
         # add a link to summary on cdash.
@@ -313,7 +311,6 @@ def makeExtraOptionsString(props):
     props_dict['ctest_test_excludes'] = _get_test_params(props, "test_excludes", "|")
     props_dict['ctest_test_include_labels'] = _get_test_params(props, "test_include_labels", "|")
     props_dict['ctest_upload_file_patterns'] = _get_test_params(props, "upload_file_patterns", ";")
-    props_dict['shortrevision'] = props.getProperty('got_revision')[0:8]
     return """
             # Essential options.
             set (CTEST_COMMAND "%(prop:cmakeroot)s/bin/ctest")
@@ -323,7 +320,7 @@ def makeExtraOptionsString(props):
 
             # we're creating an unique buildname per build.
             # that makes it possible to link back to Cdash summary page easily.
-            set (CTEST_BUILD_NAME "%(shortrevision)s-build%(prop:buildnumber)s-%(prop:buildername)s")
+            set (CTEST_BUILD_NAME "%(prop:ctest_build_name)s")
             set (CTEST_SITE "%(prop:slavename)s")
 
             set (CTEST_BUILD_FLAGS "%(prop:buildflags)s")
@@ -385,3 +382,30 @@ class DownloadCataystCTestScript(FileDownload):
                 mastersrc= "%s/catalyst.common.ctest" % moduledir,
                 slavedest=Interpolate("%(prop:builddir)s/catalyst.common.ctest"),
                 **kwargs)
+
+class GetShortRevision(object):
+    """Makes is possible to render a short version of a source property. Used by
+    SetCTestBuildNameProperty"""
+    implements(properties.IRenderable)
+    def __init__(self, step):
+        self.step = step
+
+    def getRenderingFor(self, props):
+        codebases = self.step.codebases
+        if not codebases or (len(codebases) == 1 and codebases[0] == ''):
+            return prop.getProperty("got_revision")[0:8]
+        retVal = []
+        for codebase in codebases:
+            retVal.append(props.getProperty("got_revision")[codebase][0:8])
+        return "-".join(retVal)
+
+
+class SetCTestBuildNameProperty(SetProperty):
+    def __init__(self, codebases=[], property=None, value=None, **kwargs):
+        if not property is None or not value is None:
+            raise RuntimeError("Unexpected arguments!!!")
+        self.codebases = codebases
+        SetProperty.__init__(self,
+                property="ctest_build_name",
+                value=Interpolate("%(kw:shortrevision)s-build%(prop:buildnumber)s-%(prop:buildername)s",
+                    shortrevision=GetShortRevision(self)))
