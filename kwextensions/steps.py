@@ -303,6 +303,7 @@ def makeExtraOptionsString(props):
         'prop:model' : 'Experimental',
         'prop:ctest_empty_binary_directory': False,
         'prop:sourcedir' : "source",
+        'prop:ctest_test_timeout' : 180, # 3 mins default timeout.
         }
     for (key, (value, source)) in props.asDict().iteritems():
         if isinstance(value, str):
@@ -325,6 +326,8 @@ def makeExtraOptionsString(props):
             set (CTEST_SITE "%(prop:slavename)s")
 
             set (CTEST_BUILD_FLAGS "%(prop:buildflags)s")
+
+            set (CTEST_TEST_TIMEOUT %(prop:ctest_test_timeout)s)
 
             # Extra configuration options for this build.
             set (ctest_model "%(prop:model)s")
