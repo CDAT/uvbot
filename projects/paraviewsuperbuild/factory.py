@@ -83,5 +83,9 @@ def get_factory(buildset):
     factory.addStep(
             SetProperty(property="ctest_dashboard_script",
                 value=Interpolate('%(prop:builddir)s/common.ctest')))
-    factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME))
+    # We set a 2 hrs timeout since the paraview build step can take a while
+    # without producing any output. When that happens, buildbot may kill the
+    # process.
+    factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME,
+                                   timeout=60*60*2))
     return factory
