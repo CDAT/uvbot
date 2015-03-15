@@ -29,6 +29,9 @@ def get_factory(buildset):
     # add source steps to checkout paraview
     for step in get_paraview_source_steps():
         factory.addStep(step)
+
+    factory.addStep(SetProperty(property="upstream_repo",
+        value=Interpolate("%(prop:rooturl)s/"+ poll.REPO.lower() + ".git")))
     factory.addStep(FetchTags())
     factory.addStep(SetCTestBuildNameProperty(codebases=[codebase]))
     factory.addStep(DownloadCommonCTestScript())
