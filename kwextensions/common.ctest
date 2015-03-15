@@ -26,7 +26,10 @@ set(ENV{LC_ALL} C)
 # if we're told to start with an empty binary dir, we do it.
 if (ctest_use_empty_binary_directory)
     message("Emptying binary directory ...")
-    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+    # not using ctest_use_empty_binary_directory() since that kept on failing
+    # on windows. Seeing if this works more robustly.
+    file(REMOVE_RECURSE ${CTEST_BINARY_DIRECTORY})
+    file(MAKE_DIRECTORY ${CTEST_BINARY_DIRECTORY})
 endif()
 
 ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
