@@ -9,6 +9,7 @@
 #                           CTEST_BUILD_NAME
 #                           CTEST_SITE
 #                           CTEST_BUILD_FLAGS
+#                           CTEST_TEST_TIMEOUT
 #                           ctest_use_empty_binary_directory
 #
 # ctest_stages: all, configure, build, test
