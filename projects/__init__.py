@@ -1,9 +1,9 @@
+from importlib import import_module
 import copy
 import hashlib
+import itertools
 
 from buildbot.config import BuilderConfig
-
-from kwextensions import factory
 
 
 __all__ = [
@@ -73,11 +73,14 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
         name, conf = build_config(project, defconfig=defconfig, **buildset)
         configs[name] = conf
 
-    if myfactory is None:
-        myfactory = factory.get_ctest_buildfactory()
+    if not myfactory is None:
+        raise RuntimeError("'myfactory' is no longer supported!")
+
+    # import factory module for the provided project.
+    factory = import_module("%s.factory" % project.__name__)
 
     builders = []
-    for name, config in configs.items():
+    for (name, config), buildset in itertools.izip(configs.items(), buildsets):
         props = defprops.copy()
         props['configure_options:builderconfig'] = config
 
@@ -86,7 +89,7 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
 
         builders.append(BuilderConfig(
             name='%s-%s-%s' % (project.NAME, slave.slavename, name),
-            factory=myfactory,
+            factory=factory.get_factory(buildset),
             properties=props,
             slavenames=[slave.slavename],
             **kwargs
@@ -122,3 +125,27 @@ def merge_config(base, *args):
                 output[k] = v
 
     return output
+
+
+def get_codebase(project=None, poll=None, secrets={}):
+    """Returns the defaults to use for the projects code base"""
+    if poll is None:
+        poll = import_module("%s.poll" % project.__name__)
+    return {
+        get_codebase_name(poll.REPO) : {
+            "repository" : "https://%s/%s.git" % (secrets['gitlab_host'], poll.REPO.lower()),
+            "branch" : "master",
+            "revision" : None,
+        }
+    }
+
+def get_codebase_name(projectname):
+    # evidently codebase names must be alpha-numeric, so we just strip non-alpha
+    # numeric characters from the project name.
+    return "".join([x for x in projectname if x.isalnum()])
+
+def codebaseGenerator(chdict):
+    """Returns a codebase identifier for a given change."""
+    # evidently codebase names must be alpha-numeric, so we just strip non-alpha
+    # numeric characters from the project name.
+    return get_codebase_name(str(chdict["project"]))

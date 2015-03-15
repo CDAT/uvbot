@@ -3,14 +3,15 @@ from buildbot.changes import filter
 
 
 from . import poll
-
+import projects
 
 __all__ = [
     'make_schedulers',
 ]
 
 
-def make_schedulers(buildnames):
+def make_schedulers(buildnames, secrets):
+    codebases = projects.get_codebase(poll=poll, secrets=secrets)
     return [
         AnyBranchScheduler(
             name='VTK Merge Request Scheduler',
@@ -18,12 +19,16 @@ def make_schedulers(buildnames):
                 category='merge-request',
                 project=poll.REPO),
             treeStableTimer=None,
-            builderNames=buildnames),
+            builderNames=buildnames,
+            codebases=codebases,
+            ),
         AnyBranchScheduler(
             name='VTK Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
                 category='integration-branch',
                 project=poll.REPO),
             treeStableTimer=None,
-            builderNames=buildnames),
+            builderNames=buildnames,
+            codebases=codebases,
+            ),
     ]

@@ -367,7 +367,6 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'source_branch': request['source_branch'],
                 'merge_request_id': request['id'],
                 'target_project_id': request['target_project_id'],
-                'upstream_repo': target_project_info['http_url_to_repo'],
                 'rooturl': 'https://%s' % self.host,
                 'try_user_fork': True,
                 'owner': source_project_info['owner']['username'],
