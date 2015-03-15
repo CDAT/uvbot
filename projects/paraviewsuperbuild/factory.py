@@ -83,5 +83,5 @@ def get_factory(buildset):
     factory.addStep(
             SetProperty(property="ctest_dashboard_script",
                 value=Interpolate('%(prop:builddir)s/common.ctest')))
-    factory.addStep(CTestDashboard())
+    factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME))
     return factory
