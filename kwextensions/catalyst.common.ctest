@@ -50,6 +50,10 @@ function (catalyze name paraview_repo_dir out_dir editions)
 endfunction()
 
 function(do_catalyst_dashboard catalyst_editions)
+    if (NOT success)
+        return ()
+    endif ()
+
     get_catalyst_name(catalyst_name "${catalyst_editions}")
 
     set (original_source_directory ${CTEST_SOURCE_DIRECTORY})
@@ -80,6 +84,11 @@ function(do_catalyst_dashboard catalyst_editions)
     unset(ctest_extra_options_file)
     include("${CTEST_SCRIPT_DIRECTORY}/common.ctest")
 
+    if (NOT success)
+        set(success FALSE PARENT_SCOPE)
+        return ()
+    endif ()
+
     # build tests.
     unset(CTEST_CONFIGURE_COMMAND)
     ctest_configure(APPEND
@@ -99,6 +108,8 @@ function(do_catalyst_dashboard catalyst_editions)
     ctest_upload(FILES ${catalyst_name}.tar.gz)
     ctest_submit(PARTS Upload)
 endfunction()
+
+set(success TRUE)
 
 set(CATALYST_EDITIONS "Base")
 do_catalyst_dashboard("${CATALYST_EDITIONS}")
