@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 MACHINES = [
-    #amber8, # TODO: No builds currently; duplicates of dashlin1. Also missing buildslave.
+    amber8,
     blight,
     dashlin1,
     kamino,
