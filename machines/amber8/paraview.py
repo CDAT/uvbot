@@ -50,6 +50,17 @@ buildsets = [
         'buildtype': 'release',
         'features': (),
     },
+    {
+        'os': 'linux',
+        'libtype': 'shared',
+        'buildtype': 'debug',
+        'features': (
+            'unified',
+            'gui',
+            'python',
+            'mpi',
+        ),
+    },
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
