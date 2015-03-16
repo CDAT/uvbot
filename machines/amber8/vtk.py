@@ -22,17 +22,16 @@ defconfig = {
 }
 
 buildsets = [
-    # FIXME: Same as dashlin1
-    #{
-    #    'os': 'linux',
-    #    'libtype': 'shared',
-    #    'buildtype': 'release',
-    #    'features': (
-    #        'mpi',
-    #        'python',
-    #        'qt',
-    #    ),
-    #},
+    {
+        'os': 'linux',
+        'libtype': 'shared',
+        'buildtype': 'release',
+        'features': (
+            'mpi',
+            'python',
+            'qt',
+        ),
+    },
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,

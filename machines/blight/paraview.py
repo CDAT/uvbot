@@ -55,6 +55,16 @@ defconfig = {
 buildsets = [
     {
         'os': 'linux',
+        'libtype': 'static',
+        'buildtype': 'release',
+        'features': (
+            'gui',
+            'python',
+            'mpi',
+        ),
+    },
+    {
+        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'debug',
         'features': (
@@ -65,37 +75,12 @@ buildsets = [
     },
     {
         'os': 'linux',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'features': (
-            'gui',
-            'python',
-            'mpi',
-        ),
-    },
-    {
-        'os': 'linux',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'features': (
-            'python',
-            'mpi',
-        ),
-    },
-    {
-        'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': (
             'python',
             'mpi',
         ),
-    },
-    {
-        'os': 'linux',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'features': (),
     },
 ]
 
