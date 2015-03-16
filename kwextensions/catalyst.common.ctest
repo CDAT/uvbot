@@ -33,20 +33,15 @@ function (catalyze name paraview_repo_dir out_dir editions)
         list(APPEND extra_args "${paraview_repo_dir}/Catalyst/Editions/${ed}")
     endforeach()
 
-    execute_process(COMMAND ${PYTHON_EXECUTABLE}
-        "${paraview_repo_dir}/Catalyst/catalyze.py"
-
-        # The source repo
-        "-r" "${paraview_repo_dir}"
-
-        ${extra_args}
-
-        # the output directory
-        "-o" "${out_dir}"
-
-        # also copy tests.
-        "-t"
-        )
+    execute_process(
+        COMMAND "${PYTHON_EXECUTABLE}" "${paraview_repo_dir}/Catalyst/catalyze.py"
+                # The source repo
+                "-r" "${paraview_repo_dir}"
+                ${extra_args}
+                # the output directory
+                "-o" "${out_dir}"
+                # also copy tests.
+                "-t")
 endfunction()
 
 function(do_catalyst_dashboard)
