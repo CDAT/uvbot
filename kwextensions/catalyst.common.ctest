@@ -92,12 +92,13 @@ function(do_catalyst_dashboard)
     # build tests.
     unset(CTEST_CONFIGURE_COMMAND)
     ctest_configure(APPEND
-                    SOURCE ${CTEST_SOURCE_DIRECTORY}/Testing
-                    BUILD ${CTEST_BINARY_DIRECTORY}/Testing
-                    OPTIONS "-DPVPYTHON_EXE=${CTEST_BINARY_DIRECTORY}/bin/pvpython;-DParaView_DIR=${CTEST_BINARY_DIRECTORY}"
-                    )
-    ctest_build(APPEND BUILD "${CTEST_BINARY_DIRECTORY}/Testing")
-    ctest_test(APPEND BUILD "${CTEST_BINARY_DIRECTORY}/Testing")
+        SOURCE          "${CTEST_SOURCE_DIRECTORY}/Testing"
+        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing"
+        OPTIONS         "-DPVPYTHON_EXE=${CTEST_BINARY_DIRECTORY}/bin/pvpython;-DParaView_DIR=${CTEST_BINARY_DIRECTORY}")
+    ctest_build(APPEND
+        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing")
+    ctest_test(APPEND
+        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing")
     ctest_submit(PARTS Test)
 
     # Create tar ball and then upload it.
