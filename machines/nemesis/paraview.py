@@ -43,17 +43,25 @@ buildsets = [
     },
     {
         'os': 'windows',
+        'libtype': 'static',
+        'buildtype': 'release',
+        'features': base_features,
+    },
+]
+
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
+    defprops=defprops,
+    defconfig=defconfig
+)
+
+kitbuildsets = [
+    {
+        'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': base_features + (
             'kits',
         ),
-    },
-    {
-        'os': 'windows',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'features': base_features,
     },
     {
         'os': 'windows',
@@ -65,7 +73,8 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
+BUILDERS += projects.make_builders(slave.SLAVE, paraview, kitbuildsets,
     defprops=defprops,
-    defconfig=defconfig
+    defconfig=defconfig,
+    dirlen=8
 )
