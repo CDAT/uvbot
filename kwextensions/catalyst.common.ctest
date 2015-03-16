@@ -133,3 +133,7 @@ do_catalyst_dashboard(Base Enable-Python Essentials Extras Rendering-Base Render
 # ctest_* commands are in a function, so the magic variable they use to trigger
 # this condition is not available here. Instead, set it explicitly.
 set(CTEST_RUN_CURRENT_SCRIPT FALSE)
+
+if (NOT success)
+    message(FATAL_ERROR "Catalyst builds failed!")
+endif ()
