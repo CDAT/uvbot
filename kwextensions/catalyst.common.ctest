@@ -49,12 +49,12 @@ function (catalyze name paraview_repo_dir out_dir editions)
         )
 endfunction()
 
-function(do_catalyst_dashboard catalyst_editions)
+function(do_catalyst_dashboard)
     if (NOT success)
         return ()
     endif ()
 
-    get_catalyst_name(catalyst_name "${catalyst_editions}")
+    get_catalyst_name(catalyst_name "${ARGN}")
 
     set (original_source_directory ${CTEST_SOURCE_DIRECTORY})
     set (original_binary_directory ${CTEST_BINARY_DIRECTORY})
@@ -72,7 +72,7 @@ function(do_catalyst_dashboard catalyst_editions)
         "${original_source_directory}"
         # CTEST_SOURCE_DIRECTORY is now the Catalyst edition source dir.
         "${CTEST_SOURCE_DIRECTORY}"
-        "${catalyst_editions}")
+        "${ARGN}")
 
     # don't run cmake to configure directly. Instead, we use cmake.sh.
     set (CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh ${CTEST_SOURCE_DIRECTORY}")
@@ -110,30 +110,14 @@ function(do_catalyst_dashboard catalyst_editions)
 endfunction()
 
 set(success TRUE)
-
-set(CATALYST_EDITIONS "Base")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Essentials")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Essentials" "Extras")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Essentials" "Extras" "Rendering-Base")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Enable-Python")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
-
-set(CATALYST_EDITIONS "Base" "Enable-Python" "Essentials" "Extras" "Rendering-Base" "Rendering-Base-Python")
-do_catalyst_dashboard("${CATALYST_EDITIONS}")
+do_catalyst_dashboard(Base)
+do_catalyst_dashboard(Base Essentials)
+do_catalyst_dashboard(Base Essentials Extras)
+do_catalyst_dashboard(Base Essentials Extras Rendering-Base)
+do_catalyst_dashboard(Base Enable-Python)
+do_catalyst_dashboard(Base Enable-Python Essentials)
+do_catalyst_dashboard(Base Enable-Python Essentials Extras)
+do_catalyst_dashboard(Base Enable-Python Essentials Extras Rendering-Base Rendering-Base-Python)
 
 # ctest_* commands are in a function, so the magic variable they use to trigger
 # this condition is not available here. Instead, set it explicitly.
