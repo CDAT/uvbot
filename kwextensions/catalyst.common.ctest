@@ -41,7 +41,15 @@ function (catalyze name paraview_repo_dir out_dir editions)
                 # the output directory
                 "-o" "${out_dir}"
                 # also copy tests.
-                "-t")
+                "-t"
+        RESULT_VARIABLE res
+        OUTPUT_VARIABLE out
+        ERROR_VARIABLE  err)
+    message(STATUS "Catalyze of ${editions}:\n${out}")
+    if (res)
+        message("Catalyze of ${editions} failed:\n${err}")
+        set(success FALSE PARENT_SCOPE)
+    endif ()
 endfunction()
 
 function(do_catalyst_dashboard)
@@ -68,6 +76,11 @@ function(do_catalyst_dashboard)
         # CTEST_SOURCE_DIRECTORY is now the Catalyst edition source dir.
         "${CTEST_SOURCE_DIRECTORY}"
         "${ARGN}")
+
+    if (NOT success)
+        set(success FALSE PARENT_SCOPE)
+        return ()
+    endif ()
 
     # don't run cmake to configure directly. Instead, we use cmake.sh.
     set (CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh ${CTEST_SOURCE_DIRECTORY}")
