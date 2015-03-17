@@ -7,6 +7,13 @@ __all__ = [
 ]
 
 defprops = {
+    'test_excludes:builderconfig': [
+        # broken selection on VNC
+        'TestYoungsMaterialInterface',
+
+        'TestWindowToImageTransparency', # broken transparency on VNC(?)
+        'rendererSource', # broken stencil buffer on VNC(?)
+    ],
     'referencedir': '/home/kitware/dashboards/buildbot-share/vtk',
 }
 env = {
