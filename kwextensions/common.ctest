@@ -86,9 +86,15 @@ endif ()
 # Test
 #==============================================================================
 if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";test;"))
+    set(test_args)
+    if (ctest_test_include_labels)
+        list(APPEND test_args INCLUDE_LABEL "${ctest_test_include_labels}")
+    endif ()
+    if (ctest_test_excludes)
+        list(APPEND test_args EXCLUDE "${ctest_test_excludes}")
+    endif ()
     ctest_test(
-        INCLUDE_LABEL   "${ctest_test_include_labels}"
-        EXCLUDE         "${ctest_test_excludes}"
+        ${test_args}
         RETURN_VALUE    test_result)
     ctest_submit(PARTS Test)
 
