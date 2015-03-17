@@ -9,7 +9,7 @@ __all__ = [
 SLAVE = BuildSlave('kamino', secrets.SECRETS['kamino']['password'],
     max_builds=1,
     properties={
-        'cmakeroot': '/Users/kitware/misc/root/cmake', # 3.1.3
+        'cmakeroot': '/Users/kitware/Dashboards/Support/cmake-2.8.11.2', # 2.8.11.2
         'sharedresourcesroot': '/Users/kitware/Dashboards',
 
         'os': 'osx',
