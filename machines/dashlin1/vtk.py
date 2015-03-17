@@ -8,7 +8,7 @@ __all__ = [
 
 defprops = {}
 env = {
-    'DISPLAY': ':1',
+    'DISPLAY': ':0',
 }
 
 defconfig = {
