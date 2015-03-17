@@ -23,8 +23,7 @@ def make_schedulers(buildnames, secrets):
             codebases=codebases,
             properties={
                 "ctest_track" : "buildbot",
-                }
-            ),
+            }),
         AnyBranchScheduler(
             name='VTK Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -36,6 +35,5 @@ def make_schedulers(buildnames, secrets):
             properties={
                 "ctest_empty_binary_directory" : True,
                 "ctest_track" : "master",
-                }
-            ),
+            }),
     ]

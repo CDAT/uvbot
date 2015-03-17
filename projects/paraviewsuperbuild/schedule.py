@@ -33,7 +33,7 @@ def make_schedulers(buildnames, secrets):
                 # trigger a clean build, I suppose.
                 "ctest_empty_binary_directory" : True,
                 "ctest_track" : "buildbot-packages",
-                },
+            },
             codebases=codebases),
         AnyBranchScheduler(
             name='ParaViewSuperbuild Integration Branch Scheduler',
@@ -46,7 +46,7 @@ def make_schedulers(buildnames, secrets):
             properties={
                 "ctest_empty_binary_directory" : True,
                 "ctest_track" : "master-packages",
-                },
+            },
             codebases=codebases),
         AnyBranchScheduler(
             name='ParaViewSuperbuild ParaView Integration Branch Scheduler',
@@ -59,6 +59,6 @@ def make_schedulers(buildnames, secrets):
             properties={
                 "ctest_empty_binary_directory" : True,
                 "ctest_track" : "master-packages",
-                },
+            },
             codebases=codebases),
     ]

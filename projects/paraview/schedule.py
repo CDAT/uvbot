@@ -24,8 +24,8 @@ def make_schedulers(buildnames, secrets):
             codebases=codebases,
             properties={
                 'ctest_track' : "buildbot-paraview",
-                },
-            ),
+            },
+        ),
         AnyBranchScheduler(
             name='ParaView Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -38,6 +38,6 @@ def make_schedulers(buildnames, secrets):
             properties={
                 "ctest_empty_binary_directory" : True,
                 'ctest_track' : "master",
-                },
-            ),
+            },
+        ),
     ]

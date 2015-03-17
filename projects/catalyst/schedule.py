@@ -25,8 +25,7 @@ def make_schedulers(buildnames, secrets):
             codebases=codebases,
             properties={
                 'ctest_track': "buildbot-catalyst-editions",
-                },
-            ),
+            }),
         AnyBranchScheduler(
             name='ParaView-Catalyst Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -38,8 +37,7 @@ def make_schedulers(buildnames, secrets):
             codebases=codebases,
             properties={
                 'ctest_track': "master-catalyst-editions",
-                },
-            ),
+            }),
         ForceScheduler(
             name='Force Build Catalyst',
             builderNames=buildnames,
@@ -50,6 +48,6 @@ def make_schedulers(buildnames, secrets):
                     label="Dashboard track",
                     default="buildbot-catalyst-editions",
                     size=30)
-                ],
-            ),
+            ],
+        ),
     ]
