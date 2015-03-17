@@ -20,6 +20,7 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
+            reason="VTK 'merge-request' created/changed.",
             codebases=codebases,
             properties={
                 "ctest_track" : "buildbot",
@@ -31,6 +32,7 @@ def make_schedulers(buildnames, secrets):
                 project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
+            reason="VTK 'master' changed.",
             codebases=codebases,
             properties={
                 "ctest_empty_binary_directory" : True,
