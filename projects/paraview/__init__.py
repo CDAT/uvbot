@@ -63,6 +63,11 @@ FEATURES = {
     },
     'opengl2': {
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
+        # TODO - These plugins don't work with OpenGL2 and are
+        #        enabled by default
+        'PARAVIEW_BUILD_PLUGIN_PointSprite:BOOL': ('TRUE', 'FALSE'),
+        'PARAVIEW_BUILD_PLUGIN_EyeDomeLighting:BOOL': ('TRUE', 'FALSE'),
+        'PARAVIEW_BUILD_PLUGIN_SciberQuestToolKit:BOOL': ('TRUE', 'FALSE'),
     },
     'icc': {},
     'vs': {},
