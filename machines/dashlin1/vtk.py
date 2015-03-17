@@ -38,7 +38,8 @@ defprops = {
     ],
 }
 env = {
-    'DISPLAY': ':0',
+    #'DISPLAY': ':0.0', # FIXME: This isn't starting?
+    'DISPLAY': ':1', # XXX: Ride along on CTK's VNC for now.
 }
 
 defconfig = {
