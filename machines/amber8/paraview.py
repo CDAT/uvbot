@@ -48,6 +48,17 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
+        'features': (
+            'python',
+            'mpi',
+            'gui',
+            'opengl2',
+        ),
+    },
+    {
+        'os': 'linux',
+        'libtype': 'static',
+        'buildtype': 'release',
         'features': (),
     },
     {
