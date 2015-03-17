@@ -1,5 +1,5 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
-from buildbot.schedulers.forcesched import ForceScheduler, ChoiceStringParameter, UserNameParameter, FixedParameter, StringParameter
+from buildbot.schedulers.forcesched import ForceScheduler, UserNameParameter, StringParameter
 from buildbot.changes import filter
 import urllib
 
