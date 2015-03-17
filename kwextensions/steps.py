@@ -26,14 +26,15 @@ def makeCTestDashboardCommand(props):
             '-VV',
             '-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake' % props_dict,
             '-Dctest_stages:STRING=%(prop:ctest_stages)s' % props_dict,
+            '-C', props.getProperty('configure_options:builderconfig')['CMAKE_BUILD_TYPE:STRING'], # FIXME: this is bad
             '-S',
             '%(prop:ctest_dashboard_script)s' % props_dict
             ]
     if not props.getProperty('vcvarsall'):
         return command
     command_prefix = ["call",
-            "%(prop:builddir)s/vclauncher.bat" % props_dict
-            ]
+        "%(prop:builddir)s/vclauncher.bat" % props_dict,
+    ]
     command_prefix.extend(command)
     return command_prefix
 
