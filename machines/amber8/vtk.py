@@ -6,7 +6,12 @@ __all__ = [
     'BUILDERS',
 ]
 
-defprops = {}
+defprops = {
+    'test_excludes:builderconfig': [
+        # TODO: Most of these are probably Mesa problems.
+        'TestPolygonSelection',
+    ],
+}
 env = {
     'DISPLAY': ':0.0',
 }

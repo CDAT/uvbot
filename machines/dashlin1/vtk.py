@@ -6,7 +6,37 @@ __all__ = [
     'BUILDERS',
 ]
 
-defprops = {}
+defprops = {
+    'test_excludes:builderconfig': [
+        # TODO: Most of these are probably Mesa problems.
+        'vtkDomainsChemistryCxx-TestMoleculeSelection',
+        'vtkFiltersGeneralCxx-BoxClipTetrahedra',
+        'vtkInteractionWidgetsCxx-TestLogoWidgetDepthPeeling',
+        'vtkRenderingOpenGLCxx-TestBlurAndSobelPasses',
+        'vtkRenderingCoreCxx-TestGlyph3DMapperPicking',
+        'vtkRenderingCoreCxx-TestOpacity',
+        'vtkRenderingCoreCxx-TestBlockOpacity',
+        'vtkRenderingCoreCxx-TestPointSelection',
+        'vtkRenderingCoreCxx-TestPolygonSelection',
+        'vtkRenderingOpenGLCxx-TestTextActor3DDepthPeeling',
+        'vtkRenderingCoreCxx-TestTranslucentLUTDepthPeeling',
+        'vtkRenderingCoreCxx-TestTranslucentLUTTextureDepthPeeling',
+        'vtkRenderingCoreCxx-TestTextureRGBADepthPeeling',
+        'vtkRenderingVolumeCxx-TestProjectedTetrahedra',
+        'vtkRenderingCoreCxx-TestTranslucentImageActorDepthPeeling',
+        'vtkRenderingVolumeCxx-TestProp3DFollower',
+        'vtkViewsInfovisCxx-TestRenderView',
+
+        'vtkChartsCorePython-TestParallelCoordinatesColors',
+        'vtkFiltersProgrammablePython-progGlyphsBySource',
+        'vtkRenderingCorePython-TestOpacity2',
+        'vtkRenderingCorePython-TestOpacityVectors',
+        'vtkRenderingCorePython-TestWindowToImageTransparency',
+        'vtkRenderingVolumePython-volTM3DCompressedCropRegions',
+        'vtkRenderingVolumePython-volTM3DCropRegions',
+        'vtkRenderingVolumePython-volTM3DRotateClip',
+    ],
+}
 env = {
     'DISPLAY': ':0',
 }

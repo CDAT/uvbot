@@ -6,7 +6,24 @@ __all__ = [
     'BUILDERS',
 ]
 
-defprops = {}
+defprops = {
+    'test_excludes:builderconfig': [
+        # TODO: Why are these disabled?
+        'TestTilingCxx',
+        'TestInteractorStyleTreeMapHover',
+        'TestStructuredGridLIC2DXSlice',
+        'TestStructuredGridLIC2DYSlice',
+        'TestStructuredGridLIC2DZSlice',
+        'TestShadowMapPass',
+        'ProjectedTetrahedraZoomIn',
+        'TestHAVSVolumeMapper',
+        'TestProjectedTetrahedra',
+        'RenderView',
+        'vtkRenderingVolumeCxx-TestGPURayCastFourComponentsMIP',
+        'vtkRenderingVolumeCxx-TestGPURayCastFourComponentsMinIP',
+        'vtkRenderingCoreCxx-TestEdgeFlags',
+    ],
+}
 env = {
     'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
 }
