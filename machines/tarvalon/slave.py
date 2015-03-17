@@ -9,7 +9,7 @@ __all__ = [
 SLAVE = BuildSlave('tarvalon', secrets.SECRETS['tarvalon']['password'],
     max_builds=1,
     properties={
-        'cmakeroot': 'C:/Program Files (x86)/CMake 2.8', # 2.8.7
+        'cmakeroot': 'C:/Users/dashboard/cmake-3.1.3', # 3.1.3
         'sharedresourcesroot': 'C:/Dashboards',
 
         'os': 'windows',
