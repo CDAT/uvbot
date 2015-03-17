@@ -16,7 +16,7 @@ SLAVE = BuildSlave('tarvalon', secrets.SECRETS['tarvalon']['password'],
         'distribution': 'windows-7-x86_64',
         'compiler': 'msvc-2010',
 
-        'generator': 'Visual Studio 2010',
+        'generator': 'Visual Studio 10 Win64',
         'buildflags': '',
 
         'configure_options:buildslave': {},
