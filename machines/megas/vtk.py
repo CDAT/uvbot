@@ -47,28 +47,3 @@ BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
     defconfig=defconfig,
     env=env
 )
-
-sanitizers = '-fsanitize=address,undefined'
-
-sanbuildsets = [
-    {
-        'os': 'linux',
-        'libtype': 'shared',
-        'buildtype': 'relwithdebinfo',
-        'features': base_features + (
-            'asan',
-            'ubsan',
-        ),
-    },
-]
-sanenv = projects.merge_config(env, {
-    'CFLAGS': sanitizers,
-    'CXXFLAGS': sanitizers,
-    'LDFLAGS': sanitizers,
-})
-
-BUILDERS += projects.make_builders(slave.SLAVE, vtk, sanbuildsets,
-    defprops=defprops,
-    defconfig=defconfig,
-    env=sanenv
-)
