@@ -7,7 +7,10 @@ __all__ = [
 ]
 
 defprops = {}
-env = {}
+env = {
+    'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib/libc++:${DYLD_LIBRARY_PATH}'
+    'PATH': '/Users/kitware/Dashboards/Support/openmpi/bin:${PATH}'
+}
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
@@ -18,6 +21,9 @@ defconfig = {
 
     'Module_vtkIOXdmf2:BOOL': 'ON',
     'VTK_BUILD_ALL_MODULES_FOR_TESTS:BOOL': 'ON',
+
+    'MPIEXEC:FILEPATH': '/Users/kitware/Dashboards/Support/openmpi/bin/orterun',
+    'QT_QMAKE_EXECUTABLE:PATH': '/Users/kitware/Dashboards/Support/Qt-4.8.0/bin/qmake',
 }
 
 buildsets = [
