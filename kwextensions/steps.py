@@ -12,7 +12,7 @@ from twisted.python import log as twisted_log
 from datetime import datetime, timedelta
 import cdash
 
-Gitlab_Base_URL = "https://kwgitlab.kitwarein.com"
+Gitlab_Base_URL = "https://gitlab.kitware.com"
 
 import re
 

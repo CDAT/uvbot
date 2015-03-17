@@ -32,7 +32,7 @@ Create a symlink to the `master.cfg` file from `/path/to/master`. A
 ```json
 {
     "buildbot_root": "/path/to/dashboardscriptbb/repo",
-    "gitlab_host": "kwgitlab.kitwarein.com",
+    "gitlab_host": "gitlab.kitware.com",
     "gitlab_api_token": "myapitoken",
     "web_status_url": "http://public_url:port",
     "web_status_port": 35215,
