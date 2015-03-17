@@ -16,6 +16,7 @@ env = {
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
+    'BUILD_TESTING:BOOL': 'ON',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'VTK_LEGACY_REMOVE:BOOL': 'ON',
     'VTK_ENABLE_CATALYST:BOOL': 'ON',

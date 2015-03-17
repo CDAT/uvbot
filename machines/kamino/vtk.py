@@ -11,6 +11,7 @@ env = {}
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'ON',
+    'BUILD_TESTING:BOOL': 'ON',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData',
     'VTK_USER_LARGE_DATA:BOOL': 'ON',
