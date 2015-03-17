@@ -7,7 +7,9 @@ __all__ = [
 ]
 
 defprops = {}
-env = {}
+env = {
+    'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
+}
 
 defconfig = {
     'BUILD_EXAMPLES:BOOL': 'OFF',
