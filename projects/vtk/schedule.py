@@ -21,6 +21,9 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             codebases=codebases,
+            properties={
+                "ctest_track" : "buildbot",
+                }
             ),
         AnyBranchScheduler(
             name='VTK Integration Branch Scheduler',
@@ -30,5 +33,9 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             codebases=codebases,
+            properties={
+                "ctest_empty_binary_directory" : True,
+                "ctest_track" : "master",
+                }
             ),
     ]

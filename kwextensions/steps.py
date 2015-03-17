@@ -304,6 +304,7 @@ def makeExtraOptionsString(props):
         'prop:ctest_empty_binary_directory': False,
         'prop:sourcedir' : "source",
         'prop:ctest_test_timeout' : 180, # 3 mins default timeout.
+        'prop:ctest_track' : "buildbot",
         }
     for (key, (value, source)) in props.asDict().iteritems():
         if isinstance(value, str):
@@ -324,6 +325,9 @@ def makeExtraOptionsString(props):
             # that makes it possible to link back to Cdash summary page easily.
             set (CTEST_BUILD_NAME "%(prop:ctest_build_name)s")
             set (CTEST_SITE "%(prop:slavename)s")
+
+            # the track to submit the dashboard to.
+            set (ctest_track "%(prop:ctest_track)s")
 
             set (CTEST_BUILD_FLAGS "%(prop:buildflags)s")
 

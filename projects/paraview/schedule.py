@@ -22,6 +22,9 @@ def make_schedulers(buildnames, secrets):
             builderNames=buildnames,
             reason="ParaView 'merge-request' created/changed.",
             codebases=codebases,
+            properties={
+                'ctest_track' : "buildbot-paraview",
+                },
             ),
         AnyBranchScheduler(
             name='ParaView Integration Branch Scheduler',
@@ -31,7 +34,10 @@ def make_schedulers(buildnames, secrets):
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaView 'master' changed.",
-            properties={ "ctest_empty_binary_directory" : True },
             codebases=codebases,
+            properties={
+                "ctest_empty_binary_directory" : True,
+                'ctest_track' : "master",
+                },
             ),
     ]

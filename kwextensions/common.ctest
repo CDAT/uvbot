@@ -2,6 +2,7 @@
 #                           ctest_configure_options, ctest_test_excludes,
 #                           ctest_test_include_labels,
 #                           ctest_model : dashboard model to use.
+#                           ctest_track : dashboard track
 #                           CTEST_COMMAND
 #                           CTEST_SOURCE_DIRECTORY
 #                           CTEST_BINARY_DIRECTORY
@@ -34,7 +35,7 @@ if (ctest_use_empty_binary_directory)
     file(MAKE_DIRECTORY ${CTEST_BINARY_DIRECTORY})
 endif()
 
-ctest_start(${ctest_model} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
+ctest_start(${ctest_model} TRACK ${ctest_track} ${CTEST_SOURCE_DIRECTORY} ${CTEST_BINARY_DIRECTORY})
 
 #==============================================================================
 # Configure
