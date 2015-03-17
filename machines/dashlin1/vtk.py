@@ -18,7 +18,7 @@ defprops = {
         'vtkRenderingCoreCxx-TestBlockOpacity',
         'vtkRenderingCoreCxx-TestPointSelection',
         'vtkRenderingCoreCxx-TestPolygonSelection',
-        'vtkRenderingOpenGLCxx-TestTextActor3DDepthPeeling',
+        'vtkRenderingFreeTypeCxx-TestTextActor3DDepthPeeling'
         'vtkRenderingCoreCxx-TestTranslucentLUTDepthPeeling',
         'vtkRenderingCoreCxx-TestTranslucentLUTTextureDepthPeeling',
         'vtkRenderingCoreCxx-TestTextureRGBADepthPeeling',
@@ -38,8 +38,7 @@ defprops = {
     ],
 }
 env = {
-    #'DISPLAY': ':0.0', # FIXME: This isn't starting?
-    'DISPLAY': ':1', # XXX: Ride along on CTK's VNC for now.
+    'DISPLAY': ':1',
 }
 
 defconfig = {
