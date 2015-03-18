@@ -10,7 +10,7 @@ defprops = {}
 
 defconfig = {
     # Examples end up with commands that are way too long.
-    #'BUILD_EXAMPLES:BOOL': 'ON',
+    'BUILD_EXAMPLES:BOOL': 'OFF',
     'BUILD_TESTING:BOOL': 'ON',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'VTK_LEGACY_REMOVE:BOOL': 'ON',
