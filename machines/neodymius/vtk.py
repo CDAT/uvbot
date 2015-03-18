@@ -62,6 +62,19 @@ glnewconfig = projects.merge_config(defconfig, {
     'Moddule_vtkRenderingVolumeOpenGLNew:BOOL': 'ON',
 })
 
+glnewbuildsets = [
+    {
+        'os': 'linux',
+        'libtype': 'shared',
+        'buildtype': 'release',
+        'features': (
+            'python',
+            'tcl',
+            'java',
+        ),
+    },
+]
+
 BUILDERS += projects.make_builders(slave.SLAVE, vtk, glnewbuildsets,
     defprops=glnewprops,
     defconfig=glnewconfig,
