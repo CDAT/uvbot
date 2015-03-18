@@ -229,27 +229,27 @@ class GitlabMergeRequestPoller(GitlabPoller):
         requests = self.api.getsortedmergerequests(pid, state='opened')
         for request in requests:
             mid = request['id']
-            if 'buildbot' in request['labels']:
-                branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
+            branch = self.api.getbranch(request['source_project_id'], request['source_branch'])
 
-                if not branch:
-                    # Branch is not accessible.
-                    continue
+            if not branch:
+                # Branch is not accessible.
+                continue
 
-                commit = branch['commit']
+            commit = branch['commit']
 
-                if self._check_merge_request(request, commit):
-                    # Check if the commit has changed since we last tested it.
-                    sha = commit['id']
-                    force = False # TODO
-                    if self.last_rev.get(unicode(mid)) != unicode(sha) or force:
-                        # TODO: cancel previous builds for this branch if they
-                        # exist.
-                        self.last_rev[unicode(mid)] = unicode(sha)
-                        self._accept_change(request, commit, project)
-                        yield self._add_change(project, request, commit)
-                else:
-                    self._reject_change(request)
+            command = self._check_merge_request(request, commit)
+            if command == 'test':
+                # Check if the commit has changed since we last tested it.
+                sha = commit['id']
+                force = False # TODO
+                if self.last_rev.get(unicode(mid)) != unicode(sha) or force:
+                    # TODO: cancel previous builds for this branch if they
+                    # exist.
+                    self.last_rev[unicode(mid)] = unicode(sha)
+                    self._accept_change(request, commit, project)
+                    yield self._add_change(project, request, commit)
+            else:
+                self._reject_change(request)
 
     def _strip_prefix(self, string, prefix):
         return string[len(prefix):]
@@ -258,10 +258,6 @@ class GitlabMergeRequestPoller(GitlabPoller):
     def _check_merge_request(self, request, commit):
         pid = request['target_project_id']
         access_cache = {}
-        access = self.api.getaccesslevel_cache(access_cache, pid, request['author']['id'])
-        if access >= DEVELOPER:
-            log.msg('accepting request %d because it is by a developer' % request['id'])
-            return True
 
         # Look at comments for buildbot commands.
         comments = self.api.getmergerequestwallnotes(pid, request['id'])
@@ -308,12 +304,12 @@ class GitlabMergeRequestPoller(GitlabPoller):
                         # basically "force build" this changeset.
                         log.msg('found a command to build request %d' % request['id'])
                         if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
-                            return True
+                            return 'test'
                     else:
                         # TODO: mention that the command is not recognized?
                         pass
 
-        return False
+        return None
 
     def _accept_change(self, request, commit, project):
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
