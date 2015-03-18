@@ -1,6 +1,10 @@
 from . import amber8
 from . import blight
 from . import dashlin1
+from . import debian4dash
+#from . import debian5dash
+#from . import debian6dash
+#from . import debian7dash
 from . import kamino
 from . import megas
 from . import nemesis
@@ -17,6 +21,10 @@ MACHINES = [
     amber8,
     blight,
     dashlin1,
+    debian4dash,
+    #debian5dash,
+    #debian6dash,
+    #debian7dash,
     kamino,
     megas,
     nemesis,
