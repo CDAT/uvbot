@@ -8,8 +8,8 @@ __all__ = [
 
 defprops = {
     'upload_file_patterns:builderconfig': [ '*.zip', '*.exe' ],
-    'generator' : 'Ninja',
-    'buildflags' : '-l1',
+    'generator': 'Ninja',
+    'buildflags': '-l1',
 }
 
 defconfig = {
@@ -55,34 +55,34 @@ defenv = {
 # VS9 (2008) 64-bit properties and environment.
 #------------------------------------------------------------------------------
 vs9x64props = {
-        'compiler': 'msvc-2008-64bit',
-        'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
-        'vcvarsargument' : 'amd64',
+    'compiler': 'msvc-2008-x64',
+    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+    'vcvarsargument': 'amd64',
 }
 
 vs9x64env = {
-        'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
+    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
 }
 
 vs9x64config = {
-    'QT_QMAKE_EXECUTABLE:FILEPATH' : 'C:/Tools/qt-4.8.4/vs2008-x64/bin/qmake.exe'
+    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x64/bin/qmake.exe'
 }
 
 #------------------------------------------------------------------------------
 # VS9 (2008) 32-bit properties and environment.
 #------------------------------------------------------------------------------
 vs9x32props = {
-        'compiler': 'msvc-2008-32bit',
-        'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
-        'vcvarsargument' : 'x86',
+    'compiler': 'msvc-2008-x86',
+    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+    'vcvarsargument': 'x86',
 }
 
 vs9x32env= {
-        'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
+    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
 }
 
 vs9x32config = {
-    'QT_QMAKE_EXECUTABLE:FILEPATH' : 'C:/Tools/qt-4.8.4/vs2008-x32/bin/qmake.exe'
+    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x32/bin/qmake.exe'
 }
 
 #------------------------------------------------------------------------------
