@@ -6,7 +6,12 @@ __all__ = [
     'BUILDERS',
 ]
 
-defprops = {}
+defprops = {
+    'test_excludes:builderconfig': [
+        # Old GPU drivers.
+        'vtkRenderingVolumePython-volTM2DRotateClip',
+    ],
+}
 env = {
     'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib/libc++:${DYLD_LIBRARY_PATH}',
     'PATH': '/Users/kitware/Dashboards/Support/openmpi/bin:${PATH}',
