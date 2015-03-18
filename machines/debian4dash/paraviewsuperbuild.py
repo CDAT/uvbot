@@ -14,6 +14,9 @@ defprops = {
 }
 
 defconfig = {
+    # SVN is too old.
+    'DIY_SKIP_SVN:BOOL': 'ON',
+
     'USE_NONFREE_COMPONENTS:BOOL': 'ON',
 
     'ENABLE_acusolve:BOOL': 'ON',
