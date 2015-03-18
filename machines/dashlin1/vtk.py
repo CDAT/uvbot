@@ -18,7 +18,7 @@ defprops = {
         'vtkRenderingCoreCxx-TestBlockOpacity',
         'vtkRenderingCoreCxx-TestPointSelection',
         'vtkRenderingCoreCxx-TestPolygonSelection',
-        'vtkRenderingFreeTypeCxx-TestTextActor3DDepthPeeling'
+        'vtkRenderingFreeTypeCxx-TestTextActor3DDepthPeeling',
         'vtkRenderingCoreCxx-TestTranslucentLUTDepthPeeling',
         'vtkRenderingCoreCxx-TestTranslucentLUTTextureDepthPeeling',
         'vtkRenderingCoreCxx-TestTextureRGBADepthPeeling',
