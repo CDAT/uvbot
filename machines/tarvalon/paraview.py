@@ -11,26 +11,45 @@ defprops = {
         'PARAVIEW',
     ],
     'test_excludes:builderconfig': [
-        'SurfaceLIC-ShuttleAll', # seems the streamlines aren't thick enough?
-        'NonlinearSubdivisionDisplay', # missing mesh edges?
+        # TODO: Why are these excluded?
+        'EyeDomeLighting',
+        'NewColorEditor1',
+        'pvcs-tile-display',
+        'CTHAMRMaterialInterfaceFilter',
+        'CreateDelete',
+        'pvcs.StructuredGridVolumeRendering',
+        'UncertaintyRendering',
+        'DisconnectAndSaveAnimation',
+        'NonlinearSubdivisionDisplay',
+        'StereoSplitViewportHorizontal',
     ],
+}
+defenv={
+    'PATH': 'C:/Python27x64;${PATH}',
 }
 
 defconfig = {
-    # Examples end up with commands that are way too long.
+    'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
+
+    'BUILD_TESTING:BOOL': 'OFF',
     'BUILD_EXAMPLES:BOOL': 'OFF',
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'VTK_LEGACY_REMOVE:BOOL': 'ON',
 
     'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
 
-    'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/paraview',
+    'VTK_DATA_STORE:PATH': 'C:/Dashboards/CDashHome/ExternalData/paraview',
+
+    'Boost_INCLUDE_DIR:PATH': 'C:/Support/boost_1_48_0',
+
+    'PARAVIEW_USE_VISITBRIDGE:BOOL': 'ON',
+    'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
 }
 
 base_features = (
     'gui',
-    'python',
     'mpi',
+    'vs',
 )
 buildsets = [
     {
@@ -50,29 +69,4 @@ buildsets = [
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig
-)
-
-kitbuildsets = [
-    {
-        'os': 'windows',
-        'libtype': 'shared',
-        'buildtype': 'release',
-        'features': base_features + (
-            'kits',
-        ),
-    },
-    {
-        'os': 'windows',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'features': base_features + (
-            'kits',
-        ),
-    },
-]
-
-BUILDERS += projects.make_builders(slave.SLAVE, paraview, kitbuildsets,
-    defprops=defprops,
-    defconfig=defconfig,
-    dirlen=8
 )

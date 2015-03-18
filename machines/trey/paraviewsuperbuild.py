@@ -14,8 +14,6 @@ defprops = {
 }
 
 defconfig = {
-    'BUILD_TESTING:BOOL': 'ON',
-
     'USE_NONFREE_COMPONENTS:BOOL': 'ON',
     'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
 
@@ -41,7 +39,7 @@ defconfig = {
 
 buildsets = [
     {
-        'os': 'linux',
+        'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
         'features': ('superbuild',),

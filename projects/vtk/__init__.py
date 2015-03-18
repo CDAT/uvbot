@@ -63,6 +63,8 @@ FEATURES = {
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     },
     'icc': {},
+    'clang': {},
+    'tbb': {},
     'vs': {},
     'asan': {},
     'ubsan': {},

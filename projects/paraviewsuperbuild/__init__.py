@@ -36,5 +36,7 @@ OPTIONORDER = ('os', 'libtype', 'buildtype')
 
 FEATURES = {
     'superbuild': {},
+    'osx10.5': {},
+    'osx10.7': {},
     '32bit': {},
 }

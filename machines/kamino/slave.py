@@ -14,7 +14,6 @@ SLAVE = BuildSlave('kamino', secrets.SECRETS['kamino']['password'],
 
         'os': 'osx',
         'distribution': 'osx-10.7-x86_64',
-        'compiler': 'clang-apple-3.1',
 
         'generator': 'Unix Makefiles',
         'buildflags': '-l5',

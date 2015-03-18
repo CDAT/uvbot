@@ -7,6 +7,7 @@ __all__ = [
 ]
 
 defprops = {
+    'compiler': 'icc-14.0.0',
     'test_excludes:builderconfig': [
         'ProbePicking', # pick fails
         'TestPythonView', # no matplotlib

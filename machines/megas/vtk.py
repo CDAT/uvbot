@@ -13,6 +13,12 @@ defprops = {
 
         'TestWindowToImageTransparency', # broken transparency on VNC(?)
         'rendererSource', # broken stencil buffer on VNC(?)
+
+        # FIXME: probably broken
+        'vtkInteractionWidgetsCxx-TestDijkstraImageGeodesicPath',
+        'vtkInteractionWidgetsCxx-TestImageActorContourWidget',
+        'vtkRenderingCoreCxx-TestTilingCxx',
+        'vtkRenderingOpenGLCxx-TestValuePainter',
     ],
     'referencedir': '/home/kitware/dashboards/buildbot-share/vtk',
 }

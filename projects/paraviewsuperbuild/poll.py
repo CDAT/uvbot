@@ -4,7 +4,7 @@ __all__ = [
     'CDASH_PROJECTNAME',
 ]
 
-REPO = 'ParaView/ParaViewSuperbuild'
+REPO = 'ParaView/ParaView-Superbuild'
 BRANCHES = [
     'master',
 ]
