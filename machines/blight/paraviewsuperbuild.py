@@ -12,6 +12,11 @@ defprops = {
         '*.tgz',
     ],
 }
+env = {
+    'DISPLAY': ':0',
+    # since we're using mesa, no need to do offscreen screenshots.
+    'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
+}
 
 defconfig = {
     'BUILD_TESTING:BOOL': 'ON',
@@ -50,5 +55,6 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=defprops,
-    defconfig=defconfig
+    defconfig=defconfig,
+    env=env
 )
