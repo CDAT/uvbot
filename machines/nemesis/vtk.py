@@ -6,10 +6,7 @@ __all__ = [
     'BUILDERS',
 ]
 
-defprops = {
-    'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/vcvarsall.bat',
-    'vcvarsargument': 'x64',
-}
+defprops = {}
 
 defconfig = {
     # Examples end up with commands that are way too long.
