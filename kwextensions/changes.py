@@ -166,6 +166,10 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
         self.last_rev = {}
         self.last_poll_time = None
 
+    def set_last_rev(self, lastRev):
+        """Called to set the lastRev state loaded when session is restarted."""
+        self.last_rev = lastRev
+
     def startService(self):
         self.api = Gitlab(self.host, token=self.token, verify_ssl=self.verify_ssl)
         buildbot_user = self.api.currentuser()
@@ -174,9 +178,10 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
         else:
             self.buildbot_id = buildbot_user['id']
             d = self.getState('lastRev', {})
-            def set_last_rev(last_rev):
-                self.last_rev = last_rev
-            d.addCallback(set_last_rev)
+            me = self
+            def _set_last_rev(last_rev):
+                me.set_last_rev(last_rev)
+            d.addCallback(_set_last_rev)
             d.addCallback(lambda _: base.PollingChangeSource.startService(self))
             d.addErrback(log.err, 'cannot initialize GitlabPoller')
             return d
@@ -224,6 +229,22 @@ class GitlabMergeRequestPoller(GitlabPoller):
             msg += ' (%s)' % ', '.join(self.projects)
         return msg
 
+    def set_last_rev(self, lastRev):
+        """Called to set the lastRev state loaded when session is restarted.
+        Overridden to support versions.
+        v1: { u'$MR-id' : u'$SHA', ... }
+        v2: { u'__version__': 2.0, u'$MR-id': {u'$cmd' : u'$SHA', ..}, ...}
+        """
+        version = float(lastRev.get(u'__version__', 1.0))
+        if version < 2.0:
+            # v1 only supported 'test' command. So converting to v2 is easy!
+            newLastRev = {}
+            for key, value in lastRev.iteritems():
+                newLastRev[key] = {u'test' : value}
+            lastRev = newLastRev
+        lastRev[u'__version__'] = 2.0
+        GitlabPoller.set_last_rev(self, lastRev)
+
     @defer.inlineCallbacks
     def poll(self):
         self.last_poll_time = datetime.now()
@@ -245,17 +266,28 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
             commit = branch['commit']
 
-            command = self._check_merge_request(request, commit)
-            if command == 'test':
-                # Check if the commit has changed since we last tested it.
+            command_set = self._check_merge_request(request, commit)
+            if command_set:
                 sha = commit['id']
-                force = False # TODO
-                if self.last_rev.get(unicode(mid)) != unicode(sha) or force:
-                    # TODO: cancel previous builds for this branch if they
-                    # exist.
-                    self.last_rev[unicode(mid)] = unicode(sha)
+                unicodesha = unicode(sha)
+
+                # we'll keep last revs for each command separately for each MR.
+                last_revs_for_mr = self.last_rev.get(unicode(mid), {})
+
+                # filter command set to only issue those that are new
+                # for the commit.
+                command_list = [cmd for cmd in command_set \
+                        if last_revs_for_mr.get(unicode(cmd)) != unicodesha ]
+
+                if command_list:
+                    # TODO: cancel previous builds for this branch if they exist.
+
+                    # update last_revs_for_mr for the commands being issued.
+                    for cmd in command_list:
+                        last_revs_for_mr[unicode(cmd)] = unicodesha
+                    self.last_rev[unicode(mid)] = last_revs_for_mr
                     self._accept_change(request, commit, project)
-                    yield self._add_change(project, request, commit)
+                    yield self._add_change(project, request, commit, command_list)
             else:
                 self._reject_change(request)
 
@@ -272,6 +304,9 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
         # Sort comments from newest to oldest.
         comments.sort(key=itemgetter('id'), reverse=True)
+
+        # authorized commands.
+        commands = set()
 
         for comment in comments:
             body = comment['body']
@@ -295,29 +330,28 @@ class GitlabMergeRequestPoller(GitlabPoller):
                     # Comment is a scheduled build; don't look before this
                     # comment.
                     break
+
                 # Skip comments by buildbot.
                 continue
 
+            commands_in_comment = set()
             content = body.splitlines()
             for line in content:
                 if line.startswith(self._BUILDBOT_PREFIX):
-                    # TODO: parse arguments from the command
-                    command = self._strip_prefix(line, self._BUILDBOT_PREFIX)
-                    command = command.strip()
+                    for acommand in line.split()[1:]:
+                        # XXX: Add buildbot commands here.
+                        if acommand in ['test', 'superbuild']:
+                            commands_in_comment.add(acommand)
+                        else:
+                            # TODO: mention that the command is not recognized?
+                            pass
 
-                    # XXX: Add buildbot commands here.
-                    if command == 'build' or \
-                       command == 'test':
-                        # TODO: need to remove previous build entries for this;
-                        # basically "force build" this changeset.
-                        log.msg('found a command to build request %d' % request['id'])
-                        if self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
-                            return 'test'
-                    else:
-                        # TODO: mention that the command is not recognized?
-                        pass
+            # add authorized commands to the 'commands' set.
+            if commands_in_comment and \
+                    self.api.getaccesslevel_cache(access_cache, pid, author['id']) >= DEVELOPER:
+                        commands.update(commands_in_comment)
 
-        return None
+        return commands
 
     def _accept_change(self, request, commit, project):
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
@@ -348,7 +382,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
         pass
 
     @defer.inlineCallbacks
-    def _add_change(self, project, request, commit):
+    def _add_change(self, project, request, commit, command_list):
         source_project_info = self.api.getproject(request['source_project_id'])
         target_project_info = self.api.getproject(request['target_project_id'])
 
@@ -377,6 +411,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
                 'cdash_url': self.cdash_host,
                 'cdash_projectnames': self.cdash_projectnames,
+                'buildbot_commands': command_list,
             })
 
 
