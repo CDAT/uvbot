@@ -35,6 +35,8 @@ defconfig = {
     'VTK_ENABLE_CATALYST:BOOL': 'ON',
 
     'PARAVIEW_DATA_STORE:PATH': '/home/kitware/dashboards/data/paraview',
+
+    'PARAVIEW_USE_VISITBRIDGE': 'ON',
 }
 
 base_features = (
