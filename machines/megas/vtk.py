@@ -35,9 +35,6 @@ defconfig = {
     'VTK_ENABLE_CATALYST:BOOL': 'ON',
 
     'VTK_DATA_STORE:PATH': '/home/kitware/dashboards/data/vtk',
-
-    # Breaks sanitizers with its segfault testing.
-    'VTK_USE_SYSTEM_HDF5:BOOL': 'ON',
 }
 
 base_features = (
