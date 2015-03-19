@@ -24,7 +24,7 @@ defprops = {
         'StereoSplitViewportHorizontal',
     ],
 }
-defenv={
+env = {
     'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
 }
 
@@ -68,5 +68,6 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
-    defconfig=defconfig
+    defconfig=defconfig,
+    env=env
 )
