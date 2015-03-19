@@ -24,8 +24,5 @@ SLAVE = BuildSlave('debian4dash', secrets.SECRETS['debian4dash']['password'],
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
             'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
         },
-    },
-    env={
-        'PATH': '/home/kitware/Dashboards/support/git/bin:${PATH}',
     }
 )

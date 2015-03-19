@@ -38,6 +38,9 @@ defconfig = {
 
     'download_location:PATH': '/home/kitware/Dashboards/downloads/paraview',
 }
+env = {
+    'PATH': '/home/kitware/Dashboards/support/git/bin:${PATH}',
+}
 
 buildsets = [
     {
@@ -50,5 +53,6 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=defprops,
-    defconfig=defconfig
+    defconfig=defconfig,
+    env=env
 )
