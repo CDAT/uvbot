@@ -149,3 +149,17 @@ def codebaseGenerator(chdict):
     # evidently codebase names must be alpha-numeric, so we just strip non-alpha
     # numeric characters from the project name.
     return get_codebase_name(str(chdict["project"]))
+
+def get_change_filter_fn_for_buildbot_commands(accepted_values=[]):
+    """Returns a function that can be used as a
+    buildbot.changes.filter.ChangeFilter's filter_fn to test if the
+    change has a `buildbot_commands` property with one of the
+    `accepted_values` in it."""
+    assert type(accepted_values) == list
+    accepted_values = set(accepted_values)
+    def filter_fn(change):
+        cur_value = change.properties.getProperty('buildbot_commands', [])
+        assert type(cur_value) == list
+        # if any command in accepted_values is in cur_value, we're golden!
+        return True if accepted_values.intersection(cur_value) else False
+    return filter_fn

@@ -18,7 +18,9 @@ def make_schedulers(buildnames, secrets):
             name='ParaView-Catalyst Merge Request Scheduler',
             change_filter=filter.ChangeFilter(
                 category='merge-request',
-                project=poll.REPO),
+                project=poll.REPO,
+                filter_fn=projects.get_change_filter_fn_for_buildbot_commands(accepted_values=['test'])
+            ),
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaView 'merge-request' created/changed.",
