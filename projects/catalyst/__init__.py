@@ -15,9 +15,17 @@ OPTIONS = {
         'linux': {},
         'osx': {},
     },
+    'buildtype': {
+        'release': {
+            'CMAKE_BUILD_TYPE:STRING': 'Release',
+        },
+        'debug': {
+            'CMAKE_BUILD_TYPE:STRING': 'Debug',
+        },
+    },
 }
 
-OPTIONORDER = ('os',)
+OPTIONORDER = ('os', 'buildtype',)
 
 FEATURES = {
     'catalyst': {},
