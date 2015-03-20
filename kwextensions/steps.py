@@ -410,11 +410,22 @@ class GetShortRevision(object):
 
 
 class SetCTestBuildNameProperty(SetProperty):
+    """BuildStep to add a ctest_build_name property to the build.
+    The rules used to name the build are as follows:
+
+    * The prefix is defined by:
+        - If there's 1 codebase (or no codebase) provided, then the prefix is
+          short-rev for the change.
+        - If more than one codebase is provided, then the prefix is a '-'
+          seperated short-revs for each codebase's change.
+    * The suffix is the source_branch property, if present.
+    GitlabMergeRequestPoller puts that property when a merge-request produces
+    the change object."""
     def __init__(self, codebases=[], property=None, value=None, **kwargs):
         if not property is None or not value is None:
             raise RuntimeError("Unexpected arguments!!!")
         self.codebases = codebases
         SetProperty.__init__(self,
                 property="ctest_build_name",
-                value=Interpolate("%(kw:shortrevision)s-build%(prop:buildnumber)s-%(prop:buildername)s",
+                value=Interpolate("%(kw:shortrevision)s-build%(prop:buildnumber)s-%(prop:buildername)s%(prop:source_branch:?|-%(prop:source_branch)s|)s",
                     shortrevision=GetShortRevision(self)))
