@@ -164,6 +164,7 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
         self.verify_ssl = verify_ssl
         self.api = None
         self.last_rev = {}
+        self.last_poll_time = None
 
     def startService(self):
         self.api = Gitlab(self.host, token=self.token, verify_ssl=self.verify_ssl)
@@ -193,6 +194,14 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
                 descs.append('Changed %(old_path)s' % file_desc)
         return descs
 
+    def describe(self):
+        msg = self.name
+        if not self.master:
+            msg += ' [**STOPPED** --- check logs]'
+        if self.last_poll_time is not None:
+            msg += ' [Last polled: %s]' % self.last_poll_time.strftime('%c')
+        return msg
+
 
 class GitlabMergeRequestPoller(GitlabPoller):
     # TODO: add options for required access level.
@@ -210,15 +219,14 @@ class GitlabMergeRequestPoller(GitlabPoller):
         self._BUILDBOT_PREFIX = '@buildbot '
 
     def describe(self):
-        msg = self.name
+        msg = GitlabPoller.describe(self)
         if self.projects:
             msg += ' (%s)' % ', '.join(self.projects)
-        if not self.master:
-            msg += ' [STOPPED --- check logs]'
         return msg
 
     @defer.inlineCallbacks
     def poll(self):
+        self.last_poll_time = datetime.now()
         for project in self.projects:
             pid = urllib.quote(project.lower(), '')
             yield self._poll_project(pid, project)
@@ -381,18 +389,17 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
         self.cdash_projectnames = cdash_projectnames
 
     def describe(self):
-        msg = self.name
+        msg = GitlabPoller.describe(self)
         if self.projects:
             items = []
             for project, branches in self.projects.items():
                 items.append('%s: %s' % (project, ', '.join(branches)))
             msg += ' (%s)' % '; '.join(items)
-        if not self.master:
-            msg += ' [STOPPED --- check logs]'
         return msg
 
     @defer.inlineCallbacks
     def poll(self):
+        self.last_poll_time = datetime.now()
         for project, branches in self.projects.items():
             pid = urllib.quote(project.lower(), '')
             yield self._poll_project(pid, project, branches)
