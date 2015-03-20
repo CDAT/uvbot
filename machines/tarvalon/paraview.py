@@ -36,9 +36,7 @@ defconfig = {
     'VTK_DEBUG_LEAKS:BOOL': 'ON',
     'VTK_LEGACY_REMOVE:BOOL': 'ON',
 
-    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
-
-    'VTK_DATA_STORE:PATH': 'C:/Dashboards/CDashHome/ExternalData/paraview',
+    'VTK_DATA_STORE:PATH': 'C:/Dashboards/CDashHome/ExternalData',
 
     'Boost_INCLUDE_DIR:PATH': 'C:/Support/boost_1_48_0',
 
