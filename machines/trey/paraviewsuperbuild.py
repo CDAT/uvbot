@@ -34,7 +34,7 @@ defconfig = {
     'ENABLE_visitbridge:BOOL': 'ON',
     'ENABLE_vistrails:BOOL': 'ON',
 
-    'download_location:PATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
+    'download_location:PATH': '/Users/kitware/dashboards/paraview-superbuild-downloads',
 }
 
 buildsets = [
