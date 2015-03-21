@@ -10,6 +10,11 @@ defprops = {
     'upload_file_patterns:builderconfig': [ '*.zip', '*.exe' ],
     'generator': 'Ninja',
     'buildflags': '-l1',
+    'test_excludes:builderconfig': [
+        # Since server is MPI enabled, it needs to be run with MPI.
+        # We'll fix that at some point.
+        'PrintVersionServer',
+    ],
 }
 
 defconfig = {

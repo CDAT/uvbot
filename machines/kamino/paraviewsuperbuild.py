@@ -11,6 +11,11 @@ defprops = {
         '*.tar.gz',
         '*.tgz',
     ],
+    'test_excludes:builderconfig': [
+        # QtTesting has some issue with playback/capture for this
+        # one on OsX. We'll fix it at some point
+        'TestPythonView',
+    ],
 }
 
 defconfig = {
