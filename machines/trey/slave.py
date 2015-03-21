@@ -16,7 +16,6 @@ SLAVE = BuildSlave('trey', secrets.SECRETS['trey']['password'],
         'distribution': 'osx-10.10-x86_64',
         'compiler': 'clang-apple-6.0',
 
-        'generator': 'Ninja',
         'buildflags': '-l5',
 
         'configure_options:buildslave': {
