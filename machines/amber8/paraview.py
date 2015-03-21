@@ -48,6 +48,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
+        'category': 'exotic',
         'features': (
             'python',
             'mpi',
@@ -65,6 +66,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'debug',
+        'category': 'exotic',
         'features': (
             'unified',
             'gui',
