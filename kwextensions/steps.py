@@ -328,7 +328,7 @@ def makeExtraOptionsString(props):
             set (CTEST_SITE "%(prop:slavename)s")
 
             # the track to submit the dashboard to.
-            set (ctest_track "%(prop:ctest_track)s")
+            set (ctest_track "%(prop:ctest_track)s%(prop:ctest_track_suffix)s")
 
             set (CTEST_BUILD_FLAGS "%(prop:buildflags)s")
 

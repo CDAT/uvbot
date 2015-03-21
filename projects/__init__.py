@@ -102,7 +102,13 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
         # category for the builder. If not, we simply use the project's name as
         # the category.
         try:
-            builder_category = "-".join([project.NAME, buildset['category']])
+            category = buildset['category']
+            builder_category = "-".join([project.NAME, category])
+
+            # add category to track name if its not the default.
+            default_category = project.OPTIONS.get('category').get('default')
+            if category != default_category:
+                props['ctest_track_suffix'] = "%s-%s" % (props.get('ctest_track_suffix',""), category)
         except KeyError:
             builder_category = project.NAME
 
