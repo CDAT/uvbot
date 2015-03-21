@@ -92,6 +92,7 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
             factory=factory.get_factory(buildset),
             properties=props,
             slavenames=[slave.slavename],
+            category=project.NAME,
             **kwargs
         ))
 
