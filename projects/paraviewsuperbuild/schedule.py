@@ -11,7 +11,6 @@ __all__ = [
     'make_schedulers',
 ]
 
-
 def make_schedulers(buildnames, secrets):
     # Setup defaults to use for all the codebases.
     # Note, this also acts as a change filter and hence must
@@ -24,7 +23,9 @@ def make_schedulers(buildnames, secrets):
             name='ParaViewSuperbuild Merge Request Scheduler',
             change_filter=filter.ChangeFilter(
                 category='merge-request',
-                project=poll.REPO),
+                project=poll.REPO,
+                filter_fn=projects.get_change_filter_fn_for_buildbot_commands(accepted_values=['test', 'superbuild'])
+            ),
             treeStableTimer=None,
             builderNames=buildnames,
             reason="ParaViewSuperbuild 'merge-request' created/changed.",
@@ -61,4 +62,20 @@ def make_schedulers(buildnames, secrets):
                 "ctest_track" : "master-packages",
             },
             codebases=codebases),
+        AnyBranchScheduler(
+            name='ParaViewSuperbuild ParaView Merge Request Scheduler',
+            change_filter=filter.ChangeFilter(
+                category='merge-request',
+                project=PARAVIEW_REPO,
+                # process those ParaView MRs that have the command=superbuild.
+                filter_fn=projects.get_change_filter_fn_for_buildbot_commands(accepted_values=['superbuild'])
+            ),
+            treeStableTimer=None,
+            builderNames=buildnames,
+            reason="ParaView 'merge-request' created/changed with 'superbuild' command",
+            codebases=codebases,
+            properties={
+                'ctest_track' : "buildbot-packages",
+            },
+        ),
     ]

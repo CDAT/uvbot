@@ -17,7 +17,9 @@ def make_schedulers(buildnames, secrets):
             name='VTK Merge Request Scheduler',
             change_filter=filter.ChangeFilter(
                 category='merge-request',
-                project=poll.REPO),
+                project=poll.REPO,
+                filter_fn=projects.get_change_filter_fn_for_buildbot_commands(accepted_values=['test'])
+            ),
             treeStableTimer=None,
             builderNames=buildnames,
             reason="VTK 'merge-request' created/changed.",
