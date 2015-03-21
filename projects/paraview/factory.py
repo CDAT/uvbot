@@ -33,7 +33,8 @@ def get_source_steps(sourcedir="source"):
         submodules=True,
         workdir=sourcedir,
         reference=Property("referencedir"),
-        haltOnFailure = False,
+        haltOnFailure=False,
+        flunkOnFailure=False,
         codebase=codebase,
         env={'GIT_SSL_NO_VERIFY': 'true'})
 
