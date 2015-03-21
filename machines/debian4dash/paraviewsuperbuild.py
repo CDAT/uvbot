@@ -40,6 +40,7 @@ defconfig = {
 }
 env = {
     'PATH': '/home/kitware/Dashboards/support/git/bin:${PATH}',
+    'DISPLAY': ':0',
 }
 
 buildsets = [
