@@ -34,6 +34,12 @@ OPTIONS = {
             'CMAKE_BUILD_TYPE:STRING': 'RelWithDebInfo',
         },
     },
+    'category': {
+        'expected': {},
+        'exotic': {},
+        'experimental': {},
+        'default' : 'expected',
+    },
 }
 OPTIONORDER = ('os', 'libtype', 'buildtype',)
 

@@ -55,6 +55,7 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': ('superbuild',),
     },
 ]

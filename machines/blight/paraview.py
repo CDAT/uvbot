@@ -108,6 +108,7 @@ qt5buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'exotic',
         'features': (
             'gui',
             'qt5',
