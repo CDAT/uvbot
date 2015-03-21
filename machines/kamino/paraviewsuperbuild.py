@@ -6,6 +6,8 @@ __all__ = [
     'BUILDERS',
 ]
 
+BUILDERS = []
+
 defprops = {
     'upload_file_patterns:builderconfig': [
         '*.tar.gz',
@@ -72,10 +74,12 @@ osx105buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, osx105buildsets,
-    defprops=defprops,
-    defconfig=osx105config
-)
+# temporarily disabling 10.5 superbuilds. Kamino is too busy. We can only afford
+# 1 superbuild at this moment.
+#BUILDERS += projects.make_builders(slave.SLAVE, paraviewsuperbuild, osx105buildsets,
+#    defprops=defprops,
+#    defconfig=osx105config
+#)
 
 osx107config = projects.merge_config(defconfig, {
     # Essential variables to ensure that the package can be used on Leopard.
