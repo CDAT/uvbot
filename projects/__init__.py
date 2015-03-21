@@ -1,7 +1,6 @@
 from importlib import import_module
 import copy
 import hashlib
-import itertools
 
 from buildbot.config import BuilderConfig
 
@@ -25,12 +24,24 @@ PROJECTS = [
 ]
 
 
-def build_config(project, defconfig={}, features=(), *args, **kwargs):
+def build_config(project, defconfig={}, features=(), **kwargs):
     avail_options = set(project.OPTIONS.keys())
     avail_features = set(project.FEATURES.keys())
 
-    options = set(kwargs.keys())
-    missing_options = avail_options.difference(options)
+    buildset = kwargs.copy()
+
+    options = set(buildset.keys())
+    missing_options = []
+
+    # update buildset and options with missing options that have 'default'
+    # with specified default value.
+    for mo in avail_options.difference(options):
+        try:
+            buildset[mo] = project.OPTIONS.get(mo)['default']
+            options.add(mo)
+        except KeyError:
+            missing_options.append(mo)
+
     if missing_options:
         raise RuntimeError('unknown missing options: %s' % ', '.join(missing_options))
 
@@ -46,14 +57,14 @@ def build_config(project, defconfig={}, features=(), *args, **kwargs):
     config = defconfig.copy()
 
     for optname, optvalues in project.OPTIONS.items():
-        if kwargs[optname] not in optvalues:
-            raise RuntimeError('unknown value for option %s: %s' % (optname, kwargs[optname]))
+        if buildset[optname] not in optvalues:
+            raise RuntimeError('unknown value for option %s: %s' % (optname, buildset[optname]))
 
-        config.update(optvalues[kwargs[optname]])
+        config.update(optvalues[buildset[optname]])
 
     nameparts = []
     for option in project.OPTIONORDER:
-        nameparts.append(kwargs[option])
+        nameparts.append(buildset[option])
     name = '-'.join(nameparts)
 
     for feature in sorted(avail_features):
@@ -64,14 +75,14 @@ def build_config(project, defconfig={}, features=(), *args, **kwargs):
         for k, v in project.FEATURES[feature].items():
             config[k] = v[use_feature]
 
-    return (name, config)
+    return (name, config, buildset)
 
 
 def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, dirlen=0, **kwargs):
     configs = {}
     for buildset in buildsets:
-        name, conf = build_config(project, defconfig=defconfig, **buildset)
-        configs[name] = conf
+        name, conf, buildset = build_config(project, defconfig=defconfig, **buildset)
+        configs[name] = (conf, buildset)
 
     if not myfactory is None:
         raise RuntimeError("'myfactory' is no longer supported!")
@@ -80,19 +91,27 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
     factory = import_module("%s.factory" % project.__name__)
 
     builders = []
-    for (name, config), buildset in itertools.izip(configs.items(), buildsets):
+    for name, (config, buildset) in configs.items():
         props = defprops.copy()
         props['configure_options:builderconfig'] = config
 
         if dirlen:
             kwargs['slavebuilddir'] = hashlib.md5(name).hexdigest()[:dirlen]
 
+        # if buildset has a option named category, use that to generate a
+        # category for the builder. If not, we simply use the project's name as
+        # the category.
+        try:
+            builder_category = "-".join([project.NAME, buildset['category']])
+        except KeyError:
+            builder_category = project.NAME
+
         builders.append(BuilderConfig(
             name='%s-%s-%s' % (project.NAME, slave.slavename, name),
             factory=factory.get_factory(buildset),
             properties=props,
             slavenames=[slave.slavename],
-            category=project.NAME,
+            category=builder_category,
             **kwargs
         ))
 

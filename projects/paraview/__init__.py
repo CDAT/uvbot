@@ -32,6 +32,12 @@ OPTIONS = {
             'PARAVIEW_COLLABORATION_TESTING:BOOL': 'OFF',
         },
     },
+    'category': {
+        'expected': {},
+        'exotic': {},
+        'experimental': {},
+        'default' : 'expected',
+    },
 }
 OPTIONORDER = ('os', 'libtype', 'buildtype')
 

@@ -23,6 +23,12 @@ OPTIONS = {
             'CMAKE_BUILD_TYPE:STRING': 'Debug',
         },
     },
+    'category': {
+        'expected': {},
+        'exotic': {},
+        'experimental': {},
+        'default' : 'expected',
+    },
 }
 
 OPTIONORDER = ('os', 'buildtype',)
