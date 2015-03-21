@@ -48,7 +48,7 @@ def make_pollers(secrets):
             cdash_host=secrets['cdash_url'],
             cdash_projectnames=CDASH_PROJECTNAMES,
             verify_ssl=False,
-            pollInterval=5*60, # in seconds
+            pollInterval=10*60, # in seconds
             pollAtLaunch=False),
 
         # Poll for changes to the integration branches.
@@ -59,7 +59,7 @@ def make_pollers(secrets):
             cdash_host=secrets['cdash_url'],
             cdash_projectnames=CDASH_PROJECTNAMES,
             verify_ssl=False,
-            pollInterval=5*60, # in seconds
+            pollInterval=10*60, # in seconds
             pollAtLaunch=False),
     ]
 
