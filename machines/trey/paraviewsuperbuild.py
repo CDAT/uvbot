@@ -7,6 +7,9 @@ __all__ = [
 ]
 
 defprops = {
+    #  superbuilds only support make files currently.
+    'generator': 'Unix Makefiles',
+
     'upload_file_patterns:builderconfig': [
         '*.tar.gz',
         '*.tgz',
