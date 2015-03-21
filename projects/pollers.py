@@ -48,8 +48,8 @@ def make_pollers(secrets):
             cdash_host=secrets['cdash_url'],
             cdash_projectnames=CDASH_PROJECTNAMES,
             verify_ssl=False,
-            pollInterval=10*60, # in seconds
-            pollAtLaunch=True),
+            pollInterval=5*60, # in seconds
+            pollAtLaunch=False),
 
         # Poll for changes to the integration branches.
         GitlabIntegrationBranchPoller(
@@ -59,8 +59,8 @@ def make_pollers(secrets):
             cdash_host=secrets['cdash_url'],
             cdash_projectnames=CDASH_PROJECTNAMES,
             verify_ssl=False,
-            pollInterval=10*60, # in seconds
-            pollAtLaunch=True),
+            pollInterval=5*60, # in seconds
+            pollAtLaunch=False),
     ]
 
     return pollers
