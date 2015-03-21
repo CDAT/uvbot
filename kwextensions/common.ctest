@@ -107,7 +107,7 @@ endif ()
 #==============================================================================
 # Upload files.
 #==============================================================================
-if (success AND ctest_upload_file_patterns AND
+if (ctest_upload_file_patterns AND
     (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";upload;"))
     set(files)
     foreach (pattern IN LISTS ctest_upload_file_patterns)
