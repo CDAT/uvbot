@@ -23,7 +23,7 @@ def makeCTestDashboardCommand(props):
     for (key, (value, source)) in props.asDict().iteritems():
         props_dict["prop:%s" % key] = value
     command = ['%(prop:cmakeroot)s/bin/ctest' % props_dict,
-            '-VV',
+            '-V',
             '-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake' % props_dict,
             '-Dctest_stages:STRING=%(prop:ctest_stages)s' % props_dict,
             '-C', props.getProperty('configure_options:builderconfig')['CMAKE_BUILD_TYPE:STRING'], # FIXME: this is bad
