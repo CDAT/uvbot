@@ -17,7 +17,7 @@ SLAVE = BuildSlave('blight', secrets.SECRETS['blight']['password'],
         'compiler': 'gcc-4.6.3',
 
         'generator': 'Unix Makefiles',
-        'buildflags': '-j9',
+        'buildflags': '-l9',
 
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
