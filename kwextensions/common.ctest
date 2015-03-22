@@ -15,27 +15,14 @@
 #
 # ctest_stages: all, configure, build, test
 
-#------------------------------------------------------------------
-# Sets the CTEST_USE_LAUNCHERS variable appropriately.
-# This logic simply brought over from paraview_common.ctest.
-# Choose CTest reporting mode.
-if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "Make")
-  # Launchers work only with Makefile generators.
-  set(CTEST_USE_LAUNCHERS 0)
-elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
-  # The setting is ignored by CTest < 2.8 so we need no version test.
-  set(CTEST_USE_LAUNCHERS 1)
-endif()
-
-# Configure testing.
-if(NOT DEFINED CTEST_TEST_CTEST)
-  set(CTEST_TEST_CTEST 1)
-endif()
-#------------------------------------------------------------------
-
 if (ctest_extra_options_file)
     include("${ctest_extra_options_file}")
 endif()
+
+# This sets the CTEST_USE_LAUNCHERS variable appropriately.
+# Requires that CTEST_CMAKE_GENERATOR is set properly.
+include(CTestUseLaunchers)
+
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
