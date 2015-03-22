@@ -43,6 +43,16 @@ ctest_start(${ctest_model} TRACK ${ctest_track})
 #==============================================================================
 set(success TRUE)
 if (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";configure;")
+
+    if(CTEST_CMAKE_GENERATOR MATCHES "Make")
+      # When using Make generator, we don't want the default CTest behaviour to
+      # use "-i" build flag. Hence we do this: find 'make', and if found use
+      # that explicitly.
+      find_program(MAKECOMMAND make)
+      if(MAKECOMMAND)
+        set (ctest_configure_options "-DMAKECOMMAND:STRING=${MAKECOMMAND} ${CTEST_BUILD_FLAGS};${ctest_configure_options}")
+      endif()
+    endif()
     ctest_configure(
         OPTIONS         "--no-warn-unused-cli;-DCTEST_USE_LAUNCHERS:BOOL=${CTEST_USE_LAUNCHERS};${ctest_configure_options}"
         RETURN_VALUE    configure_result)
