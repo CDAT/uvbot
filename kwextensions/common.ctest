@@ -15,8 +15,9 @@
 #
 # ctest_stages: all, configure, build, test
 
-# I still have no clue what this is.
-set(CTEST_USE_LAUNCHERS 1)
+# This sets the CTEST_USE_LAUNCHERS variable appropriately.
+# Requires that CTEST_CMAKE_GENERATOR is set properly.
+include(CTestUseLaunchers)
 
 if (ctest_extra_options_file)
     include("${ctest_extra_options_file}")
@@ -43,7 +44,7 @@ ctest_start(${ctest_model} TRACK ${ctest_track})
 set(success TRUE)
 if (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";configure;")
     ctest_configure(
-        OPTIONS         "--no-warn-unused-cli;${ctest_configure_options}"
+        OPTIONS         "--no-warn-unused-cli;-DCTEST_USE_LAUNCHERS:BOOL=${CTEST_USE_LAUNCHERS};${ctest_configure_options}"
         RETURN_VALUE    configure_result)
 
     #if (EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
@@ -65,7 +66,7 @@ endif ()
 #==============================================================================
 # Read ctest custom files from the project.
 ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
-
+set (build_number_errors 0)
 if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";build;"))
     ctest_build(
         RETURN_VALUE    build_result
@@ -108,7 +109,8 @@ endif ()
 # Upload files.
 #==============================================================================
 if (ctest_upload_file_patterns AND
-    (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";upload;"))
+    (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";upload;") AND
+    (NOT build_number_errors))
     set(files)
     foreach (pattern IN LISTS ctest_upload_file_patterns)
         set(cur_files)
