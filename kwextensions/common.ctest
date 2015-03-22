@@ -19,10 +19,12 @@ if (ctest_extra_options_file)
     include("${ctest_extra_options_file}")
 endif()
 
-# This sets the CTEST_USE_LAUNCHERS variable appropriately.
+set (CTEST_USE_LAUNCHERS 1)
+# This sets the CTEST_USE_LAUNCHERS variable appropriately i.e. set it to 0
+# if not supported.
 # Requires that CTEST_CMAKE_GENERATOR is set properly.
 include(CTestUseLaunchers)
-
+message("CTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}")
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
