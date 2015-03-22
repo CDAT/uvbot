@@ -22,7 +22,8 @@ endif()
 set (CTEST_USE_LAUNCHERS 1)
 # This sets the CTEST_USE_LAUNCHERS variable appropriately i.e. set it to 0
 # if not supported.
-# Requires that CTEST_CMAKE_GENERATOR is set properly.
+# Requires that CMAKE_GENERATOR is set properly, so we set it.
+set (CMAKE_GENERATOR ${CTEST_CMAKE_GENERATOR})
 include(CTestUseLaunchers)
 message("CTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}")
 
