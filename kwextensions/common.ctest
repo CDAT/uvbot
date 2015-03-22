@@ -15,13 +15,14 @@
 #
 # ctest_stages: all, configure, build, test
 
+if (ctest_extra_options_file)
+    include("${ctest_extra_options_file}")
+endif()
+
 # This sets the CTEST_USE_LAUNCHERS variable appropriately.
 # Requires that CTEST_CMAKE_GENERATOR is set properly.
 include(CTestUseLaunchers)
 
-if (ctest_extra_options_file)
-    include("${ctest_extra_options_file}")
-endif()
 
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
