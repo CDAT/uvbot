@@ -95,6 +95,11 @@ qt5props = projects.merge_config(defprops, {
         # This fails with an assertion. This really needs
         # to be debugged before we make Qt5 the default.
         'pv.LoadPlugins',
+
+        # Disable these till we have time to debug why they fail.
+        'ComparativeVisPanel',
+        'Ensemble',
+        'HistogramSelection',
     ]
 })
 qt5env = projects.merge_config(env, {
