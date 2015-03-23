@@ -1,5 +1,6 @@
 # VTK
 import vtk.schedule
+import vtksuperbuild.schedule
 
 # ParaView
 import paraview.schedule
@@ -15,6 +16,7 @@ __all__ = [
 SCHEDULES = {
     # VTK
     'VTK' : vtk.schedule,
+    'VTKSuperbuild' : vtksuperbuild.schedule,
 
     # ParaView
     'ParaView': paraview.schedule,
