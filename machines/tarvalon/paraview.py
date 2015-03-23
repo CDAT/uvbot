@@ -67,5 +67,6 @@ buildsets = [
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
+    dirlen=8,
     env=env
 )
