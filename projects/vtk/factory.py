@@ -25,6 +25,7 @@ def get_source_steps(sourcedir="source"):
     codebase = projects.get_codebase_name(poll.REPO)
     update = Git(repourl=Interpolate("%(src:"+codebase+":repository)s"),
         mode='incremental',
+        method='clean',
         submodules=False,
         workdir=sourcedir,
         reference=Property("referencedir"),
