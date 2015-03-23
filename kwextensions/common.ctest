@@ -25,6 +25,13 @@ set (CTEST_USE_LAUNCHERS 1)
 # Requires that CMAKE_GENERATOR is set properly, so we set it.
 set (CMAKE_GENERATOR ${CTEST_CMAKE_GENERATOR})
 include(CTestUseLaunchers)
+
+if(WIN32 AND (CMAKE_VERSION VERSION_LESS "3.2"))
+    # On Windows, CMAKE_VERSION < 3.2 has a bug causing
+    # generated file issues (see CMake rev:29b0c8c3)
+    set (CTEST_USE_LAUNCHERS 0)
+    message("Disabling launchers on Windows since CMake version is < 3.2")
+endif()
 message("CTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}")
 
 # Avoid non-ascii characters in tool output.
