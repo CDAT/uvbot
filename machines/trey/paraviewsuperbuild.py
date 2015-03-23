@@ -11,6 +11,7 @@ defprops = {
     'generator': 'Unix Makefiles',
 
     'upload_file_patterns:builderconfig': [
+        '*.dmg',
         '*.tar.gz',
         '*.tgz',
     ],

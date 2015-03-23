@@ -10,6 +10,7 @@ BUILDERS = []
 
 defprops = {
     'upload_file_patterns:builderconfig': [
+        '*.dmg',
         '*.tar.gz',
         '*.tgz',
     ],
