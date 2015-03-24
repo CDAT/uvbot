@@ -26,7 +26,7 @@ message("${userFork}")
 
 execute_process(COMMAND "${GIT_COMMAND}" "remote" "add" "fetch_submodule_tmp" "${userFork}")
 
-execute_process(COMMAND "${GIT_COMMAND}" "fetch" "tmp"
+execute_process(COMMAND "${GIT_COMMAND}" "fetch" "fetch_submodule_tmp"
                 RESULT_VARIABLE fetchResult)
 
 if(fetchResult)
