@@ -14,17 +14,17 @@ defprops = {
         'SurfaceLIC-ShuttleAll', # seems the streamlines aren't thick enough?
         'NonlinearSubdivisionDisplay', # missing mesh edges?
     ],
-}
 
-defconfig = {
-    # Examples end up with commands that are way too long.
-    'BUILD_EXAMPLES:BOOL': 'OFF',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'VTK_LEGACY_REMOVE:BOOL': 'ON',
+    'configure_options:builderconfig': {
+        # Examples end up with commands that are way too long.
+        'BUILD_EXAMPLES:BOOL': 'OFF',
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+        'VTK_LEGACY_REMOVE:BOOL': 'ON',
 
-    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
+        'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
 
-    'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/paraview',
+        'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/paraview',
+    },
 }
 
 base_features = (
@@ -47,10 +47,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
-    defprops=defprops,
-    defconfig=defconfig
-)
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)
 
 kitbuildsets = [
     {
@@ -71,8 +68,5 @@ kitbuildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraview, kitbuildsets,
-    defprops=defprops,
-    defconfig=defconfig,
-    dirlen=8
-)
+BUILDERS += projects.make_builders(slave.SLAVE, paraview, kitbuildsets, defprops,
+    dirlen=8)

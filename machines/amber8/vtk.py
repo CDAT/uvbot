@@ -12,20 +12,20 @@ defprops = {
         'TestPolygonSelection',
     ],
 
+    'configure_options:builderconfig': {
+        'BUILD_EXAMPLES:BOOL': 'ON',
+        'BUILD_TESTING:BOOL': 'ON',
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+        'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData',
+        'VTK_USER_LARGE_DATA:BOOL': 'ON',
+
+        'Module_vtkIOXdmf2:BOOL': 'ON',
+        'VTK_BUILD_ALL_MODULES_FOR_TESTS:BOOL': 'ON',
+    },
+
     'slaveenv': {
         'DISPLAY': ':0.0',
     },
-}
-
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'BUILD_TESTING:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData',
-    'VTK_USER_LARGE_DATA:BOOL': 'ON',
-
-    'Module_vtkIOXdmf2:BOOL': 'ON',
-    'VTK_BUILD_ALL_MODULES_FOR_TESTS:BOOL': 'ON',
 }
 
 buildsets = [
@@ -41,7 +41,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
-    defprops=defprops,
-    defconfig=defconfig
-)
+BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets, defprops)

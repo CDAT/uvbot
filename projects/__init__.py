@@ -94,10 +94,10 @@ def _merge_options(props, key, default):
     return merged
 
 
-def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, dirlen=0, **kwargs):
+def make_builders(slave, project, buildsets, defprops, myfactory=None, dirlen=0, **kwargs):
     configs = {}
     for buildset in buildsets:
-        name, conf, buildset = build_config(project, defconfig=defconfig, **buildset)
+        name, conf, buildset = build_config(project, props.get('configure_options:builderconfig', {}), **buildset)
         configs[name] = (conf, buildset)
 
     if not myfactory is None:
@@ -116,7 +116,6 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
     builders = []
     for name, (config, buildset) in configs.items():
         props = defprops.copy()
-        props['configure_options:builderconfig'] = config
 
         for key, default in composite_keys:
             props = _merge_options(props, key, default)

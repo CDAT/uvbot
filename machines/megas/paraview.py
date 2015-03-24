@@ -21,23 +21,24 @@ defprops = {
         'EyeDomeLighting', # unsupported texture format
         'SelectionLabels', # http://www.paraview.org/Bug/view.php?id=15294
     ],
+
+    'configure_options:builderconfig': {
+        'BUILD_EXAMPLES:BOOL': 'ON',
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+        'VTK_LEGACY_REMOVE:BOOL': 'ON',
+        'VTK_ENABLE_CATALYST:BOOL': 'ON',
+
+        'PARAVIEW_DATA_STORE:PATH': '/home/kitware/dashboards/data/paraview',
+
+        'PARAVIEW_USE_VISITBRIDGE': 'ON',
+    },
+
     'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
 
     'slaveenv': {
         'DISPLAY': ':1',
         'PATH': '/usr/lib64/mpich/bin:${PATH}',
     },
-}
-
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'VTK_LEGACY_REMOVE:BOOL': 'ON',
-    'VTK_ENABLE_CATALYST:BOOL': 'ON',
-
-    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/dashboards/data/paraview',
-
-    'PARAVIEW_USE_VISITBRIDGE': 'ON',
 }
 
 base_features = (
@@ -61,7 +62,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
-    defprops=defprops,
-    defconfig=defconfig
-)
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)

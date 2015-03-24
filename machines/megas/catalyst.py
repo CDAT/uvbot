@@ -15,8 +15,6 @@ defprops = {
     },
 }
 
-defconfig = {}
-
 buildsets = [
     {
         'os': 'linux',
@@ -25,7 +23,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, catalyst, buildsets,
-    defprops=defprops,
-    defconfig=defconfig
-)
+BUILDERS = projects.make_builders(slave.SLAVE, catalyst, buildsets, defprops)

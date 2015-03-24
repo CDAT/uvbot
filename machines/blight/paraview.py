@@ -28,29 +28,29 @@ defprops = {
         'pvweb-chrome.TestApp-all',
     ],
 
+    'configure_options:builderconfig': {
+        'BUILD_EXAMPLES:BOOL': 'ON',
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+        'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
+        'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
+
+        'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',
+        'MANTA_BUILD:PATH': '/opt/source/manta-build',
+
+        'smooth_flash:FILEPATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
+
+        'PARAVIEW_ENABLE_COSMOTOOLS:BOOL': 'ON',
+        'GENERIC_IO_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/genericio',
+        'GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
+        'COSMOTOOLS_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
+        'COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
+    },
+
     'slaveenv': {
         'DISPLAY': ':0',
         # since we're using mesa, no need to do offscreen screenshots.
         'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
     }
-}
-
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
-
-    'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',
-    'MANTA_BUILD:PATH': '/opt/source/manta-build',
-
-    'smooth_flash:FILEPATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
-
-    'PARAVIEW_ENABLE_COSMOTOOLS:BOOL': 'ON',
-    'GENERIC_IO_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/genericio',
-    'GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
-    'COSMOTOOLS_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
-    'COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
 }
 
 buildsets = [
@@ -85,10 +85,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
-    defprops=defprops,
-    defconfig=defconfig
-)
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)
 
 qt5props = projects.merge_config(defprops, {
     'test_excludes:builderconfig': [
@@ -122,7 +119,4 @@ qt5buildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraview, qt5buildsets,
-    defprops=qt5props,
-    defconfig=defconfig
-)
+BUILDERS += projects.make_builders(slave.SLAVE, paraview, qt5buildsets, qt5props)

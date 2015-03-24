@@ -20,16 +20,16 @@ defprops = {
         'pvcs.LoadState',
     ],
 
+    'configure_options:builderconfig': {
+        'BUILD_EXAMPLES:BOOL': 'ON',
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+
+        'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData',
+    },
+
     'slaveenv': {
         'DISPLAY': ':0',
     },
-}
-
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-
-    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData',
 }
 
 buildsets = [
@@ -47,7 +47,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
-    defprops=defprops,
-    defconfig=defconfig
-)
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)
