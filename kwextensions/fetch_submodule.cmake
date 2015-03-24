@@ -24,7 +24,7 @@ set(userFork "${url_prefix}/${username}/${repoName}")
 
 message("${userFork}")
 
-execute_process(COMMAND "${GIT_COMMAND}" "remote" "add" "tmp" "${userFork}")
+execute_process(COMMAND "${GIT_COMMAND}" "remote" "add" "fetch_submodule_tmp" "${userFork}")
 
 execute_process(COMMAND "${GIT_COMMAND}" "fetch" "tmp"
                 RESULT_VARIABLE fetchResult)
@@ -33,4 +33,4 @@ if(fetchResult)
     message("Fetch failed, continuing...")
 endif()
 
-execute_process(COMMAND "${GIT_COMMAND}" "remote" "remove" "tmp")
+execute_process(COMMAND "${GIT_COMMAND}" "remote" "rm" "fetch_submodule_tmp")
