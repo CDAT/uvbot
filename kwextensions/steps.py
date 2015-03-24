@@ -59,7 +59,7 @@ def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
     lastStep = step.build.getStatus().getSteps()[0]
     output = lastStep.getLogs()[0].getText()
-    return lastStep.build.result == FAILURE and output.find('in submodule path') != -1
+    return output.find('Unable to checkout') != -1 and output.find('in submodule path') != -1
 
 def makeUploadFetchSubmoduleScript(**kwargs):
     import os
