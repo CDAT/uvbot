@@ -19,6 +19,7 @@ if (ctest_extra_options_file)
     include("${ctest_extra_options_file}")
 endif()
 
+# NOTE: Also see catalyst.common.ctest
 set (CTEST_USE_LAUNCHERS 1)
 # This sets the CTEST_USE_LAUNCHERS variable appropriately i.e. set it to 0
 # if not supported.

@@ -6,9 +6,25 @@ cmake_minimum_required(VERSION 2.8)
 # Avoid non-ascii characters in tool output.
 set(ENV{LC_ALL} C)
 
-set(CTEST_USE_LAUNCHERS 1)
-
 include("${ctest_extra_options_file}")
+
+#------------------------------------------------------------------------
+# NOTE: Also see common.ctest
+set (CTEST_USE_LAUNCHERS 1)
+# This sets the CTEST_USE_LAUNCHERS variable appropriately i.e. set it to 0
+# if not supported.
+# Requires that CMAKE_GENERATOR is set properly, so we set it.
+set (CMAKE_GENERATOR ${CTEST_CMAKE_GENERATOR})
+include(CTestUseLaunchers)
+
+if(WIN32 AND (CMAKE_VERSION VERSION_LESS "3.2"))
+    # On Windows, CMAKE_VERSION < 3.2 has a bug causing
+    # generated file issues (see CMake rev:29b0c8c3)
+    set (CTEST_USE_LAUNCHERS 0)
+    message("Disabling launchers on Windows since CMake version is < 3.2")
+endif()
+message("CTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}")
+#------------------------------------------------------------------------
 
 # Find Python
 find_package(PythonInterp 2 REQUIRED)
@@ -83,7 +99,15 @@ function(do_catalyst_dashboard)
     endif ()
 
     # don't run cmake to configure directly. Instead, we use cmake.sh.
-    set (CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/cmake.sh ${CTEST_SOURCE_DIRECTORY}")
+    # Once CTEST_CONFIGURE_COMMAND is set, the default OPTIONS don't get passed
+    # in ctest_configure(), hence we need to pass them here to the
+    # configure-command itself.
+    # XXX: We need to clean this. Right now, I am just duplicating code between
+    # common.ctest and this.
+    set (configure_args "-DCTEST_USE_LAUNCHERS:BOOL=${CTEST_USE_LAUNCHERS};${ctest_configure_options}")
+    string (REPLACE ";" " " configure_args "${configure_args}")
+    set (CTEST_CONFIGURE_COMMAND
+      "${CTEST_SOURCE_DIRECTORY}/cmake.sh -G ${CTEST_CMAKE_GENERATOR} ${configure_args} ${CTEST_SOURCE_DIRECTORY}")
 
     # Make common.ctest only do the build and configure steps.
     set (ctest_stages "configure;build")
