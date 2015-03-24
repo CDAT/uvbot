@@ -57,9 +57,25 @@ def makeUserForkCommand(props):
 
 def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
-    lastStep = step.build.getStatus().getSteps()[0]
-    output = lastStep.getLogs()[0].getText()
-    return step.build.result == FAILURE and output.find('in submodule path') != -1
+
+    # get all steps in teh current build.
+    buildsteps = step.build.getStatus().getSteps()
+
+    # start going back from the current step to find the Git step
+    # and the check its status and output.
+    assert step in buildsteps
+
+    gitStep = None
+    step_index = buildsteps.index(step)
+    for astep in reversed(buildsteps[:step_index]):
+        if isinstance(astep, Git):
+            gitStep = astep
+            break
+    if gitStep is None:
+        raise RuntimeError("No 'Git' step found! Configuration seems incorrect!")
+    if gitStep.build.result == FAILURE:
+        return gitStep.getLogs()[0].getText().find('in submodule path') != -1
+    return False
 
 def makeUploadFetchSubmoduleScript(**kwargs):
     import os
