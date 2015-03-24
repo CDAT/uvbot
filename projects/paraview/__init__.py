@@ -111,4 +111,16 @@ FEATURES = {
         },
     }),
     '32bit': ({}, {}),
+
+    '_nocollab': ({}, {
+        'configure_options:feature': {
+            'PARAVIEW_COLLABORATION_TESTING:BOOL': 'OFF',
+        },
+    }),
+
+    '_noexamples': ({}, {
+        'configure_options:feature': {
+            'BUILD_EXAMPLES:BOOL': 'OFF',
+        },
+    }),
 }

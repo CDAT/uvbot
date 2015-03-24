@@ -18,6 +18,8 @@ base_features = (
     'opengl2',
     'python',
     'mpi',
+
+    '_noexamples',
 )
 buildsets = [
     {

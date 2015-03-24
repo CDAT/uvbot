@@ -23,6 +23,8 @@ base_features = (
     'gui',
     'python',
     'mpi',
+
+    '_noexamples',
 )
 buildsets = [
     {

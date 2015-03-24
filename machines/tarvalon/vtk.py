@@ -42,6 +42,8 @@ buildsets = [
             'mpi',
             'qt',
             'vs',
+
+            '_noexamples',
         ),
     },
 ]

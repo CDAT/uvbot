@@ -102,4 +102,10 @@ FEATURES = {
     }),
     'asan': ({}, {}),
     'ubsan': ({}, {}),
+
+    '_noexamples': ({}, {
+        'configure_options:feature': {
+            'BUILD_EXAMPLES:BOOL': 'OFF',
+        },
+    }),
 }

@@ -38,6 +38,8 @@ base_features = (
     'gui',
     'mpi',
     'vs',
+
+    '_noexamples',
 )
 buildsets = [
     {

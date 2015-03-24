@@ -93,6 +93,7 @@ buildsets64 = [
         'buildtype': 'debug',
         'features': base_features + (
             'python',
+            '_nocollab',
         ),
     },
 ]
