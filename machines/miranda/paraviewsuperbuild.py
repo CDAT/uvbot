@@ -57,15 +57,28 @@ defprops = {
 }
 
 #------------------------------------------------------------------------------
-# VS9 (2008) 64-bit properties and environment.
+vs9props = {
+    'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcvarsall.bat',
+}
+
 #------------------------------------------------------------------------------
-vs9x64props = {
+ninjaprops = {
+    'generator': 'Ninja',
+    'buildflags': '-l9',
+}
+
+#------------------------------------------------------------------------------
+x64props = {
+    'generator': 'Visual Studio 9 2008 Win64',
     'compiler': 'msvc-2008-x64',
-    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
     'vcvarsargument': 'amd64',
 
     'configure_options:builderconfig': {
         'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x64/bin/qmake.exe',
+
+        'PYTHON_EXECUTABLE:FILEPATH': 'C:/Tools/Python27/x64/python.exe',
+        'PYTHON_INCLUDE_DIR:PATH': 'C:/Tools/Python27/x64/include',
+        'PYTHON_LIBRARY:FILEPATH': 'C:/Tools/Python27/x64/libs/python27.lib',
     },
 
     'slaveenv': {
@@ -73,16 +86,18 @@ vs9x64props = {
     },
 }
 
-#------------------------------------------------------------------------------
-# VS9 (2008) 32-bit properties and environment.
-#------------------------------------------------------------------------------
-vs9x32props = {
-    'compiler': 'msvc-2008-x86',
-    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+x32props = {
+    'generator': 'Visual Studio 9 2008',
+    'compiler': 'msvc-2008-x32',
     'vcvarsargument': 'x86',
 
     'configure_options:builderconfig': {
         'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x32/bin/qmake.exe',
+
+        # We don't have 32-bit Python on this machine for dashboards.
+        #'PYTHON_EXECUTABLE:FILEPATH': 'C:/Tools/Python27/x32/python.exe',
+        #'PYTHON_INCLUDE_DIR:PATH': 'C:/Tools/Python27/x32/include',
+        #'PYTHON_LIBRARY:FILEPATH': 'C:/Tools/Python27/x32/libs/python27.lib',
     },
 
     'slaveenv': {
@@ -101,9 +116,8 @@ buildsets = [
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
-    defprops=projects.merge_config(defprops, vs9x64props),
-    dirlen=8
-)
+    projects.merge_config(defprops, vs9props, x64props, ninjaprops),
+    dirlen=8)
 
 #------------------------------------------------------------------------------
 buildsets = [
@@ -116,5 +130,5 @@ buildsets = [
 ]
 
 BUILDERS += projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
-    defprops=projects.merge_config(defprops, vs9x32props),
+    projects.merge_config(defprops, vs9props, x32props, ninjaprops),
     dirlen=8)
