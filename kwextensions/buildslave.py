@@ -7,7 +7,6 @@ class BuildSlave(_BuildSlave):
     def __init__(self, name, password,
                  cmake_root,
                  shared_resources_root,
-                 env={},
                  **kwargs):
         """
         @param cmake_root:
@@ -16,11 +15,8 @@ class BuildSlave(_BuildSlave):
         @param shared_resources_root:
             Root directory under which various builds can share resources
             such as data directories or ExternalData_OBJECT_STORES.
-        @param env:
-            A dict of key value pairs to pass as the environment to any build step.
         @type env: dictionary
         """
         _BuildSlave.__init__(self, name, password, **kwargs)
         self.properties.setProperty('cmakeroot', cmake_root, 'BuildSlave')
         self.properties.setProperty('sharedresourcesroot', shared_resources_root, 'BuildSlave')
-        self.properties.setProperty('slaveenv', pickle.dumps(env), 'BuildSlave')

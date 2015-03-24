@@ -12,10 +12,11 @@ defprops = {
         # Old GPU drivers.
         'vtkRenderingVolumePython-volTM2DRotateClip',
     ],
-}
-env = {
-    'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib/libc++:${DYLD_LIBRARY_PATH}',
-    'PATH': '/Users/kitware/Dashboards/Support/openmpi/bin:${PATH}',
+
+    'slaveenv': {
+        'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib/libc++:${DYLD_LIBRARY_PATH}',
+        'PATH': '/Users/kitware/Dashboards/Support/openmpi/bin:${PATH}',
+    },
 }
 
 defconfig = {
@@ -61,17 +62,17 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )
 
 gccprops = projects.merge_config(defprops, {
     'compiler': 'gcc-4.2.1',
-})
-gccenv = projects.merge_config(env, {
-    'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib:${DYLD_LIBRARY_PATH}',
-    'CC': 'gcc',
-    'CXX': 'g++',
+
+    'slaveenv': {
+        'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib:${DYLD_LIBRARY_PATH}',
+        'CC': 'gcc',
+        'CXX': 'g++',
+    },
 })
 gccconfig = projects.merge_config(defconfig, {
     'TBB_LIBRARY:FILEPATH': '/Users/kitware/Dashboards/Support/tbb/lib/libtbb.dylib',
@@ -96,6 +97,5 @@ gccbuildsets = [
 
 BUILDERS += projects.make_builders(slave.SLAVE, vtk, gccbuildsets,
     defprops=defprops,
-    defconfig=gccconfig,
-    env=gccenv
+    defconfig=gccconfig
 )

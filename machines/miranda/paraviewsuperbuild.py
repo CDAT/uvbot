@@ -15,6 +15,10 @@ defprops = {
         # We'll fix that at some point.
         'PrintVersionServer',
     ],
+
+    'slaveenv': {
+        'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+    },
 }
 
 defconfig = {
@@ -52,10 +56,6 @@ defconfig = {
     "download_location:PATH":"c:/bbd/superbuild-downloads",
 }
 
-defenv = {
-    'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
-}
-
 #------------------------------------------------------------------------------
 # VS9 (2008) 64-bit properties and environment.
 #------------------------------------------------------------------------------
@@ -63,10 +63,10 @@ vs9x64props = {
     'compiler': 'msvc-2008-x64',
     'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
     'vcvarsargument': 'amd64',
-}
 
-vs9x64env = {
-    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
+    'slaveenv': {
+        'PATH': 'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
+    },
 }
 
 vs9x64config = {
@@ -80,10 +80,10 @@ vs9x32props = {
     'compiler': 'msvc-2008-x86',
     'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
     'vcvarsargument': 'x86',
-}
 
-vs9x32env= {
-    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
+    'slaveenv': {
+        'PATH': 'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
+    },
 }
 
 vs9x32config = {
@@ -103,8 +103,7 @@ buildsets = [
 BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=projects.merge_config(defprops, vs9x64props),
     defconfig=projects.merge_config(defconfig, vs9x64config),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x64env)
+    dirlen=8
 )
 
 #------------------------------------------------------------------------------
@@ -120,6 +119,5 @@ buildsets = [
 BUILDERS.extend(projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=projects.merge_config(defprops, vs9x32props),
     defconfig=projects.merge_config(defconfig, vs9x32config),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x32env)
+    dirlen=8
 ))

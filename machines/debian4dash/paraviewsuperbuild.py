@@ -16,6 +16,11 @@ defprops = {
         # one. We'll fix it at some point
         'TestPythonView',
     ],
+
+    'slaveenv': {
+        'PATH': '/home/kitware/Dashboards/support/git/bin:${PATH}',
+        'DISPLAY': ':0',
+    },
 }
 
 defconfig = {
@@ -43,10 +48,6 @@ defconfig = {
 
     'download_location:PATH': '/home/kitware/Dashboards/downloads/paraview',
 }
-env = {
-    'PATH': '/home/kitware/Dashboards/support/git/bin:${PATH}',
-    'DISPLAY': ':0',
-}
 
 buildsets = [
     {
@@ -59,6 +60,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

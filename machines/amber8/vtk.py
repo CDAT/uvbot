@@ -11,9 +11,10 @@ defprops = {
         # TODO: Most of these are probably Mesa problems.
         'TestPolygonSelection',
     ],
-}
-env = {
-    'DISPLAY': ':0.0',
+
+    'slaveenv': {
+        'DISPLAY': ':0.0',
+    },
 }
 
 defconfig = {
@@ -42,6 +43,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

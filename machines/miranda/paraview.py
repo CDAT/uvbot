@@ -18,34 +18,35 @@ defprops = {
         'pvcs-collab.CreateDelete', # TODO: why?
         'OpenHelp', # random clucene exceptions
     ],
-}
-defenv = {
-    'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+
+    'slaveenv': {
+        'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+    },
 }
 
 #------------------------------------------------------------------------------
 # VS9 (2008) 64-bit properties and environment.
 #------------------------------------------------------------------------------
 vs9x64props = {
-        'compiler': 'msvc-2008-64bit',
-        'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
-        'vcvarsargument' : 'amd64',
-}
+    'compiler': 'msvc-2008-64bit',
+    'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+    'vcvarsargument' : 'amd64',
 
-vs9x64env = {
+    'slaveenv': {
         'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;C:/Tools/Python27/x64;${PATH}'
+    },
 }
 #------------------------------------------------------------------------------
 # VS9 (2008) 32-bit properties and environment.
 #------------------------------------------------------------------------------
 vs9x32props = {
-        'compiler': 'msvc-2008-32bit',
-        'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
-        'vcvarsargument' : 'x86',
-}
+    'compiler': 'msvc-2008-32bit',
+    'vcvarsall' : 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+    'vcvarsargument' : 'x86',
 
-vs9x32env= {
+    'slaveenv': {
         'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;C:/Tools/Python27/x32;${PATH}'
+    },
 }
 
 #------------------------------------------------------------------------------
@@ -112,8 +113,7 @@ buildsets64 = [
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets64,
     defprops=projects.merge_config(projects.merge_config(defprops, ninjaprops), vs9x64props),
     defconfig=projects.merge_config(defconfig, defconfigx64),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x64env)
+    dirlen=8
 )
 
 buildsets32 = [
@@ -130,7 +130,6 @@ buildsets32 = [
 BUILDERS.extend(projects.make_builders(slave.SLAVE, paraview, buildsets32,
     defprops=projects.merge_config(projects.merge_config(defprops, ninjaprops), vs9x32props),
     defconfig=projects.merge_config(defconfig, defconfigx32),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x32env)
+    dirlen=8
     )
 )

@@ -8,14 +8,14 @@ __all__ = [
 
 defprops = {
     'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
+
+    'slaveenv': {
+        'DISPLAY': ':1',
+        'PATH': '/usr/lib64/mpich/bin:${PATH}',
+    },
 }
 
 defconfig = {}
-
-env = {
-    'DISPLAY': ':1',
-    'PATH': '/usr/lib64/mpich/bin:${PATH}',
-}
 
 buildsets = [
     {
@@ -27,6 +27,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, catalyst, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

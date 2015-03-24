@@ -18,12 +18,11 @@ defprops = {
         # to build trust on the dashboard. We need to debug these.
         'pvcrs.LoadState',
         'pvcs.LoadState',
-    ]
-}
-env = {
-    'DISPLAY': ':0',
-    'CC': 'icc',
-    'CXX': 'icpc',
+    ],
+
+    'slaveenv': {
+        'DISPLAY': ':0',
+    },
 }
 
 defconfig = {
@@ -50,6 +49,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

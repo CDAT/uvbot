@@ -36,9 +36,10 @@ defprops = {
         'vtkRenderingVolumePython-volTM3DCropRegions',
         'vtkRenderingVolumePython-volTM3DRotateClip',
     ],
-}
-env = {
-    'DISPLAY': ':1',
+
+    'slaveenv': {
+        'DISPLAY': ':1',
+    },
 }
 
 defconfig = {
@@ -67,6 +68,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

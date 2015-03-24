@@ -8,11 +8,12 @@ __all__ = [
 
 defprops = {
     'compiler': 'icc-14.0.0',
-}
-env = {
-    'DISPLAY': ':0',
-    'CC': 'icc',
-    'CXX': 'icpc',
+
+    'slaveenv': {
+        'DISPLAY': ':0',
+        'CC': 'icc',
+        'CXX': 'icpc',
+    },
 }
 
 defconfig = {
@@ -45,17 +46,17 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
     defprops=defprops,
-    defconfig=allconfig,
-    env=env
+    defconfig=allconfig
 )
 
 glnewprops = projects.merge_config(defprops, {
     'compiler': 'gcc-4.8.3',
     'ctest_track' : 'VolumeOpenGLNew',
-})
-glnewenv = projects.merge_config(env, {
-    'CC': 'gcc',
-    'CXX': 'g++',
+
+    'slaveenv': {
+        'CC': 'gcc',
+        'CXX': 'g++',
+    },
 })
 
 glnewconfig = projects.merge_config(defconfig, {
@@ -77,6 +78,5 @@ glnewbuildsets = [
 
 BUILDERS += projects.make_builders(slave.SLAVE, vtk, glnewbuildsets,
     defprops=glnewprops,
-    defconfig=glnewconfig,
-    env=glnewenv
+    defconfig=glnewconfig
 )

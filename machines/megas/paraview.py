@@ -22,10 +22,11 @@ defprops = {
         'SelectionLabels', # http://www.paraview.org/Bug/view.php?id=15294
     ],
     'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
-}
-env = {
-    'DISPLAY': ':1',
-    'PATH': '/usr/lib64/mpich/bin:${PATH}',
+
+    'slaveenv': {
+        'DISPLAY': ':1',
+        'PATH': '/usr/lib64/mpich/bin:${PATH}',
+    },
 }
 
 defconfig = {
@@ -62,6 +63,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

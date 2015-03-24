@@ -44,7 +44,7 @@ SLAVE = BuildSlave('_example', secrets.SECRETS['_example']['password'],
         # Environment variables which should be used on the slave for *all*
         # projects. Existing environment variables may be referenced as
         # `${ENVVAR}` (the braces are important).
-        'env': {
+        'slaveenv': {
             'PATH': '/path/for/ninja:${PATH}',
         },
     }

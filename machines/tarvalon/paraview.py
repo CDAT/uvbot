@@ -23,9 +23,10 @@ defprops = {
         'NonlinearSubdivisionDisplay',
         'StereoSplitViewportHorizontal',
     ],
-}
-env = {
-    'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
+
+    'slaveenv': {
+        'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
+    },
 }
 
 defconfig = {
@@ -67,6 +68,5 @@ buildsets = [
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
     defconfig=defconfig,
-    dirlen=8,
-    env=env
+    dirlen=8
 )

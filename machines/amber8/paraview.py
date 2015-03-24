@@ -20,11 +20,12 @@ defprops = {
         'ProbePicking',
         'pvcs-tile-display',
     ],
-}
-env = {
-    'DISPLAY': ':0',
-    # since we're using mesa, no need to do offscreen screenshots.
-    'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
+
+    'slaveenv': {
+        'DISPLAY': ':0',
+        # since we're using mesa, no need to do offscreen screenshots.
+        'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
+    },
 }
 
 defconfig = {
@@ -78,6 +79,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

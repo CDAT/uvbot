@@ -23,9 +23,10 @@ defprops = {
         'vtkRenderingVolumeCxx-TestGPURayCastFourComponentsMinIP',
         'vtkRenderingCoreCxx-TestEdgeFlags',
     ],
-}
-env = {
-    'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
+
+    'slaveenv': {
+        'PATH': 'C:/Support/Qt/4.8.0-vs2010-x64/bin;C:/Python27x64;${PATH}',
+    },
 }
 
 defconfig = {
@@ -53,6 +54,5 @@ buildsets = [
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
     defprops=defprops,
-    defconfig=defconfig,
-    env=env
+    defconfig=defconfig
 )

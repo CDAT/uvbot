@@ -20,10 +20,10 @@ defprops = {
         'test2', # bogus drivers
         'some.*test.*regex', # runs out of memory
     ],
-}
-# Relevant environment variables for this project.
-env = {
-    'DISPLAY': ':0',
+    # Relevant environment variables for this project.
+    'slaveenv': {
+        'DISPLAY': ':0',
+    },
 }
 
 # Common CMake configuration values for this project. The project may provide
@@ -94,8 +94,7 @@ BUILDERS = projects.make_builders(slave.SLAVE, project1, buildsets,
     # Important ones may include 'category' for putting the builds into a
     # category for separating the builds out in the view and 'env' for
     # environment variables.
-    category='awesome',
-    env=env
+    category='awesome'
 )
 
 # the 'projects' module contains a `merge_config` function which will join two
@@ -107,11 +106,11 @@ specialprops = projects.merge_config(defprops, {
     # Append an extra test to exclude
     'test_excludes:builderconfig': [
         'flyingpigs', # full moon on Tuesdays
-    ]
-})
-# More environment variables.
-specialenv = projects.merge_config(env, {
-    'PATH': '/path/to/some/tool:${PATH}',
+    ],
+
+    'slaveenv': {
+        'PATH': '/path/to/some/tool:${PATH}',
+    },
 })
 
 specialbuildsets = [
@@ -128,6 +127,5 @@ specialbuildsets = [
 # Make sure to *append* these new buildsets.
 BUILDERS += projects.make_builders(slave.SLAVE, project1, specialbuildsets,
     defprops=specialprops,
-    defconfig=defconfig,
-    env=qt5env
+    defconfig=defconfig
 )
