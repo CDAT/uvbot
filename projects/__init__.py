@@ -116,9 +116,6 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         name, conf, buildset = build_config(project, props, **buildset)
         configs[name] = (conf, buildset)
 
-    if not myfactory is None:
-        raise RuntimeError("'myfactory' is no longer supported!")
-
     # import factory module for the provided project.
     factory = import_module("%s.factory" % project.__name__)
 
@@ -136,9 +133,6 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         for key, default in composite_keys:
             buildprops = _merge_options(buildprops, key, default)
 
-        if dirlen:
-            kwargs['slavebuilddir'] = hashlib.md5(name).hexdigest()[:dirlen]
-
         # if buildset has a option named category, use that to generate a
         # category for the builder. If not, we simply use the project's name as
         # the category.
@@ -153,8 +147,13 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         except KeyError:
             builder_category = project.NAME
 
+        buildname = '%s-%s-%s' % (project.NAME, slave.slavename, name)
+
+        if dirlen:
+            kwargs['slavebuilddir'] = hashlib.md5(buildname).hexdigest()[:dirlen]
+
         builders.append(BuilderConfig(
-            name='%s-%s-%s' % (project.NAME, slave.slavename, name),
+            name=buildname,
             factory=factory.get_factory(buildset),
             properties=buildprops,
             slavenames=[slave.slavename],
