@@ -8,8 +8,6 @@ __all__ = [
 
 defprops = {
     'configure_options:builderconfig': {
-        'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
-
         'download_location:PATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
     },
 
@@ -25,7 +23,11 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': ('superbuild',),
+        'features': (
+            'superbuild',
+
+            '_webdoc',
+        ),
     },
 ]
 

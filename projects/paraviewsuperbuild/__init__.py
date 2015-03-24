@@ -113,4 +113,10 @@ FEATURES = {
     'osx10.5': ({}, {}),
     'osx10.7': ({}, {}),
     '32bit': ({}, {}),
+
+    '_webdoc': ({}, {
+        'configure_options:feature': {
+            'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
+        },
+    }),
 }

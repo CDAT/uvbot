@@ -8,8 +8,6 @@ __all__ = [
 
 defprops = {
     'configure_options:builderconfig': {
-        'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
-
         'download_location:PATH': '/Users/kitware/dashboards/paraview-superbuild-downloads',
 
         # Set OS X SYSROOT, etc.
@@ -30,7 +28,11 @@ buildsets = [
         'libtype': 'shared',
         'buildtype': 'release',
         'category': 'experimental',
-        'features': ('superbuild',),
+        'features': (
+            'superbuild',
+
+            '_webdoc',
+        ),
     },
 ]
 

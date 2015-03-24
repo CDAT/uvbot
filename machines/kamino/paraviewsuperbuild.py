@@ -13,8 +13,6 @@ defprops = {
         # Manually specify the Fortran compiler.
         'CMAKE_Fortran_COMPILER:FILEPATH': '/usr/local/bin/gfortran',
 
-        'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
-
         'download_location:PATH': '/Users/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
     },
 }
@@ -41,6 +39,8 @@ osx105buildsets = [
         'features': (
             'osx10.5',
             'superbuild',
+
+            '_webdoc',
         ),
     },
 ]

@@ -14,8 +14,6 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        #'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
-
         "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
 
         # Location of the ftjam freetype build system executable
