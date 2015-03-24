@@ -22,10 +22,15 @@ string(TOLOWER "${repoName}" repoName)
 
 set(userFork "${url_prefix}/${username}/${repoName}")
 
-message("${userFork}")
+# When accessing non-existent forks, sometimes the fetch call just blocks!
+# Providing a bogus username and password overcomes that blocking.
+string(REGEX REPLACE "^(http[s]*://)" "\\1buildbot:buildbot@" userFork "${userFork}")
 
+message("Removing old 'remote', if any")
+execute_process(COMMAND "${GIT_COMMAND}" "remote" "rm" "fetch_submodule_tmp")
+message("Adding 'remote' for ${userFork}...")
 execute_process(COMMAND "${GIT_COMMAND}" "remote" "add" "fetch_submodule_tmp" "${userFork}")
-
+message("Fetching..")
 execute_process(COMMAND "${GIT_COMMAND}" "fetch" "fetch_submodule_tmp"
                 RESULT_VARIABLE fetchResult)
 
@@ -33,4 +38,5 @@ if(fetchResult)
     message("Fetch failed, continuing...")
 endif()
 
+message("Removing 'remote' for cleanup.")
 execute_process(COMMAND "${GIT_COMMAND}" "remote" "rm" "fetch_submodule_tmp")
