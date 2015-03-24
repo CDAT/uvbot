@@ -55,13 +55,13 @@ def build_config(project, props, features=(), **kwargs):
     if unknown_features:
         raise RuntimeError('unknown features: %s' % ', '.join(unknown_features))
 
-    config = props.copy()
+    allprops = props.copy()
 
     for optname, optvalues in project.OPTIONS.items():
         if buildset[optname] not in optvalues:
             raise RuntimeError('unknown value for option %s: %s' % (optname, buildset[optname]))
 
-        config = merge_config(config, optvalues[buildset[optname]])
+        allprops = merge_config(allprops, optvalues[buildset[optname]])
 
     nameparts = []
     for option in project.OPTIONORDER:
@@ -75,9 +75,9 @@ def build_config(project, props, features=(), **kwargs):
                 name += '+%s' % feature
             use_feature = 1
         props = project.FEATURES[feature][use_feature]
-        config = merge_config(config, props)
+        allprops = merge_config(allprops, props)
 
-    return (name, config, buildset)
+    return (name, allprops, buildset)
 
 
 def make_feature_cmake_options(options):
@@ -111,10 +111,12 @@ def _merge_options(props, key, default):
 
 
 def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
-    configs = {}
+    baseprops = merge_config(project.DEFAULTS.copy(), props)
+
+    setprops = {}
     for buildset in buildsets:
-        name, conf, buildset = build_config(project, props, **buildset)
-        configs[name] = (conf, buildset)
+        name, buildsetprops, buildset = build_config(project, baseprops, **buildset)
+        setprops[name] = (buildsetprops, buildset)
 
     # import factory module for the provided project.
     factory = import_module("%s.factory" % project.__name__)
@@ -127,9 +129,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
     )
 
     builders = []
-    for name, (config, buildset) in configs.items():
-        buildprops = merge_config(project.DEFAULTS, props)
-
+    for name, (buildprops, buildset) in setprops.items():
         for key, default in composite_keys:
             buildprops = _merge_options(buildprops, key, default)
 
