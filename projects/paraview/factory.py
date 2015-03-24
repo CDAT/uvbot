@@ -40,8 +40,8 @@ def get_source_steps(sourcedir="source"):
         env={'GIT_SSL_NO_VERIFY': 'true'})
 
     steps = []
-    steps.append(update)
     steps.append(SetProperty(name="SetParaViewSourceDir", property="sourcedir", value=sourcedir))
+    steps.append(update)
     steps.append(makeUploadFetchSubmoduleScript())
     steps.append(FetchUserSubmoduleForks())
     steps.append(SetGotRevision(codebase=codebase, workdir=sourcedir))
