@@ -159,7 +159,7 @@ def merge_config(base, *args):
                 # Merge dictionaries.
                 if type(v) == dict:
                     if type(output[k]) == dict:
-                        merge_config(output[k], v)
+                        output[k] = merge_config(output[k], v)
                     else:
                         raise RuntimeError('incompatible entries with key \'%s\'' % k)
 
