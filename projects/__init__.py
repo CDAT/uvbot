@@ -71,7 +71,8 @@ def build_config(project, props, features=(), **kwargs):
     for feature in sorted(avail_features):
         use_feature = 0
         if feature in featureset:
-            name += '+%s' % feature
+            if not feature.startswith('_'):
+                name += '+%s' % feature
             use_feature = 1
         props = project.FEATURES[feature][use_feature]
         config = merge_config(config, props)
