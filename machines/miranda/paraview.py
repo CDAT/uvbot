@@ -10,9 +10,6 @@ __all__ = [
 # Common properties and environment.
 #------------------------------------------------------------------------------
 defprops = {
-    'test_include_labels:builderconfig': [
-        'PARAVIEW',
-    ],
     'test_excludes:builderconfig': [
         'UncertaintyRendering', # TODO: why?
         'pvcs-collab.CreateDelete', # TODO: why?

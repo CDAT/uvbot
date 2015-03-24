@@ -14,12 +14,7 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'BUILD_EXAMPLES:BOOL': 'ON',
-        'BUILD_TESTING:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'VTK_LEGACY_REMOVE:BOOL': 'ON',
         'VTK_DATA_STORE:PATH': '/Users/kitware/Dashboards/ExternalData',
-        'VTK_USER_LARGE_DATA:BOOL': 'ON',
 
         'Module_vtkIOXdmf2:BOOL': 'ON',
         'Module_vtkIOGDAL:BOOL': 'ON',
@@ -29,7 +24,6 @@ defprops = {
         'QT_QMAKE_EXECUTABLE:PATH': '/Users/kitware/Dashboards/Support/Qt-4.8.0/bin/qmake',
         'VTK_GHOSTSCRIPT_EXECUTABLE:FILEPATH': '/Users/kitware/david.lonie/ghostscript-9.06/bin/gs',
 
-        'VTK_SMP_IMPLEMENTATION_TYPE:STRING': 'TBB',
         'TBB_INSTALL_DIR:PATH': '/Users/kitware/Dashboards/Support/tbb',
         'TBB_INCLUDE_DIR:PATH': '/Users/kitware/Dashboards/Support/tbb/include',
         'TBB_LIBRARY:FILEPATH': '/Users/kitware/Dashboards/Support/tbb/lib/libc++/libtbb.dylib',

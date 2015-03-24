@@ -19,7 +19,7 @@ buildsets = [
     {
         'os': 'linux',
         'buildtype': 'release',
-        'features' : ('catalyst',),
+        'features': ('catalyst',),
     },
 ]
 

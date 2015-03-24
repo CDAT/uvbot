@@ -21,9 +21,6 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'BUILD_EXAMPLES:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-
         'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData',
     },
 

@@ -99,7 +99,12 @@ FEATURES = {
         'PARAVIEW_BUILD_PLUGIN_EyeDomeLighting:BOOL': ('TRUE', 'FALSE'),
         'PARAVIEW_BUILD_PLUGIN_SciberQuestToolKit:BOOL': ('TRUE', 'FALSE'),
     }),
-    'icc': ({}, {}),
+    'icc': ({}, {
+        'slaveenv': {
+            'CC': 'icc',
+            'CXX': 'icpc',
+        }
+    }),
     'vs': ({}, {
         'configure_options:feature': {
             'CMAKE_CXX_MP_FLAG:BOOL': 'ON',

@@ -7,9 +7,6 @@ __all__ = [
 ]
 
 defprops = {
-    'test_include_labels:builderconfig': [
-        'PARAVIEW',
-    ],
     'test_excludes:builderconfig': [
         # TODO: Why are these excluded?
         'EyeDomeLighting',
@@ -25,13 +22,6 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
-
-        'BUILD_TESTING:BOOL': 'OFF',
-        'BUILD_EXAMPLES:BOOL': 'OFF',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'VTK_LEGACY_REMOVE:BOOL': 'ON',
-
         'VTK_DATA_STORE:PATH': 'C:/Dashboards/CDashHome/ExternalData',
 
         'Boost_INCLUDE_DIR:PATH': 'C:/Support/boost_1_48_0',

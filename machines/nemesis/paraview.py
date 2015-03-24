@@ -7,20 +7,12 @@ __all__ = [
 ]
 
 defprops = {
-    'test_include_labels:builderconfig': [
-        'PARAVIEW',
-    ],
     'test_excludes:builderconfig': [
         'SurfaceLIC-ShuttleAll', # seems the streamlines aren't thick enough?
         'NonlinearSubdivisionDisplay', # missing mesh edges?
     ],
 
     'configure_options:builderconfig': {
-        # Examples end up with commands that are way too long.
-        'BUILD_EXAMPLES:BOOL': 'OFF',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'VTK_LEGACY_REMOVE:BOOL': 'ON',
-
         'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
 
         'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/paraview',

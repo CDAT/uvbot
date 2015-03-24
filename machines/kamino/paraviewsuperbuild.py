@@ -9,43 +9,11 @@ __all__ = [
 BUILDERS = []
 
 defprops = {
-    'upload_file_patterns:builderconfig': [
-        '*.dmg',
-        '*.tar.gz',
-        '*.tgz',
-    ],
-    'test_excludes:builderconfig': [
-        # QtTesting has some issue with playback/capture for this
-        # one on OsX. We'll fix it at some point
-        'TestPythonView',
-    ],
-
     'configure_options:builderconfig': {
-        'BUILD_TESTING:BOOL': 'ON',
-
-        # CMake is picking make -i as default, which ends up ignoring errors and wasting time!
-        'MAKE_COMMAND:STRING': '/usr/bin/make',
-
         # Manually specify the Fortran compiler.
         'CMAKE_Fortran_COMPILER:FILEPATH': '/usr/local/bin/gfortran',
 
-        'USE_NONFREE_COMPONENTS:BOOL': 'ON',
         'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
-
-        'ENABLE_boost:BOOL': 'ON',
-        'ENABLE_cgns:BOOL': 'ON',
-        'ENABLE_cosmotools:BOOL': 'ON',
-        'ENABLE_ffmpeg:BOOL': 'ON',
-        'ENABLE_matplotlib:BOOL': 'ON',
-        'ENABLE_mpi:BOOL': 'ON',
-        'ENABLE_nektarreader:BOOL': 'ON',
-        'ENABLE_numpy:BOOL': 'ON',
-        'ENABLE_paraview:BOOL': 'ON',
-        'ENABLE_python:BOOL': 'ON',
-        'ENABLE_qt:BOOL': 'ON',
-        'ENABLE_silo:BOOL': 'ON',
-        'ENABLE_visitbridge:BOOL': 'ON',
-        'ENABLE_vistrails:BOOL': 'ON',
 
         'download_location:PATH': '/Users/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
     },

@@ -8,12 +8,6 @@ __all__ = [
 
 defprops = {
     'configure_options:builderconfig': {
-        # Examples end up with commands that are way too long.
-        'BUILD_EXAMPLES:BOOL': 'OFF',
-        'BUILD_TESTING:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'VTK_LEGACY_REMOVE:BOOL': 'ON',
-
         'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
 
         'VTK_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/vtk',

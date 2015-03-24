@@ -8,7 +8,6 @@ __all__ = [
 
 defprops = {
     'test_include_labels:builderconfig': [
-        'PARAVIEW',
         'CATALYST',
         'PARAVIEWWEB',
     ],
@@ -29,9 +28,6 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'BUILD_EXAMPLES:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
         'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
 
         'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',

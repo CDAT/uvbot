@@ -22,12 +22,6 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'BUILD_EXAMPLES:BOOL': 'ON',
-        'BUILD_TESTING:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'VTK_LEGACY_REMOVE:BOOL': 'ON',
-        'VTK_ENABLE_CATALYST:BOOL': 'ON',
-
         'VTK_DATA_STORE:PATH': '/home/kitware/dashboards/data/vtk',
     },
 

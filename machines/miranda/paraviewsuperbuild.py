@@ -7,9 +7,6 @@ __all__ = [
 ]
 
 defprops = {
-    'upload_file_patterns:builderconfig': [ '*.zip', '*.exe' ],
-    'generator': 'Ninja',
-    'buildflags': '-l1',
     'test_excludes:builderconfig': [
         # Since server is MPI enabled, it needs to be run with MPI.
         # We'll fix that at some point.
@@ -17,24 +14,7 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'BUILD_TESTING:BOOL': 'ON',
-
-        'USE_NONFREE_COMPONENTS:BOOL': 'ON',
         #'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
-
-        # Superbuild Variables
-        "ENABLE_acusolve:BOOL": "ON",
-        "ENABLE_boost:BOOL": "ON",
-        "ENABLE_cgns:BOOL": "ON",
-        "ENABLE_matplotlib:BOOL": "ON",
-        "ENABLE_mpi:BOOL": "ON",
-        "ENABLE_numpy:BOOL": "ON",
-        "ENABLE_paraview:BOOL": "ON",
-        "ENABLE_qt:BOOL": "ON",
-        "ENABLE_silo:BOOL": "ON",
-        "ENABLE_visitbridge:BOOL": "ON",
-        "ENABLE_vistrails:BOOL": "ON",
-        "ENABLE_netcdf:BOOL": "ON",
 
         "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
 

@@ -10,7 +10,6 @@ defprops = {
     'generator': 'Ninja',
 
     'test_include_labels:builderconfig': [
-        'PARAVIEW',
         'CATALYST',
         'PARAVIEWWEB',
     ],
@@ -22,11 +21,6 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'BUILD_EXAMPLES:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-        'VTK_LEGACY_REMOVE:BOOL': 'ON',
-        'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-        'PARAVIEW_ENABLE_CATALYST:BOOL': 'ON',
         'PARAVIEW_DATA_STORE:PATH': '/Users/kitware/dashboards/data',
 
         'VTK_USE_SYSTEM_EXPAT:BOOL': 'ON',

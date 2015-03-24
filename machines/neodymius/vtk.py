@@ -10,17 +10,11 @@ defprops = {
     'compiler': 'icc-14.0.0',
 
     'configure_options:builderconfig': {
-        'BUILD_EXAMPLES:BOOL': 'ON',
-        'BUILD_TESTING:BOOL': 'ON',
-        'VTK_DEBUG_LEAKS:BOOL': 'ON',
-
         'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData/vtk',
     },
 
     'slaveenv': {
         'DISPLAY': ':0',
-        'CC': 'icc',
-        'CXX': 'icpc',
     },
 }
 
@@ -54,11 +48,6 @@ glnewprops = projects.merge_config(defprops, {
 
     'configure_options:builderconfig': {
         'Module_vtkRenderingVolumeOpenGLNew:BOOL': 'ON',
-    },
-
-    'slaveenv': {
-        'CC': 'gcc',
-        'CXX': 'g++',
     },
 })
 
