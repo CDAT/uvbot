@@ -26,7 +26,7 @@ def makeCTestDashboardCommand(props):
             '-V',
             '-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake' % props_dict,
             '-Dctest_stages:STRING=%(prop:ctest_stages)s' % props_dict,
-            '-C', props.getProperty('configure_options:builderconfig')['CMAKE_BUILD_TYPE:STRING'], # FIXME: this is bad
+            '-C', props.getProperty('configure_options')['CMAKE_BUILD_TYPE:STRING'], # FIXME: this is bad
             '-S',
             '%(prop:ctest_dashboard_script)s' % props_dict
             ]
