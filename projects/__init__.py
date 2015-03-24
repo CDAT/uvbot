@@ -78,6 +78,22 @@ def build_config(project, defconfig={}, features=(), **kwargs):
     return (name, config, buildset)
 
 
+def _merge_options(props, key, default):
+    subkeys = [
+        'buildslave',
+        'builderconfig',
+        'project',
+        'feature',
+    ]
+    merged = merge_config(props, {key: default})
+    for subkey in subkeys:
+        fullkey = '%s:%s' % (key, subkey)
+        if fullkey not in props:
+            continue
+        merged = merge_config(merged, {key: props[fullkey]})
+    return merged
+
+
 def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, dirlen=0, **kwargs):
     configs = {}
     for buildset in buildsets:
@@ -90,10 +106,20 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
     # import factory module for the provided project.
     factory = import_module("%s.factory" % project.__name__)
 
+    composite_keys = (
+        ('configure_options', {}),
+        ('test_include_labels', []),
+        ('test_excludes', []),
+        ('upload_file_patterns', []),
+    )
+
     builders = []
     for name, (config, buildset) in configs.items():
         props = defprops.copy()
         props['configure_options:builderconfig'] = config
+
+        for key, default in composite_keys:
+            props = _merge_options(props, key, default)
 
         if dirlen:
             kwargs['slavebuilddir'] = hashlib.md5(name).hexdigest()[:dirlen]

@@ -269,35 +269,6 @@ class CTestDashboard(ShellCommand):
             return WARNINGS
         return SUCCESS
 
-def _get_test_params(props, prefix, joinstr):
-    excludes = []
-    regex = re.compile('^%s:.*$' % prefix)
-    for (key, (value, source)) in props.asDict().iteritems():
-        if regex.match(key):
-            excludes += value
-    return joinstr.join(excludes)
-
-def _get_configure_options(props):
-    source_precedence = ["BuildSlave", "Builder", "Build"]
-    regex = re.compile('^configure_options:.*$')
-
-    option_dicts = {}
-    for (key, (value, source)) in props.asDict().iteritems():
-        if not regex.match(key): continue
-        if type(value) != dict:
-            raise RuntimeError('%s: value must be a dict!' % key)
-        try:
-            index = source_precedence.index(source)
-            option_dicts[index] = value
-        except IndexError:
-            raise RuntimeError('%s: source (%s) unrecognized!' % (key, source))
-
-    config = {}
-    for option in option_dicts.values():
-        config.update(option)
-    lines = [ "-D%s=%s" % (key, str(value)) for key, value in config.iteritems() ]
-    return ";".join(lines)
-
 @properties.renderer
 def makeExtraOptionsString(props):
     props_dict = {
@@ -312,10 +283,10 @@ def makeExtraOptionsString(props):
         if isinstance(value, str):
             value = value.replace("\\", '/')
         props_dict["prop:%s" % key] = value
-    props_dict['ctest_configure_options'] = _get_configure_options(props)
-    props_dict['ctest_test_excludes'] = _get_test_params(props, "test_excludes", "|")
-    props_dict['ctest_test_include_labels'] = _get_test_params(props, "test_include_labels", "|")
-    props_dict['ctest_upload_file_patterns'] = _get_test_params(props, "upload_file_patterns", ";")
+    props_dict['ctest_configure_options'] = props.getProperty('configure_options')
+    props_dict['ctest_test_excludes'] = '|'.join(props.getProperty('test_excludes'))
+    props_dict['ctest_test_include_labels'] = '|'.join(props.getProperty('test_include_labels'))
+    props_dict['ctest_upload_file_patterns'] = ';'.join(props.getProperty('upload_file_patterns'))
     return """
             # Essential options.
             set (CTEST_COMMAND "%(prop:cmakeroot)s/bin/ctest")
