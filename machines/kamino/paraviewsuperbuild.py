@@ -12,6 +12,7 @@ defprops = {
     'configure_options:builderconfig': {
         # Manually specify the Fortran compiler.
         'CMAKE_Fortran_COMPILER:FILEPATH': '/usr/local/bin/gfortran',
+        'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
 
         'download_location:PATH': '/Users/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
     },
@@ -19,11 +20,6 @@ defprops = {
 
 osx105props = projects.merge_config(defprops, {
     'configure_options:builderconfig': {
-        # Essential variables to ensure that the package can be used on Leopard.
-        'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk',
-        'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
-        'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.5',
-
         # Force the Python version.
         'PYTHON_EXECUTABLE:FILEPATH': '/usr/bin/python2.6',
         'PYTHON_INCLUDE_DIR:PATH': '/System/Library/Frameworks/Python.framework/Versions/2.6/Headers',
@@ -51,11 +47,6 @@ osx105buildsets = [
 
 osx107props = projects.merge_config(defprops, {
     'configure_options:builderconfig': {
-        # Essential variables to ensure that the package can be used on Leopard.
-        'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk',
-        'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
-        'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.7',
-
         # Force the Python version.
         'PYTHON_EXECUTABLE:FILEPATH': '/usr/bin/python2.7',
         'PYTHON_INCLUDE_DIR:PATH': '/System/Library/Frameworks/Python.framework/Versions/2.7/Headers',
