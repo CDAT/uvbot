@@ -61,6 +61,17 @@ def failureForSubmodule(step):
     output = lastStep.getLogs()[0].getText()
     return output.find('Unable to checkout') != -1 and output.find('in submodule path') != -1
 
+class SubmoduleForkLogObserver(LogLineObserver):
+    success = True
+    def lineReceived(self, line, lineType):
+        if line.find('Fetch failed, continuing...') != -1:
+            self.success = False
+    def outLineReceived(self,line):
+        self.lineReceived(line,'out')
+    def errLineReceived(self,line):
+        self.lineReceived(line,'err')
+
+
 def makeUploadFetchSubmoduleScript(**kwargs):
     import os
     moduledir = os.path.dirname(os.path.abspath(__file__))
@@ -84,6 +95,7 @@ class FetchTags(ShellCommand):
 
 class FetchUserSubmoduleForks(ShellCommand):
     def __init__(self, **kwargs):
+        self.logObserver = SubmoduleForkLogObserver()
         ShellCommand.__init__(self,command=makeUserForkCommand,
                               haltOnFailure=True,
                               flunkOnFailure=True,
@@ -93,6 +105,15 @@ class FetchUserSubmoduleForks(ShellCommand):
                               descriptionDone=["Tried user's submodule forks"],
                               env={'GIT_SSL_NO_VERIFY': 'true'},
                               **kwargs)
+        self.addLogObserver('stdio',self.logObserver)
+        self.addLogObserver('stderr',self.logObserver)
+    def evaluateCommand(self, cmd):
+        """return command state"""
+        result = ShellCommand.evaluateCommand(self, cmd)
+        if not self.logObserver.success:
+            return FAILURE
+        else:
+            return result
 
 class SetGotRevision(SetPropertyFromCommand):
     """Command used to setup got-revision. This is needed since the Source step
