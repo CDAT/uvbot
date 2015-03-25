@@ -1,6 +1,8 @@
 __all__ = [
     'NAME',
 
+    'DEFAULTS',
+
     'OPTIONS',
     'OPTIONORDER',
 
