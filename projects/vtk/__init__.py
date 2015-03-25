@@ -92,7 +92,12 @@ FEATURES = {
     'opengl2': projects.make_feature_cmake_options({
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     }),
-    'icc': ({}, {}),
+    'icc': ({}, {
+        'slaveenv': {
+            'CC': 'icc',
+            'CXX': 'icpc',
+        }
+    }),
     'clang': ({}, {}),
     'tbb': ({}, {}),
     'vs': ({}, {
