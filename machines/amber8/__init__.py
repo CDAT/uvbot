@@ -1,6 +1,6 @@
 r'''
     Machine: amber8.kitwarein.com
-    Owner: vtk-developers@vtk.org
+    Owner: kitware-sysadmin@kitware.com
 '''
 
 from . import slave

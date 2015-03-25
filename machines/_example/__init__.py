@@ -1,6 +1,6 @@
 r'''
     Machine: $HOSTNAME.kitwarein.com
-    Owner: $EMAIL
+    Owner: $EMAIL_OF_WHO_HAS_ROOT
 '''
 
 # Store the slave description in a slave module.
