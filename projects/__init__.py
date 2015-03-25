@@ -80,7 +80,7 @@ def build_config(project, props, features=(), **kwargs):
     return (name, allprops, buildset)
 
 
-def make_feature_cmake_options(options):
+def make_feature_cmake_options(options, extra_without={}, extra_with={}):
     with_feature = {}
     without_feature = {}
 
@@ -89,8 +89,8 @@ def make_feature_cmake_options(options):
         without_feature[k] = off
 
     return (
-        {'configure_options:feature': without_feature},
-        {'configure_options:feature': with_feature},
+        merge_config({'configure_options:feature': without_feature}, extra_without),
+        merge_config({'configure_options:feature': with_feature}, extra_with),
     )
 
 
