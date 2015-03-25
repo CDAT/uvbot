@@ -158,6 +158,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
             properties=buildprops,
             slavenames=[slave.slavename],
             category=builder_category,
+            env=buildprops.get('slaveenv', {}),
             **kwargs
         ))
 
