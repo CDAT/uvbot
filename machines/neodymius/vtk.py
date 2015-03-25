@@ -32,7 +32,6 @@ buildsets = [
         'buildtype': 'release',
         'features': (
             'python',
-            'tcl',
             'java',
 
             'icc',
@@ -58,7 +57,6 @@ glnewbuildsets = [
         'buildtype': 'release',
         'features': (
             'python',
-            'tcl',
             'java',
         ),
     },
