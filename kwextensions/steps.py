@@ -278,7 +278,7 @@ def makeExtraOptionsString(props):
         'prop:ctest_test_timeout' : 180, # 3 mins default timeout.
         'prop:ctest_track' : "buildbot",
         'prop:ctest_track_suffix' : '',
-        }
+    }
     for (key, (value, source)) in props.asDict().iteritems():
         if isinstance(value, str):
             value = value.replace("\\", '/')
