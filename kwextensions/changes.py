@@ -363,8 +363,17 @@ class GitlabMergeRequestPoller(GitlabPoller):
             q.add_filter(('buildstarttime/date', cdash.DateOp.IS_AFTER, datetime.now()))
             msg += ' You may view the test results [here](%s).' % q.get_url('%s/index.php' % self.cdash_host)
 
+        project_info = self.api.getproject(request['project_id'])
+
         # TODO: How to handle branches with the same name over time?
-        msg += ' Kitware developers may monitor the status of testing [here](%s/grid?%s).' % (self.web_host, urllib.urlencode({'branch': request['source_branch']}))
+        msg += ' Kitware developers may monitor the status of testing [here](%s/grid?%s).' % (
+            self.web_host,
+            urllib.urlencode((
+                ('branch', request['source_branch']),
+                ('category', '%s-expected' % project_info['path']),
+                ('category', '%s-exotic' % project_info['path']),
+            )),
+        )
 
         msg += '\n\n%s%s' % (trailers.BRANCH_HEAD_PREFIX, commit['id'])
 
