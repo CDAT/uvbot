@@ -1,4 +1,5 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
+from buildbot.schedulers.timed import Nightly
 from buildbot.changes import filter
 
 
@@ -25,9 +26,8 @@ def make_schedulers(buildnames, secrets):
             reason="ParaView 'merge-request' created/changed.",
             codebases=codebases,
             properties={
-                'ctest_track' : "buildbot-paraview",
-            },
-        ),
+                'ctest_track': 'buildbot-paraview',
+            }),
         AnyBranchScheduler(
             name='ParaView Integration Branch Scheduler',
             change_filter=filter.ChangeFilter(
@@ -38,8 +38,24 @@ def make_schedulers(buildnames, secrets):
             reason="ParaView 'master' changed.",
             codebases=codebases,
             properties={
-                "ctest_empty_binary_directory" : True,
-                'ctest_track' : "master",
-            },
-        ),
+                'ctest_empty_binary_directory': True,
+                'ctest_track': 'master',
+            }),
+        Nightly(
+            name='ParaView Weekly Integration Branch Scheduler',
+            change_filter=filter.ChangeFilter(
+                category='integration-branch',
+                project=poll.REPO),
+            branch='master',
+            dayOfWeek=6, # Saturday
+            hour=23, # 11pm
+            onlyIfChanged=False,
+            builderNames=buildnames,
+            reason='Weekly test exclusion check.',
+            codebases=codebases,
+            properties={
+                'ctest_empty_binary_directory': True,
+                'ctest_track': 'master',
+                'ignore_exclusions': True,
+            }),
     ]

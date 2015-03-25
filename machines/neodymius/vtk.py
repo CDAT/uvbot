@@ -8,24 +8,21 @@ __all__ = [
 
 defprops = {
     'compiler': 'icc-14.0.0',
-}
-env = {
-    'DISPLAY': ':0',
-    'CC': 'icc',
-    'CXX': 'icpc',
-}
 
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'BUILD_TESTING:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
+    'configure_options:builderconfig': {
+        'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData/vtk',
+    },
 
-    'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData/vtk',
+    'slaveenv': {
+        'DISPLAY': ':0',
+    },
 }
 
-allconfig = projects.merge_config(defconfig, {
-    'VTK_BUILD_ALL_MODULES:BOOL': 'ON',
-    'VTK_BUILD_ALL_MODULES_FOR_TESTS:BOOL': 'ON',
+allprops = projects.merge_config(defprops, {
+    'configure_options:builderconfig': {
+        'VTK_BUILD_ALL_MODULES:BOOL': 'ON',
+        'VTK_BUILD_ALL_MODULES_FOR_TESTS:BOOL': 'ON',
+    },
 })
 
 buildsets = [
@@ -35,7 +32,6 @@ buildsets = [
         'buildtype': 'release',
         'features': (
             'python',
-            'tcl',
             'java',
 
             'icc',
@@ -43,23 +39,15 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
-    defprops=defprops,
-    defconfig=allconfig,
-    env=env
-)
+BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets, allprops)
 
 glnewprops = projects.merge_config(defprops, {
     'compiler': 'gcc-4.8.3',
     'ctest_track' : 'VolumeOpenGLNew',
-})
-glnewenv = projects.merge_config(env, {
-    'CC': 'gcc',
-    'CXX': 'g++',
-})
 
-glnewconfig = projects.merge_config(defconfig, {
-    'Moddule_vtkRenderingVolumeOpenGLNew:BOOL': 'ON',
+    'configure_options:builderconfig': {
+        'Module_vtkRenderingVolumeOpenGLNew:BOOL': 'ON',
+    },
 })
 
 glnewbuildsets = [
@@ -69,14 +57,9 @@ glnewbuildsets = [
         'buildtype': 'release',
         'features': (
             'python',
-            'tcl',
             'java',
         ),
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, vtk, glnewbuildsets,
-    defprops=glnewprops,
-    defconfig=glnewconfig,
-    env=glnewenv
-)
+BUILDERS += projects.make_builders(slave.SLAVE, vtk, glnewbuildsets, glnewprops)

@@ -8,7 +8,6 @@ __all__ = [
 
 defprops = {
     'test_include_labels:builderconfig': [
-        'PARAVIEW',
         'CATALYST',
         'PARAVIEWWEB',
     ],
@@ -20,18 +19,16 @@ defprops = {
         'ProbePicking',
         'pvcs-tile-display',
     ],
-}
-env = {
-    'DISPLAY': ':0',
-    # since we're using mesa, no need to do offscreen screenshots.
-    'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
-}
 
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
+    'configure_options:builderconfig': {
+        'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
+    },
+
+    'slaveenv': {
+        'DISPLAY': ':0',
+        # since we're using mesa, no need to do offscreen screenshots.
+        'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
+    },
 }
 
 buildsets = [
@@ -76,8 +73,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
-    defprops=defprops,
-    defconfig=defconfig,
-    env=env
-)
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)

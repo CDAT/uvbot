@@ -1,6 +1,7 @@
-
 __all__ = [
     'NAME',
+
+    'DEFAULTS',
 
     'OPTIONS',
     'OPTIONORDER',
@@ -10,6 +11,16 @@ __all__ = [
 
 NAME = 'paraview'
 
+DEFAULTS = {
+    'test_include_labels:project': [
+        'PARAVIEW',
+    ],
+    'configure_options:project': {
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+        'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
+    }
+}
+
 OPTIONS = {
     'os': {
         'linux': {},
@@ -17,10 +28,14 @@ OPTIONS = {
     },
     'buildtype': {
         'release': {
-            'CMAKE_BUILD_TYPE:STRING': 'Release',
+            'configure_options:project': {
+                'CMAKE_BUILD_TYPE:STRING': 'Release',
+            },
         },
         'debug': {
-            'CMAKE_BUILD_TYPE:STRING': 'Debug',
+            'configure_options:project': {
+                'CMAKE_BUILD_TYPE:STRING': 'Debug',
+            },
         },
     },
     'category': {
@@ -34,5 +49,5 @@ OPTIONS = {
 OPTIONORDER = ('os', 'buildtype',)
 
 FEATURES = {
-    'catalyst': {},
+    'catalyst': ({}, {}),
 }

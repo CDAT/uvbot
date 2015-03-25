@@ -7,9 +7,6 @@ __all__ = [
 ]
 
 defprops = {
-    'test_include_labels:builderconfig': [
-        'PARAVIEW',
-    ],
     'test_excludes:builderconfig': [
         # broken selection on VNC
         'TestYoungsMaterialInterface',
@@ -21,22 +18,19 @@ defprops = {
         'EyeDomeLighting', # unsupported texture format
         'SelectionLabels', # http://www.paraview.org/Bug/view.php?id=15294
     ],
+
+    'configure_options:builderconfig': {
+        'PARAVIEW_DATA_STORE:PATH': '/home/kitware/dashboards/data/paraview',
+
+        'PARAVIEW_USE_VISITBRIDGE': 'ON',
+    },
+
     'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
-}
-env = {
-    'DISPLAY': ':1',
-    'PATH': '/usr/lib64/mpich/bin:${PATH}',
-}
 
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'VTK_LEGACY_REMOVE:BOOL': 'ON',
-    'VTK_ENABLE_CATALYST:BOOL': 'ON',
-
-    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/dashboards/data/paraview',
-
-    'PARAVIEW_USE_VISITBRIDGE': 'ON',
+    'slaveenv': {
+        'DISPLAY': ':1',
+        'PATH': '/usr/lib64/mpich/bin:${PATH}',
+    },
 }
 
 base_features = (
@@ -60,8 +54,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets,
-    defprops=defprops,
-    defconfig=defconfig,
-    env=env
-)
+BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)

@@ -16,7 +16,7 @@ SLAVE = BuildSlave('kamino', secrets.SECRETS['kamino']['password'],
         'distribution': 'osx-10.7-x86_64',
 
         'generator': 'Unix Makefiles',
-        'buildflags': '-l5',
+        'buildflags': '-j5 -l5',
 
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',

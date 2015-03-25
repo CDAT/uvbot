@@ -20,31 +20,30 @@ defprops = {
         'test2', # bogus drivers
         'some.*test.*regex', # runs out of memory
     ],
-}
-# Relevant environment variables for this project.
-env = {
-    'DISPLAY': ':0',
-}
 
-# Common CMake configuration values for this project. The project may provide
-# default configuration to use, so use that if possible.
-#defconfig = project1.CONFIG.copy().update({...})
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-    'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
+    # Common CMake configuration values for this project.
+    'configure_options:builderconfig': {
+        'BUILD_EXAMPLES:BOOL': 'ON',
+        'VTK_DEBUG_LEAKS:BOOL': 'ON',
+        'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
+        'PARAVIEW_DATA_STORE:PATH': '/home/kitware/Dashboards/MyTests/ExternalData',
 
-    'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',
-    'MANTA_BUILD:PATH': '/opt/source/manta-build',
+        'PARAVIEW_BUILD_PLUGIN_MantaView:BOOL': 'ON',
+        'MANTA_BUILD:PATH': '/opt/source/manta-build',
 
-    'smooth_flash:FILEPATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
+        'smooth_flash:FILEPATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperLargeData/smooth.flash',
 
-    'PARAVIEW_ENABLE_COSMOTOOLS:BOOL': 'ON',
-    'GENERIC_IO_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/genericio',
-    'GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
-    'COSMOTOOLS_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
-    'COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
+        'PARAVIEW_ENABLE_COSMOTOOLS:BOOL': 'ON',
+        'GENERIC_IO_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/genericio',
+        'GENERIC_IO_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/genericio-build/libGenericIO.a',
+        'COSMOTOOLS_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/include',
+        'COSMOTOOLS_LIBRARIES:FILEPATH': '/home/kitware/Dashboards/Support/Cosmology/cosmologytools-build/libs/libcosmotools.a',
+    },
+
+    # Relevant environment variables for this project.
+    'slaveenv': {
+        'DISPLAY': ':0',
+    },
 }
 
 # A list of 'buildsets' for a project. Projects have 'options' and 'features'.
@@ -85,17 +84,12 @@ buildsets = [
 # The 'projects' module contains a `make_builders` function which takes the
 # project and buildsets and generates the proper build name and CMake
 # configuration for each.
-BUILDERS = projects.make_builders(slave.SLAVE, project1, buildsets,
-    # The base properties to build upon.
-    defprops=defprops,
-    # The CMake variables to build upon.
-    defconfig=defconfig,
+BUILDERS = projects.make_builders(slave.SLAVE, project1, buildsets, defprops,
     # Other keyword arguments are passed to the BuilderConfig constructor.
     # Important ones may include 'category' for putting the builds into a
     # category for separating the builds out in the view and 'env' for
     # environment variables.
-    category='awesome',
-    env=env
+    category='awesome'
 )
 
 # the 'projects' module contains a `merge_config` function which will join two
@@ -107,11 +101,11 @@ specialprops = projects.merge_config(defprops, {
     # Append an extra test to exclude
     'test_excludes:builderconfig': [
         'flyingpigs', # full moon on Tuesdays
-    ]
-})
-# More environment variables.
-specialenv = projects.merge_config(env, {
-    'PATH': '/path/to/some/tool:${PATH}',
+    ],
+
+    'slaveenv': {
+        'PATH': '/path/to/some/tool:${PATH}',
+    },
 })
 
 specialbuildsets = [
@@ -126,8 +120,4 @@ specialbuildsets = [
 ]
 
 # Make sure to *append* these new buildsets.
-BUILDERS += projects.make_builders(slave.SLAVE, project1, specialbuildsets,
-    defprops=specialprops,
-    defconfig=defconfig,
-    env=qt5env
-)
+BUILDERS += projects.make_builders(slave.SLAVE, project1, specialbuildsets, specialprops)

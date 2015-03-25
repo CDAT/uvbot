@@ -7,6 +7,7 @@ from buildbot.config import BuilderConfig
 
 __all__ = [
     'build_config',
+    'make_feature_cmake_options',
     'make_builders',
     'merge_config',
     'PROJECTS',
@@ -24,7 +25,7 @@ PROJECTS = [
 ]
 
 
-def build_config(project, defconfig={}, features=(), **kwargs):
+def build_config(project, props, features=(), **kwargs):
     avail_options = set(project.OPTIONS.keys())
     avail_features = set(project.FEATURES.keys())
 
@@ -54,13 +55,13 @@ def build_config(project, defconfig={}, features=(), **kwargs):
     if unknown_features:
         raise RuntimeError('unknown features: %s' % ', '.join(unknown_features))
 
-    config = defconfig.copy()
+    allprops = props.copy()
 
     for optname, optvalues in project.OPTIONS.items():
         if buildset[optname] not in optvalues:
             raise RuntimeError('unknown value for option %s: %s' % (optname, buildset[optname]))
 
-        config.update(optvalues[buildset[optname]])
+        allprops = merge_config(allprops, optvalues[buildset[optname]])
 
     nameparts = []
     for option in project.OPTIONORDER:
@@ -70,33 +71,67 @@ def build_config(project, defconfig={}, features=(), **kwargs):
     for feature in sorted(avail_features):
         use_feature = 0
         if feature in featureset:
-            name += '+%s' % feature
+            if not feature.startswith('_'):
+                name += '+%s' % feature
             use_feature = 1
-        for k, v in project.FEATURES[feature].items():
-            config[k] = v[use_feature]
+        props = project.FEATURES[feature][use_feature]
+        allprops = merge_config(allprops, props)
 
-    return (name, config, buildset)
+    return (name, allprops, buildset)
 
 
-def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactory=None, dirlen=0, **kwargs):
-    configs = {}
+def make_feature_cmake_options(options, extra_without={}, extra_with={}):
+    with_feature = {}
+    without_feature = {}
+
+    for k, (off, on) in options.items():
+        with_feature[k] = on
+        without_feature[k] = off
+
+    return (
+        merge_config({'configure_options:feature': without_feature}, extra_without),
+        merge_config({'configure_options:feature': with_feature}, extra_with),
+    )
+
+
+def _merge_options(props, key, default):
+    subkeys = [
+        'buildslave',
+        'builderconfig',
+        'project',
+        'feature',
+    ]
+    merged = merge_config(props, {key: default})
+    for subkey in subkeys:
+        fullkey = '%s:%s' % (key, subkey)
+        if fullkey not in props:
+            continue
+        merged = merge_config(merged, {key: props[fullkey]})
+    return merged
+
+
+def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
+    baseprops = merge_config(project.DEFAULTS.copy(), props)
+
+    setprops = {}
     for buildset in buildsets:
-        name, conf, buildset = build_config(project, defconfig=defconfig, **buildset)
-        configs[name] = (conf, buildset)
-
-    if not myfactory is None:
-        raise RuntimeError("'myfactory' is no longer supported!")
+        name, buildsetprops, buildset = build_config(project, baseprops, **buildset)
+        setprops[name] = (buildsetprops, buildset)
 
     # import factory module for the provided project.
     factory = import_module("%s.factory" % project.__name__)
 
-    builders = []
-    for name, (config, buildset) in configs.items():
-        props = defprops.copy()
-        props['configure_options:builderconfig'] = config
+    composite_keys = (
+        ('configure_options', {}),
+        ('test_include_labels', []),
+        ('test_excludes', []),
+        ('upload_file_patterns', []),
+    )
 
-        if dirlen:
-            kwargs['slavebuilddir'] = hashlib.md5(name).hexdigest()[:dirlen]
+    builders = []
+    for name, (buildprops, buildset) in setprops.items():
+        for key, default in composite_keys:
+            buildprops = _merge_options(buildprops, key, default)
 
         # if buildset has a option named category, use that to generate a
         # category for the builder. If not, we simply use the project's name as
@@ -112,10 +147,15 @@ def make_builders(slave, project, buildsets, defprops={}, defconfig={}, myfactor
         except KeyError:
             builder_category = project.NAME
 
+        buildname = '%s-%s-%s' % (project.NAME, slave.slavename, name)
+
+        if dirlen:
+            kwargs['slavebuilddir'] = hashlib.md5(buildname).hexdigest()[:dirlen]
+
         builders.append(BuilderConfig(
-            name='%s-%s-%s' % (project.NAME, slave.slavename, name),
+            name=buildname,
             factory=factory.get_factory(buildset),
-            properties=props,
+            properties=buildprops,
             slavenames=[slave.slavename],
             category=builder_category,
             **kwargs
@@ -133,7 +173,7 @@ def merge_config(base, *args):
                 # Merge dictionaries.
                 if type(v) == dict:
                     if type(output[k]) == dict:
-                        merge_config(output[k], v)
+                        output[k] = merge_config(output[k], v)
                     else:
                         raise RuntimeError('incompatible entries with key \'%s\'' % k)
 

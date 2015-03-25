@@ -20,21 +20,17 @@ defprops = {
         'vtkRenderingCoreCxx-TestTilingCxx',
         'vtkRenderingOpenGLCxx-TestValuePainter',
     ],
+
+    'configure_options:builderconfig': {
+        'VTK_DATA_STORE:PATH': '/home/kitware/dashboards/data/vtk',
+    },
+
     'referencedir': '/home/kitware/dashboards/buildbot-share/vtk',
-}
-env = {
-    'DISPLAY': ':1',
-    'PATH': '/usr/lib64/mpich/bin:${PATH}',
-}
 
-defconfig = {
-    'BUILD_EXAMPLES:BOOL': 'ON',
-    'BUILD_TESTING:BOOL': 'ON',
-    'VTK_DEBUG_LEAKS:BOOL': 'ON',
-    'VTK_LEGACY_REMOVE:BOOL': 'ON',
-    'VTK_ENABLE_CATALYST:BOOL': 'ON',
-
-    'VTK_DATA_STORE:PATH': '/home/kitware/dashboards/data/vtk',
+    'slaveenv': {
+        'DISPLAY': ':1',
+        'PATH': '/usr/lib64/mpich/bin:${PATH}',
+    },
 }
 
 base_features = (
@@ -52,8 +48,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets,
-    defprops=defprops,
-    defconfig=defconfig,
-    env=env
-)
+BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets, defprops)

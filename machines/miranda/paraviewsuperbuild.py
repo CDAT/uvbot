@@ -7,87 +7,80 @@ __all__ = [
 ]
 
 defprops = {
-    'upload_file_patterns:builderconfig': [ '*.zip', '*.exe' ],
-    'generator': 'Ninja',
-    'buildflags': '-l1',
     'test_excludes:builderconfig': [
         # Since server is MPI enabled, it needs to be run with MPI.
         # We'll fix that at some point.
         'PrintVersionServer',
     ],
-}
 
-defconfig = {
-    'BUILD_TESTING:BOOL': 'ON',
+    'configure_options:builderconfig': {
+        "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
 
-    'USE_NONFREE_COMPONENTS:BOOL': 'ON',
-    #'PARAVIEW_BUILD_WEB_DOCUMENTATION:BOOL': 'ON',
+        # Location of the ftjam freetype build system executable
+        "FTJAM_EXECUTABLE:FILEPATH": "C:/Tools/ftjam-2.5.2/jam.exe",
 
-    # Superbuild Variables
-    "ENABLE_acusolve:BOOL": "ON",
-    "ENABLE_boost:BOOL": "ON",
-    "ENABLE_cgns:BOOL": "ON",
-    "ENABLE_matplotlib:BOOL": "ON",
-    "ENABLE_mpi:BOOL": "ON",
-    "ENABLE_numpy:BOOL": "ON",
-    "ENABLE_paraview:BOOL": "ON",
-    "ENABLE_qt:BOOL": "ON",
-    "ENABLE_silo:BOOL": "ON",
-    "ENABLE_visitbridge:BOOL": "ON",
-    "ENABLE_vistrails:BOOL": "ON",
-    "ENABLE_netcdf:BOOL": "ON",
+        # Use system qt
+        "USE_SYSTEM_qt:BOOL": "ON",
 
-    "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
+        # Package the system qt files.
+        "PACKAGE_SYSTEM_QT:BOOL": "ON",
 
-    # Location of the ftjam freetype build system executable
-    "FTJAM_EXECUTABLE:FILEPATH": "C:/Tools/ftjam-2.5.2/jam.exe",
+        #Location where source tar-balls are (to be) downloaded.
+        "download_location:PATH":"c:/bbd/superbuild-downloads",
+    },
 
-    # Use system qt
-    "USE_SYSTEM_qt:BOOL": "ON",
-
-    # Package the system qt files.
-    "PACKAGE_SYSTEM_QT:BOOL": "ON",
-
-    #Location where source tar-balls are (to be) downloaded.
-    "download_location:PATH":"c:/bbd/superbuild-downloads",
-}
-
-defenv = {
-    'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+    'slaveenv': {
+        'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+    },
 }
 
 #------------------------------------------------------------------------------
-# VS9 (2008) 64-bit properties and environment.
+vs9props = {
+    'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcvarsall.bat',
+}
+
 #------------------------------------------------------------------------------
-vs9x64props = {
+ninjaprops = {
+    'generator': 'Ninja',
+    'buildflags': '-l9',
+}
+
+#------------------------------------------------------------------------------
+x64props = {
+    'generator': 'Visual Studio 9 2008 Win64',
     'compiler': 'msvc-2008-x64',
-    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
     'vcvarsargument': 'amd64',
+
+    'configure_options:builderconfig': {
+        'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x64/bin/qmake.exe',
+
+        'PYTHON_EXECUTABLE:FILEPATH': 'C:/Tools/Python27/x64/python.exe',
+        'PYTHON_INCLUDE_DIR:PATH': 'C:/Tools/Python27/x64/include',
+        'PYTHON_LIBRARY:FILEPATH': 'C:/Tools/Python27/x64/libs/python27.lib',
+    },
+
+    'slaveenv': {
+        'PATH': 'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
+    },
 }
 
-vs9x64env = {
-    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
-}
-
-vs9x64config = {
-    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x64/bin/qmake.exe'
-}
-
-#------------------------------------------------------------------------------
-# VS9 (2008) 32-bit properties and environment.
-#------------------------------------------------------------------------------
-vs9x32props = {
-    'compiler': 'msvc-2008-x86',
-    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+x32props = {
+    'generator': 'Visual Studio 9 2008',
+    'compiler': 'msvc-2008-x32',
     'vcvarsargument': 'x86',
-}
 
-vs9x32env= {
-    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
-}
+    'configure_options:builderconfig': {
+        'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x32/bin/qmake.exe',
 
-vs9x32config = {
-    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x32/bin/qmake.exe'
+        # We don't have 32-bit Python on this machine for dashboards.
+        #'PYTHON_EXECUTABLE:FILEPATH': 'C:/Tools/Python27/x32/python.exe',
+        #'PYTHON_INCLUDE_DIR:PATH': 'C:/Tools/Python27/x32/include',
+        #'PYTHON_LIBRARY:FILEPATH': 'C:/Tools/Python27/x32/libs/python27.lib',
+    },
+
+    'slaveenv': {
+        'PATH': 'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
+    },
 }
 
 #------------------------------------------------------------------------------
@@ -101,11 +94,8 @@ buildsets = [
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
-    defprops=projects.merge_config(defprops, vs9x64props),
-    defconfig=projects.merge_config(defconfig, vs9x64config),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x64env)
-)
+    projects.merge_config(defprops, vs9props, x64props, ninjaprops),
+    dirlen=8)
 
 #------------------------------------------------------------------------------
 buildsets = [
@@ -117,9 +107,6 @@ buildsets = [
     },
 ]
 
-BUILDERS.extend(projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
-    defprops=projects.merge_config(defprops, vs9x32props),
-    defconfig=projects.merge_config(defconfig, vs9x32config),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x32env)
-))
+BUILDERS += projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
+    projects.merge_config(defprops, vs9props, x32props, ninjaprops),
+    dirlen=8)
