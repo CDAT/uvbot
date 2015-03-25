@@ -283,7 +283,7 @@ def makeExtraOptionsString(props):
         if isinstance(value, str):
             value = value.replace("\\", '/')
         props_dict["prop:%s" % key] = value
-    props_dict['ctest_configure_options'] = props.getProperty('configure_options')
+    props_dict['ctest_configure_options'] = ';'.join(['-D%s=%s' % i for i in props.getProperty('configure_options', {}).items()])
     props_dict['ctest_test_excludes'] = '|'.join(props.getProperty('test_excludes'))
     props_dict['ctest_test_includes'] = ''
     if props.getProperty('ignore_exclusions', False):
