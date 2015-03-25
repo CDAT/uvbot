@@ -8,6 +8,10 @@ import vtksuperbuild.poll
 import paraview.poll
 import paraviewsuperbuild.poll
 
+# CMB
+import cmb.poll
+import cmbsuperbuild.poll
+
 
 __all__ = [
     'make_pollers',
@@ -37,6 +41,10 @@ _add_project_poll(vtksuperbuild.poll)
 # ParaView
 _add_project_poll(paraview.poll)
 _add_project_poll(paraviewsuperbuild.poll)
+
+# CMB
+_add_project_poll(cmb.poll)
+_add_project_poll(cmbsuperbuild.poll)
 
 
 def make_pollers(secrets):
