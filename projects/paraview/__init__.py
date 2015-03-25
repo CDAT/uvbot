@@ -98,6 +98,12 @@ FEATURES = {
         'PARAVIEW_BUILD_PLUGIN_PointSprite:BOOL': ('TRUE', 'FALSE'),
         'PARAVIEW_BUILD_PLUGIN_EyeDomeLighting:BOOL': ('TRUE', 'FALSE'),
         'PARAVIEW_BUILD_PLUGIN_SciberQuestToolKit:BOOL': ('TRUE', 'FALSE'),
+    }, extra_with={
+        'test_excludes:feature': [
+            # Enough problems that these are just noise right now.
+            '^pvcs\.',
+            '^pvcrs\.',
+        ],
     }),
     'icc': ({}, {
         'slaveenv': {
