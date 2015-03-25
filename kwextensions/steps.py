@@ -285,7 +285,9 @@ def makeExtraOptionsString(props):
         props_dict["prop:%s" % key] = value
     props_dict['ctest_configure_options'] = props.getProperty('configure_options')
     props_dict['ctest_test_excludes'] = '|'.join(props.getProperty('test_excludes'))
+    props_dict['ctest_test_includes'] = ''
     if props.getProperty('ignore_exclusions', False):
+        props_dict['ctest_test_includes'] = props_dict['ctest_test_excludes']
         props_dict['ctest_test_excludes'] = ''
     props_dict['ctest_test_include_labels'] = '|'.join(props.getProperty('test_include_labels'))
     props_dict['ctest_upload_file_patterns'] = ';'.join(props.getProperty('upload_file_patterns'))
@@ -313,6 +315,9 @@ def makeExtraOptionsString(props):
 
             # Options to pass to the configure stage.
             set (ctest_configure_options "%(ctest_configure_options)s")
+
+            # Test includes
+            set (ctest_test_includes "%(ctest_test_includes)s")
 
             # Test excludes
             set (ctest_test_excludes "%(ctest_test_excludes)s")
