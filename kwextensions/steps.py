@@ -64,7 +64,7 @@ def failureForSubmodule(step):
 class SubmoduleForkLogObserver(LogLineObserver):
     success = True
     def lineReceived(self, line, lineType):
-        if line.find('Fetch failed, continuing...') != -1:
+        if line.find('Unable to checkout') != -1 and line.find('in submodule path') != -1:
             self.success = False
     def outLineReceived(self,line):
         self.lineReceived(line,'out')
