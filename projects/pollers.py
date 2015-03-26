@@ -2,6 +2,7 @@ from kwextensions.changes import GitlabMergeRequestPoller, GitlabIntegrationBran
 
 # VTK
 import vtk.poll
+import vtksuperbuild.poll
 
 # ParaView
 import paraview.poll
@@ -31,6 +32,7 @@ def _add_project_poll(poll):
 
 # VTK
 _add_project_poll(vtk.poll)
+_add_project_poll(vtksuperbuild.poll)
 
 # ParaView
 _add_project_poll(paraview.poll)
