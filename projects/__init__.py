@@ -128,6 +128,8 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         ('upload_file_patterns', []),
     )
 
+    default_category = project.OPTIONS.get('category', {}).get('default')
+
     builders = []
     for name, (buildprops, buildset) in setprops.items():
         for key, default in composite_keys:
@@ -136,16 +138,16 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         # if buildset has a option named category, use that to generate a
         # category for the builder. If not, we simply use the project's name as
         # the category.
-        try:
+        builder_category = project.NAME
+        if 'category' in buildset:
             category = buildset['category']
             builder_category = "-".join([project.NAME, category])
 
-            # add category to track name if its not the default.
-            default_category = project.OPTIONS.get('category').get('default')
             if category != default_category:
-                props['ctest_track_suffix'] = "%s-%s" % (props.get('ctest_track_suffix',""), category)
-        except KeyError:
-            builder_category = project.NAME
+                if 'ctest_track_suffix' in buildprops:
+                    buildprops['ctest_track_suffix'] += '-%s' % category
+                else:
+                    buildprops['ctest_track_suffix'] = '-%s' % category
 
         buildname = '%s-%s-%s' % (project.NAME, slave.slavename, name)
 
