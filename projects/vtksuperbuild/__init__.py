@@ -1,5 +1,6 @@
 __all__ = [
     'NAME',
+    'DEFAULTS',
     'OPTIONS',
     'OPTIONORDER',
     'FEATURES',
@@ -7,11 +8,42 @@ __all__ = [
 
 NAME = 'vtksuperbuild'
 
+DEFAULTS = {
+    'generator': 'Unix Makefiles',
+    'buildflags': '-j1',
+
+    'upload_file_patterns:project': [
+        '*.tar.gz',
+        '*.tgz',
+    ],
+
+    'configure_options:project': {
+        'BUILD_TESTING:BOOL': 'ON',
+        'ENABLE_vtk:BOOL': 'ON',
+        "GENERATE_JAVA_PACKAGE:BOOL": "ON",
+    },
+}
+
+
 OPTIONS = {
     'os': {
         'linux': {},
-        'windows': {},
-        'osx': {},
+        'windows': {
+            'upload_file_patterns:project': [
+                '*.zip',
+                '*.exe',
+            ],
+
+            'generator': 'Ninja',
+            },
+        'osx': {
+            'upload_file_patterns:project': [
+                '*.dmg',
+            ],
+
+            # CMake is picking make -i as default, which ends up ignoring errors and wasting time!
+            'MAKE_COMMAND:STRING': '/usr/bin/make',
+            },
     },
     'libtype': {
         'shared': {

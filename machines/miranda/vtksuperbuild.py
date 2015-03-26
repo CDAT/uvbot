@@ -7,79 +7,90 @@ __all__ = [
 ]
 
 defprops = {
-    'upload_file_patterns:builderconfig': [ '*.zip', '*.exe' ],
-    'generator': 'Ninja',
-    'buildflags': '-l1',
     'test_excludes:builderconfig': [
         # Since server is MPI enabled, it needs to be run with MPI.
         # We'll fix that at some point.
         'PrintVersionServer',
     ],
+
+    'configure_options:builderconfig': {
+        "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
+
+        # Location of the ftjam freetype build system executable
+        "FTJAM_EXECUTABLE:FILEPATH": "C:/Tools/ftjam-2.5.2/jam.exe",
+
+        #Location where source tar-balls are (to be) downloaded.
+        "download_location:PATH":"c:/bbd/superbuild-downloads",
+
+        #common options for java on this machine
+        "JOGL_GLUE:FILEPATH": "C:/Users/utkarsh/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.0.2/gluegen-rt-2.0.2.jar",
+        "JOGL_LIB:FILEPATH": "C:/Users/utkarsh/.m2/repository/org/jogamp/jogl/jogl-all/2.0.2/jogl-all-2.0.2.jar",
+    },
+
+    'slaveenv': {
+        'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+    },
 }
 
-defconfig = {
-    'BUILD_TESTING:BOOL': 'OFF',
 
-    # Superbuild Variables
-    "ENABLE_vtk:BOOL": "ON",
-    "GENERATE_JAVA_PACKAGE:BOOL": "ON",
-    "JAVA_AWT_INCLUDE_PATH:PATH": "${JDK_HOME}/include",
-    "JAVA_INCLUDE_PATH:PATH": "${JDK_HOME}/include",
-    "JAVA_INCLUDE_PATH2:PATH": "${JDK_HOME}/include/win32",
-    "JAVA_JVM_LIBRARY:PATH": "${JDK_HOME}/lib/jvm.lib",
-    "JAVA_AWT_LIBRARY:PATH": "${JDK_HOME}/lib/jawt.lib",
-    "Java_JAR_EXECUTABLE:FILEPATH": "${JDK_HOME}/bin/jar.exe",
-    "Java_JAVAC_EXECUTABLE:FILEPATH": "${JDK_HOME}/bin/javac.exe",
-    "Java_JAVADOC_EXECUTABLE:FILEPATH": "${JDK_HOME}/bin/javadoc.exe",
-    "Java_JAVAH_EXECUTABLE:FILEPATH": "${JDK_HOME}/bin/javah.exe",
-    "Java_JAVA_EXECUTABLE:FILEPATH": "${JDK_HOME}/bin/java.exe",
-    "JOGL_GLUE:FILEPATH": "${M2_REPO}/org/jogamp/gluegen/gluegen-rt/2.0.2/gluegen-rt-2.0.2.jar",
-    "JOGL_LIB:FILEPATH": "${M2_REPO}/org/jogamp/jogl/jogl-all/2.0.2/jogl-all-2.0.2.jar",
-
-    "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
-
-    # Location of the ftjam freetype build system executable
-    "FTJAM_EXECUTABLE:FILEPATH": "C:/Tools/ftjam-2.5.2/jam.exe",
-
-    #Location where source tar-balls are (to be) downloaded.
-    "download_location:PATH":"c:/bbd/superbuild-downloads",
-}
-
-defenv = {
-    'JSDUCK_HOME': 'C:/Tools/jsduck-4.4.1',
+#------------------------------------------------------------------------------
+vs9props = {
+    'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcvarsall.bat',
 }
 
 #------------------------------------------------------------------------------
-# VS9 (2008) 64-bit properties and environment.
+ninjaprops = {
+    'generator': 'Ninja',
+    'buildflags': '-l9',
+}
+
 #------------------------------------------------------------------------------
-vs9x64props = {
+x64props = {
+    'generator': 'Visual Studio 9 2008 Win64',
     'compiler': 'msvc-2008-x64',
-    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
     'vcvarsargument': 'amd64',
+
+    'configure_options:builderconfig': {
+        "JAVA_AWT_INCLUDE_PATH:PATH": "C:/Dashboards/Support/jdk7-x64/include",
+        "JAVA_INCLUDE_PATH:PATH": "C:/Dashboards/Support/jdk7-x64/include",
+        "JAVA_INCLUDE_PATH2:PATH": "C:/Dashboards/Support/jdk7-x64/include/win32",
+        "JAVA_JVM_LIBRARY:PATH": "C:/Dashboards/Support/jdk7-x64/lib/jvm.lib",
+        "JAVA_AWT_LIBRARY:PATH": "C:/Dashboards/Support/jdk7-x64/lib/jawt.lib",
+        "Java_JAR_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x64/bin/jar.exe",
+        "Java_JAVAC_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x64/bin/javac.exe",
+        "Java_JAVADOC_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x64/bin/javadoc.exe",
+        "Java_JAVAH_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x64/bin/javah.exe",
+        "Java_JAVA_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x64/bin/java.exe",
+    },
+
+    'slaveenv': {
+        'JDK_HOME': 'C:/Dashboards/Support/jdk7-x64'
+        'PATH': 'C:/Tools/jom;${JDK_HOME}/jre/bin;${PATH}'
+    },
 }
 
-vs9x64env = {
-    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x64/bin;${PATH}'
-}
-
-vs9x64config = {
-    'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Tools/qt-4.8.4/vs2008-x64/bin/qmake.exe'
-}
-
-#------------------------------------------------------------------------------
-# VS9 (2008) 32-bit properties and environment.
-#------------------------------------------------------------------------------
-vs9x32props = {
-    'compiler': 'msvc-2008-x86',
-    'vcvarsall': 'C:\\Program Files (x86)\\Microsoft Visual Studio 9.0\\VC\\vcvarsall.bat',
+x32props = {
+    'generator': 'Visual Studio 9 2008',
+    'compiler': 'msvc-2008-x32',
     'vcvarsargument': 'x86',
-}
 
-vs9x32env= {
-    'PATH':'C:/Tools/jom;C:/Tools/qt-4.8.4/vs2008-x32/bin;${PATH}'
-}
+    'configure_options:builderconfig': {
+        "JAVA_AWT_INCLUDE_PATH:PATH": "C:/Dashboards/Support/jdk7-x32/include",
+        "JAVA_INCLUDE_PATH:PATH": "C:/Dashboards/Support/jdk7-x32/include",
+        "JAVA_INCLUDE_PATH2:PATH": "C:/Dashboards/Support/jdk7-x32/include/win32",
+        "JAVA_JVM_LIBRARY:PATH": "C:/Dashboards/Support/jdk7-x32/lib/jvm.lib",
+        "JAVA_AWT_LIBRARY:PATH": "C:/Dashboards/Support/jdk7-x32/lib/jawt.lib",
+        "Java_JAR_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x32/bin/jar.exe",
+        "Java_JAVAC_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x32/bin/javac.exe",
+        "Java_JAVADOC_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x32/bin/javadoc.exe",
+        "Java_JAVAH_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x32/bin/javah.exe",
+        "Java_JAVA_EXECUTABLE:FILEPATH": "C:/Dashboards/Support/jdk7-x32/bin/java.exe",
+    },
 
-vs9x32config = {
+    'slaveenv': {
+        'JDK_HOME': 'C:/Dashboards/Support/jdk7-x64'
+        'PATH': 'C:/Tools/jom;${JDK_HOME}/jre/bin;${PATH}'
+    },
 }
 
 #------------------------------------------------------------------------------
@@ -93,11 +104,8 @@ buildsets = [
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets,
-    defprops=projects.merge_config(defprops, vs9x64props),
-    defconfig=projects.merge_config(defconfig, vs9x64config),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x64env)
-)
+    projects.merge_config(defprops, vs9props, x64props, ninjaprops),
+    dirlen=8)
 
 #------------------------------------------------------------------------------
 buildsets = [
@@ -109,9 +117,6 @@ buildsets = [
     },
 ]
 
-BUILDERS.extend(projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets,
-    defprops=projects.merge_config(defprops, vs9x32props),
-    defconfig=projects.merge_config(defconfig, vs9x32config),
-    dirlen=8,
-    env=projects.merge_config(defenv, vs9x32env)
-))
+BUILDERS += projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets,
+    projects.merge_config(defprops, vs9props, x32props, ninjaprops),
+    dirlen=8)

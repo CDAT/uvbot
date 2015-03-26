@@ -21,30 +21,14 @@ from kwextensions.steps import CTestDashboard,\
                                CTestExtraOptionsDownload,\
                                SetCTestBuildNameProperty
 
-@properties.renderer
-def _extra(props):
-    vtk_src_dir = "%s/source-vtk" % props.getProperty("builddir")
-    vtk_src_dir = vtk_src_dir.replace("\\", "/")
-    extra_options = [
-        "-DVTK_FROM_GIT:BOOL=OFF",
-        "-DVTK_FROM_SOURCE_DIR:BOOL=ON",
-        "-DVTK_SOURCE_DIR:PATH=%s" % vtk_src_dir,
-        ]
-    return """
-           # Extend the ctest_configure_options to pass options that set
-           # the VTK source dir for the Superbuild to use
-           set (ctest_configure_options_extra "%s")
-           set (ctest_configure_options "${ctest_configure_options};${ctest_configure_options_extra}")
-           """ % ";".join(extra_options)
-
 def get_source_steps(sourcedir="source"):
     codebase = projects.get_codebase_name(poll.REPO)
     update = Git(repourl=Interpolate("%(src:"+codebase+":repository)s"),
         mode='incremental',
+        method='clean',
         submodules=False,
         workdir=sourcedir,
         reference=Property("referencedir"),
-        haltOnFailure = True,
         codebase=codebase,
         env={'GIT_SSL_NO_VERIFY': 'true'})
 
@@ -59,12 +43,7 @@ def get_factory(buildset):
     factory as needed."""
     factory = BuildFactory()
 
-    codebases = [projects.get_codebase_name(poll.REPO),
-                 projects.get_codebase_name(vtk_poll.REPO)]
-
-    # Add steps to checkout Vtk codebase.
-    for step in get_vtk_source_steps(sourcedir="source-vtk"):
-        factory.addStep(step)
+    codebases = [projects.get_codebase_name(poll.REPO)]
 
     # Add steps to checkout VtkSuperbuild codebase.
     for step in get_source_steps():
