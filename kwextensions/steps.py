@@ -62,7 +62,8 @@ def failureForSubmodule(step):
     return output.find('Unable to checkout') != -1 and output.find('in submodule path') != -1
 
 class SubmoduleForkLogObserver(LogLineObserver):
-    success = True
+    def __init__(self):
+        self.success = True
     def lineReceived(self, line, lineType):
         if line.find('Unable to checkout') != -1 and line.find('in submodule path') != -1:
             self.success = False
