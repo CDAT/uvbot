@@ -128,7 +128,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         ('upload_file_patterns', []),
     )
 
-    default_category = project.OPTIONS.get('category').get('default')
+    default_category = project.OPTIONS.get('category', {}).get('default')
 
     builders = []
     for name, (buildprops, buildset) in setprops.items():
