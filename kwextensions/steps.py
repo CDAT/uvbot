@@ -59,13 +59,17 @@ def failureForSubmodule(step):
     from buildbot.status.builder import FAILURE
     lastStep = step.build.getStatus().getSteps()[0]
     output = lastStep.getLogs()[0].getText()
-    return output.find('Unable to checkout') != -1 and output.find('in submodule path') != -1
+    hasMsg1 = output.find('Unable to checkout') != -1 and output.find('in submodule path') != -1
+    hasMsg2 = output.find('Unable to find current revision in submodule path') != -1
+    return hasMsg1 or hasMsg2
 
 class SubmoduleForkLogObserver(LogLineObserver):
     def __init__(self):
         self.success = True
     def lineReceived(self, line, lineType):
         if line.find('Unable to checkout') != -1 and line.find('in submodule path') != -1:
+            self.success = False
+        if line.find('Unable to find current revision in submodule path') != -1:
             self.success = False
     def outLineReceived(self,line):
         self.lineReceived(line,'out')
