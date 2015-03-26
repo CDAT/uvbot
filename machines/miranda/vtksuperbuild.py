@@ -7,12 +7,6 @@ __all__ = [
 ]
 
 defprops = {
-    'test_excludes:builderconfig': [
-        # Since server is MPI enabled, it needs to be run with MPI.
-        # We'll fix that at some point.
-        'PrintVersionServer',
-    ],
-
     'configure_options:builderconfig': {
         "7Z_EXE:FILEPATH": "C:/Program Files/7-Zip/7z.exe",
 
