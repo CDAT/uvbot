@@ -34,6 +34,9 @@ SLAVE = BuildSlave('_example', secrets.SECRETS['_example']['password'],
         # is `-l#` (load average) for machines with concurrent builds to not
         # swamp the machine.
         'buildflags': '-j9',
+        # If a project supports parallel testing, this is the parallel testing
+        # level that will be given to ctest for this machine
+        'maximum_parallel_level': 9
 
         # CMake options *all* projects with this slave should receive.
         'configure_options:buildslave': {
