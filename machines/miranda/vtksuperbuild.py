@@ -64,7 +64,7 @@ x64props = {
     },
 
     'slaveenv': {
-        'JDK_HOME': 'C:/Dashboards/Support/jdk7-x64'
+        'JDK_HOME': 'C:/Dashboards/Support/jdk7-x64',
         'PATH': 'C:/Tools/jom;${JDK_HOME}/jre/bin;${PATH}'
     },
 }
@@ -88,7 +88,7 @@ x32props = {
     },
 
     'slaveenv': {
-        'JDK_HOME': 'C:/Dashboards/Support/jdk7-x64'
+        'JDK_HOME': 'C:/Dashboards/Support/jdk7-x64',
         'PATH': 'C:/Tools/jom;${JDK_HOME}/jre/bin;${PATH}'
     },
 }

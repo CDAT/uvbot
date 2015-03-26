@@ -60,8 +60,19 @@ OPTIONS = {
 OPTIONORDER = ('os', 'libtype', 'buildtype')
 
 FEATURES = {
-    'superbuild': {},
-    'osx10.7': {},
-    '32bit': {},
-    '64bit': {},
+    'superbuild': ({}, {}),
+    'osx10.5': ({}, {
+        'configure_options:feature': {
+            'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk',
+            'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.5',
+        },
+    }),
+    'osx10.7': ({}, {
+        'configure_options:feature': {
+            'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk',
+            'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.7',
+        },
+    }),
+    '32bit': ({}, {}),
+    '64bit': ({}, {}),
 }

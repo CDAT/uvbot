@@ -21,6 +21,13 @@ from kwextensions.steps import CTestDashboard,\
                                CTestExtraOptionsDownload,\
                                SetCTestBuildNameProperty
 
+@properties.renderer
+def _extra(props):
+    extra_options = [
+        ]
+    return """
+           """
+
 def get_source_steps(sourcedir="source"):
     codebase = projects.get_codebase_name(poll.REPO)
     update = Git(repourl=Interpolate("%(src:"+codebase+":repository)s"),
