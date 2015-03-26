@@ -18,6 +18,8 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
         'generator': 'Unix Makefiles',
         'buildflags': '-j9',
 
+        'maximum_parallel_level': 9,
+
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
             'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',

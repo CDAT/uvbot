@@ -21,6 +21,8 @@ SLAVE = BuildSlave('megas', secrets.SECRETS['megas']['password'],
 
         'catalyst:upload_source_tarball' : 1,
 
+        'maximum_parallel_level': 5,
+
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
             'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
