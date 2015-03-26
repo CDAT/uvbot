@@ -144,10 +144,10 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
             builder_category = "-".join([project.NAME, category])
 
             if category != default_category:
-                if 'ctest_track_suffix' in props:
-                    props['ctest_track_suffix'] += '-%s' % category
+                if 'ctest_track_suffix' in buildprops:
+                    buildprops['ctest_track_suffix'] += '-%s' % category
                 else:
-                    props['ctest_track_suffix'] = '-%s' % category
+                    buildprops['ctest_track_suffix'] = '-%s' % category
 
         buildname = '%s-%s-%s' % (project.NAME, slave.slavename, name)
 
