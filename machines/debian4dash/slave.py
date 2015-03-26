@@ -19,6 +19,8 @@ SLAVE = BuildSlave('debian4dash', secrets.SECRETS['debian4dash']['password'],
         'generator': 'Unix Makefiles',
         'buildflags': '-j3',
 
+        'maximum_parallel_level': 3,
+
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
             'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',

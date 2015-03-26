@@ -21,6 +21,7 @@ DEFAULTS = {
         'VTK_LEGACY_REMOVE:BOOL': 'ON',
         'VTK_USER_LARGE_DATA:BOOL': 'ON',
     },
+    'supports_parallel_testing:project' : True,
 }
 
 OPTIONS = {

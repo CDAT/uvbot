@@ -127,6 +127,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         ('test_include_labels', []),
         ('test_excludes', []),
         ('upload_file_patterns', []),
+        ('supports_parallel_testing', False),
     )
 
     default_category = project.OPTIONS.get('category', {}).get('default')

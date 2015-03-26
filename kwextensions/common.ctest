@@ -1,6 +1,7 @@
 # ctest_extra_options_file: file to include that defines extra variables like
 #                           ctest_configure_options, ctest_test_excludes,
 #                           ctest_test_include_labels,
+#                           ctest_parallel_level,
 #                           ctest_model : dashboard model to use.
 #                           ctest_track : dashboard track
 #                           CTEST_COMMAND
@@ -120,6 +121,9 @@ if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";te
     endif ()
     if (ctest_test_excludes)
         list(APPEND test_args EXCLUDE "${ctest_test_excludes}")
+    endif ()
+    if (ctest_parallel_level)
+        list(APPEND test_args PARALLEL_LEVEL "${ctest_parallel_level}")
     endif ()
     ctest_test(
         ${test_args}

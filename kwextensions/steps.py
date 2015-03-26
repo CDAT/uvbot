@@ -315,6 +315,8 @@ def makeExtraOptionsString(props):
     if props.getProperty('ignore_exclusions', False):
         props_dict['ctest_test_includes'] = props_dict['ctest_test_excludes']
         props_dict['ctest_test_excludes'] = ''
+    if props.getProperty('supports_parallel_tests', False):
+        props_dict['ctest_parallel_level'] = props.getProperty('maximum_parallel_level',1)
     props_dict['ctest_test_include_labels'] = '|'.join(props.getProperty('test_include_labels'))
     props_dict['ctest_upload_file_patterns'] = ';'.join(props.getProperty('upload_file_patterns'))
     return """
@@ -347,6 +349,9 @@ def makeExtraOptionsString(props):
 
             # Test excludes
             set (ctest_test_excludes "%(ctest_test_excludes)s")
+
+            # Tests in parallel -- how many processes to use
+            set (ctest_parallel_level "%(ctest_parallel_level)d")
 
             # Test include labels
             set (ctest_test_include_labels "%(ctest_test_include_labels)s")
