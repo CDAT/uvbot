@@ -6,7 +6,7 @@ __all__ = [
     'FEATURES',
 ]
 
-NAME = 'vtksuperbuild'
+NAME = 'vtk'
 
 DEFAULTS = {
     'generator': 'Unix Makefiles',
@@ -47,12 +47,16 @@ OPTIONS = {
     },
     'libtype': {
         'shared': {
-            'BUILD_SHARED_LIBS:BOOL': 'ON',
+            'configure_options:project': {
+                'BUILD_SHARED_LIBS:BOOL': 'ON',
+            },
         },
     },
     'buildtype': {
         'release': {
-            'CMAKE_BUILD_TYPE:STRING': 'Release',
+            'configure_options:project': {
+                'CMAKE_BUILD_TYPE:STRING': 'Release',
+            },
         },
     },
 }
