@@ -153,7 +153,6 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
     compare_attrs = [
         'host',
         'token',
-        'projects',
     ]
 
     def __init__(self, name, host, token, verify_ssl=False, **kwargs):
@@ -209,6 +208,13 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
 
 
 class GitlabMergeRequestPoller(GitlabPoller):
+    compare_attrs = [
+        'web_host',
+        'projects',
+        'cdash_host',
+        'cdash_projectnames',
+    ]
+
     # TODO: add options for required access level.
     def __init__(self, host, token, web_host, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
         GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
@@ -425,6 +431,12 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
 
 class GitlabIntegrationBranchPoller(GitlabPoller):
+    compare_attrs = [
+        'projects',
+        'cdash_host',
+        'cdash_projectnames',
+    ]
+
     def __init__(self, host, token, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
         GitlabPoller.__init__(self, 'GitlabIntegrationBranchPoller(%s)', host, token, **kwargs)
 
