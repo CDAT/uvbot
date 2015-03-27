@@ -128,10 +128,16 @@ function(do_catalyst_dashboard)
         BUILD           "${CTEST_BINARY_DIRECTORY}/Testing"
         OPTIONS         "-DPVPYTHON_EXE=${CTEST_BINARY_DIRECTORY}/bin/pvpython;-DParaView_DIR=${CTEST_BINARY_DIRECTORY}")
     ctest_build(APPEND
-        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing")
+        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing"
+        RETURN_VALUE    build_result)
     ctest_test(APPEND
-        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing")
+        BUILD           "${CTEST_BINARY_DIRECTORY}/Testing"
+        RETURN_VALUE    test_result)
     ctest_submit(PARTS Test)
+
+    if (build_result OR test_result)
+        set(testing_success FALSE PARENT_SCOPE)
+    endif ()
 
     # Create tar ball and then upload it.
     get_filename_component(catalyst_source_directory_name "${CTEST_SOURCE_DIRECTORY}" NAME)
@@ -142,6 +148,7 @@ function(do_catalyst_dashboard)
     ctest_submit(PARTS Upload)
 endfunction()
 
+set(testing_success TRUE)
 set(success TRUE)
 do_catalyst_dashboard(Base)
 do_catalyst_dashboard(Base Essentials)
@@ -158,6 +165,6 @@ do_catalyst_dashboard(Base Enable-Python Essentials Extras Rendering-Base Render
 # this condition is not available here. Instead, set it explicitly.
 set(CTEST_RUN_CURRENT_SCRIPT FALSE)
 
-if (NOT success)
-    message(FATAL_ERROR "Catalyst builds failed!")
+if (NOT success OR NOT testing_success)
+    message(FATAL_ERROR "Catalyst testing failed!")
 endif ()
