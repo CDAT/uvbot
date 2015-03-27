@@ -18,6 +18,9 @@ defprops = {
         'DIY_SKIP_SVN:BOOL': 'ON',
 
         'download_location:PATH': '/home/kitware/Dashboards/downloads/paraview',
+
+        'SUBPROJECT_GENERATOR:STRING': 'Unix Makefiles',
+        'SUBPROJECT_BUILD_FLAGS:STRING': '-j3',
     },
 
     'slaveenv': {

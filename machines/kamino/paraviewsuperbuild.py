@@ -15,6 +15,9 @@ defprops = {
         'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
 
         'download_location:PATH': '/Users/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
+
+        'SUBPROJECT_GENERATOR:STRING': 'Unix Makefiles',
+        'SUBPROJECT_BUILD_FLAGS:STRING': '-j5',
     },
 }
 
