@@ -14,6 +14,7 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
 
         'os': 'linux',
         'distribution': 'fedora-19-x86_64',
+        'compiler': 'gcc-4.8.3',
 
         'generator': 'Unix Makefiles',
         'buildflags': '-j9',
