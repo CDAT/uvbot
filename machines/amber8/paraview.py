@@ -59,18 +59,20 @@ buildsets = [
         'buildtype': 'release',
         'features': (),
     },
-    {
-        'os': 'linux',
-        'libtype': 'shared',
-        'buildtype': 'debug',
-        'category': 'exotic',
-        'features': (
-            'unified',
-            'gui',
-            'python',
-            'mpi',
-        ),
-    },
+    # disabling unified for now since it just fails anyways (and amber8 is
+    # swamped). We should debug and renable it in time.
+    #{
+    #    'os': 'linux',
+    #    'libtype': 'shared',
+    #    'buildtype': 'debug',
+    #    'category': 'exotic',
+    #    'features': (
+    #        'unified',
+    #        'gui',
+    #        'python',
+    #        'mpi',
+    #    ),
+    #},
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)
