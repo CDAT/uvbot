@@ -30,7 +30,7 @@ def make_schedulers(buildnames, secrets):
             builderNames=buildnames,
             reason="ParaViewSuperbuild 'merge-request' created/changed.",
             properties={
-                # For superbuilds, merge requets on superbuild itself should always
+                # For superbuilds, merge requests on superbuild itself should always
                 # trigger a clean build, I suppose.
                 "ctest_empty_binary_directory" : True,
                 "ctest_track" : "buildbot-packages",

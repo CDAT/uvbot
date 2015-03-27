@@ -16,7 +16,7 @@ defprops = {
     },
 }
 
-allprops = projects.merge_config(defprops, {
+iccprops = projects.merge_config(defprops, {
     'compiler': 'icc-14.0.0',
 
     'configure_options:builderconfig': {
@@ -25,7 +25,7 @@ allprops = projects.merge_config(defprops, {
     },
 })
 
-buildsets = [
+iccbuildsets = [
     {
         'os': 'linux',
         'libtype': 'shared',
@@ -39,7 +39,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets, allprops)
+BUILDERS = projects.make_builders(slave.SLAVE, vtk, iccbuildsets, iccprops)
 
 gccbuildsets = [
     {
