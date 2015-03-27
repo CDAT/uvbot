@@ -7,8 +7,6 @@ __all__ = [
 ]
 
 defprops = {
-    'generator': 'Ninja',
-
     'test_include_labels:builderconfig': [
         'CATALYST',
         'PARAVIEWWEB',

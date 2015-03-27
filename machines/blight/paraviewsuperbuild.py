@@ -9,6 +9,9 @@ __all__ = [
 defprops = {
     'configure_options:builderconfig': {
         'download_location:PATH': '/home/kitware/Dashboards/MyTests/ParaViewSuperbuild-downloads',
+
+        'SUBPROJECT_GENERATOR:STRING': 'Unix Makefiles',
+        'SUBPROJECT_BUILD_FLAGS:STRING': '-j9',
     },
 
     'slaveenv': {

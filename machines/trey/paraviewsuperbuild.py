@@ -19,6 +19,9 @@ defprops = {
         'PYTHON_EXECUTABLE:FILEPATH' : '/usr/bin/python2.7',
         'PYTHON_INCLUDE_DIR:PATH' : '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks/Python.framework/Versions/2.7/Headers',
         'PYTHON_LIBRARY:FILEPATH' : '/usr/lib/libpython2.7.dylib',
+
+        'SUBPROJECT_GENERATOR:STRING': 'Ninja',
+        'SUBPROJECT_BUILD_FLAGS:STRING': '-l5',
     },
 }
 
