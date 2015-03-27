@@ -73,6 +73,11 @@ OPTIONS = {
                 '*.dmg',
             ],
 
+            'configure_options:project': {
+                # Manta is not supported on OsX in our superbuild.
+                'ENABLE_manta:BOOL': 'OFF',
+            },
+
             # CMake is picking make -i as default, which ends up ignoring errors and wasting time!
             'MAKE_COMMAND:STRING': '/usr/bin/make',
         },
