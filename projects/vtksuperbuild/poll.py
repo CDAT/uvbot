@@ -8,7 +8,7 @@ REPO = 'VTK/VTK-Superbuild'
 
 BRANCHES = [
     'master',
-    'release',
+#   'release', #only needed during vtk release cycle
 ]
 
 CDASH_PROJECTNAME = 'VTK'
