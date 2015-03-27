@@ -34,7 +34,7 @@ def make_schedulers(buildnames, secrets):
                 # For superbuilds, merge requets on superbuild itself should always
                 # trigger a clean build, I suppose.
                 "ctest_empty_binary_directory" : True,
-                "ctest_track" : "buildbot-packages",
+                "ctest_track" : "Super-Build (Release)",
             },
             codebases=codebases),
         AnyBranchScheduler(
@@ -47,7 +47,7 @@ def make_schedulers(buildnames, secrets):
             reason="VTKSuperbuild 'master' changed.",
             properties={
                 "ctest_empty_binary_directory" : True,
-                "ctest_track" : "master-packages",
+                "ctest_track" : "Super-Build (Release)",
             },
             codebases=codebases),
     ]
