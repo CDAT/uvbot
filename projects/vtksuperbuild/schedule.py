@@ -1,4 +1,5 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
+from buildbot.schedulers.timed import Nightly
 from buildbot.changes import filter
 
 
@@ -31,7 +32,7 @@ def make_schedulers(buildnames, secrets):
             builderNames=buildnames,
             reason="VTKSuperbuild 'merge-request' created/changed.",
             properties={
-                # For superbuilds, merge requets on superbuild itself should always
+                # For superbuilds, merge requests on superbuild itself should always
                 # trigger a clean build, I suppose.
                 "ctest_empty_binary_directory" : True,
                 "ctest_track" : "Super-Build (Release)",
@@ -50,4 +51,19 @@ def make_schedulers(buildnames, secrets):
                 "ctest_track" : "Super-Build (Release)",
             },
             codebases=codebases),
+        Nightly(
+            name='VTKSuperbuild Nightly Scheduler',
+            change_filter=filter.ChangeFilter(
+                category='integration-branch',
+                project=poll.REPO),
+            hour=23, # 11pm
+            onlyIfChanged=False,
+            builderNames=buildnames,
+            reason='Nightly vtk superbuild vtk-master check.',
+            properties={
+                'ctest_empty_binary_directory': True,
+                'ctest_track': 'Super-Build (Release)',
+            },
+            codebases=codebases),
+
     ]
