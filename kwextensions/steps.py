@@ -64,8 +64,10 @@ def failureForSubmodule(step):
     return hasMsg1 or hasMsg2
 
 class SubmoduleForkLogObserver(LogLineObserver):
-    def __init__(self):
+    def __init__(self, **kwargs):
+        LogLineObserver.__init__(self, **kwargs)
         self.success = True
+
     def lineReceived(self, line, lineType):
         if line.find('Unable to checkout') != -1 and line.find('in submodule path') != -1:
             self.success = False
