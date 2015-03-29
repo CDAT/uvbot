@@ -57,6 +57,7 @@ kitbuildsets = [
         'os': 'windows',
         'libtype': 'static',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': base_features + (
             'kits',
         ),
