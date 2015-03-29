@@ -49,7 +49,6 @@ kitbuildsets = [
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': base_features + (
             'kits',
         ),
@@ -58,6 +57,7 @@ kitbuildsets = [
         'os': 'windows',
         'libtype': 'static',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': base_features + (
             'kits',
         ),
