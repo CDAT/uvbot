@@ -35,13 +35,12 @@ Create a symlink to the `master.cfg` file from `/path/to/master`. A
     "gitlab_host": "gitlab.kitware.com",
     "gitlab_api_token": "myapitoken",
     "web_status_url": "http://public_url:port",
-    "web_status_port": 35215,
-    "cdash_url": "https://open.cdash.org"
+    "web_status_port": 35215
 }
 ```
 
-An API token is availble from your profile page in Gitlab. Finally, to start
-the master:
+An API token is availble from your profile page in Gitlab. Also symlink
+`templates` to the directory here. Finally, to start the master:
 
 ```sh
 buildbot start /path/to/master
@@ -56,6 +55,9 @@ htpasswd -c webstatuspasswords username
 
 This sample command will prompt for the password for user `username` and create
 the file.
+
+You may set up the `local` machine as needed in `machines/local` and set the
+`KW_BUILDBOT_TESTING` environment to use it.
 
 Adding a Machine
 ================
