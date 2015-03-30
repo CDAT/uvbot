@@ -91,7 +91,7 @@ For Windows, the following will be necessary:
 Once you have these, run:
 
 ```batch
-> path/to/pip install buildslave==0.8.10
+> path/to/pip install buildbot-slave==0.8.10
 ```
 
 This will install the buildslave daemon.
@@ -105,7 +105,7 @@ Run:
 $ easy_install install pip
 $ pip install virtualenv
 $ virtualenv path/to/buildslave/venv
-$ path/to/buildslave/venv/bin/pip install buildslave==0.8.10
+$ path/to/buildslave/venv/bin/pip install buildbot-slave==0.8.10
 ```
 
 Linux
@@ -115,7 +115,7 @@ Install `virtualenv` through the package manager followed by:
 
 ```sh
 $ virtualenv path/to/buildslave/venv
-$ path/to/buildslave/venv/bin/pip install buildslave==0.8.10
+$ path/to/buildslave/venv/bin/pip install buildbot-slave==0.8.10
 ```
 
 Setting up buildslave
@@ -220,4 +220,12 @@ start up a VNC server for the buildslave.
 
 ### sysvinit
 
-Find a machine with one of these and copy it ;) .
+Find a script to drop into `/etc/init.d/buildslave` which does the required
+incantations. Probably best to copy from an existing one. Once that is done,
+run:
+
+```sh
+sudo update-rc.d buildslave defaults
+```
+
+and hope for the best.
