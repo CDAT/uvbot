@@ -319,7 +319,7 @@ def makeExtraOptionsString(props):
         props_dict['ctest_test_includes'] = props_dict['ctest_test_excludes']
         props_dict['ctest_test_excludes'] = ''
     props_dict['ctest_parallel_level'] = 1
-    if props.getProperty('supports_parallel_tests', False):
+    if props.getProperty('supports_parallel_testing', False):
         props_dict['ctest_parallel_level'] = props.getProperty('maximum_parallel_level',1)
     props_dict['ctest_test_include_labels'] = '|'.join(props.getProperty('test_include_labels'))
     props_dict['ctest_upload_file_patterns'] = ';'.join(props.getProperty('upload_file_patterns'))
