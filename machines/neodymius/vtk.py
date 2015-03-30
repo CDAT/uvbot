@@ -14,6 +14,7 @@ defprops = {
     'slaveenv': {
         'DISPLAY': ':0',
     },
+    'supports_parallel_testing:sandbox' : True,
 }
 
 iccprops = projects.merge_config(defprops, {
@@ -39,6 +40,7 @@ iccbuildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'python',
             'java',
@@ -55,6 +57,7 @@ gccbuildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'python',
             'java',
