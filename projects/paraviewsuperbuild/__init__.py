@@ -43,6 +43,9 @@ DEFAULTS = {
         'ENABLE_visitbridge:BOOL': 'ON',
         'ENABLE_vistrails:BOOL': 'ON',
     },
+
+    'cdash_url': 'https://open.cdash.org',
+    'cdash_project': 'ParaView',
 }
 
 OPTIONS = {

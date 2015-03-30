@@ -211,18 +211,16 @@ class GitlabMergeRequestPoller(GitlabPoller):
     compare_attrs = [
         'web_host',
         'projects',
-        'cdash_host',
-        'cdash_projectnames',
+        'cdash_info',
     ]
 
     # TODO: add options for required access level.
-    def __init__(self, host, token, web_host, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
+    def __init__(self, host, token, web_host, projects=[], cdash_info={}, **kwargs):
         GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
 
         self.web_host = web_host
         self.projects = projects
-        self.cdash_host = cdash_host
-        self.cdash_projectnames = cdash_projectnames
+        self.cdash_info = cdash_info
 
         # Special comment regular expressions.
         self._branch_update_re = re.compile('^Added [1-9][0-9]* new commits?:\n\n(\* [0-9a-f]* - [^\n]*\n)*$')
@@ -363,11 +361,12 @@ class GitlabMergeRequestPoller(GitlabPoller):
         msg = '**BUILDBOT**: Your merge request has been queued for testing.'
 
         # Add a link to CDash for test results.
-        if self.cdash_host and project in self.cdash_projectnames:
-            q = cdash.Query(self.cdash_projectnames[project])
+        if project in self.cdash_info:
+            (cdash_host, cdash_project) = self.cdash_info(project)
+            q = cdash.Query(cdash_project)
             q.add_filter(('buildname/string', cdash.StringOp.CONTAINS, commit['id'][:8]))
             q.add_filter(('buildstarttime/date', cdash.DateOp.IS_AFTER, datetime.now()))
-            msg += ' You may view the test results [here](%s).' % q.get_url('%s/index.php' % self.cdash_host)
+            msg += ' You may view the test results [here](%s).' % q.get_url('%s/index.php' % cdash_host)
 
         project_info = self.api.getproject(request['project_id'])
 
@@ -424,8 +423,6 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'try_user_fork': True,
                 'owner': source_project_info['owner']['username'],
                 'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
-                'cdash_url': self.cdash_host,
-                'cdash_projectnames': self.cdash_projectnames,
                 'buildbot_commands': command_list,
             })
 
@@ -433,16 +430,12 @@ class GitlabMergeRequestPoller(GitlabPoller):
 class GitlabIntegrationBranchPoller(GitlabPoller):
     compare_attrs = [
         'projects',
-        'cdash_host',
-        'cdash_projectnames',
     ]
 
-    def __init__(self, host, token, projects=[], cdash_host=None, cdash_projectnames={}, **kwargs):
+    def __init__(self, host, token, projects=[], **kwargs):
         GitlabPoller.__init__(self, 'GitlabIntegrationBranchPoller(%s)', host, token, **kwargs)
 
         self.projects = projects
-        self.cdash_host = cdash_host
-        self.cdash_projectnames = cdash_projectnames
 
     def describe(self):
         msg = GitlabPoller.describe(self)
@@ -496,6 +489,4 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                         'rooturl': 'https://%s' % self.host,
                         'try_user_fork': False,
                         'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
-                        'cdash_url': self.cdash_host,
-                        'cdash_projectnames': self.cdash_projectnames,
                     })
