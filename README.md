@@ -39,8 +39,11 @@ Create a symlink to the `master.cfg` file from `/path/to/master`. A
 }
 ```
 
-An API token is availble from your profile page in Gitlab. Also symlink
-`templates` to the directory here. Finally, to start the master:
+An API token is available from your profile page in Gitlab. Also symlink
+`templates` to the directory here. Please note that the bot ignores its own
+comments, so you may need to piggyback on another MR to test since you can't
+issue `@buildbot test` as the bot (which is you based on your API key).
+Finally, to start the master:
 
 ```sh
 buildbot start /path/to/master
