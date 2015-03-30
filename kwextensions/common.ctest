@@ -97,11 +97,20 @@ endif ()
 ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
 set (build_number_errors 0)
 if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";build;"))
+    if (COMMAND buildbot_pre_build)
+        buildbot_pre_build()
+    endif ()
+
     ctest_build(
         RETURN_VALUE    build_result
         NUMBER_ERRORS   build_number_errors
         NUMBER_WARNINGS build_number_warnings
         APPEND)
+
+    if (COMMAND buildbot_post_build)
+        buildbot_post_build()
+    endif ()
+
     ctest_submit(PARTS Build)
 
     # If build failed (or had non-zero errors), report error and stop test.
