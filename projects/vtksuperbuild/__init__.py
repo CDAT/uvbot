@@ -22,8 +22,10 @@ DEFAULTS = {
         'ENABLE_vtk:BOOL': 'ON',
         "GENERATE_JAVA_PACKAGE:BOOL": "ON",
     },
-}
 
+    'cdash_url': 'https://open.cdash.org',
+    'cdash_project': 'VTK',
+}
 
 OPTIONS = {
     'os': {

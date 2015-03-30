@@ -1,6 +1,7 @@
 __all__ = [
     'REPO',
     'BRANCHES',
+    'CDASH_ROOT',
     'CDASH_PROJECTNAME',
 ]
 
@@ -11,4 +12,5 @@ BRANCHES = [
 #   'release', #only needed during vtk release cycle
 ]
 
+CDASH_ROOT = 'https://open.cdash.org'
 CDASH_PROJECTNAME = 'VTK'

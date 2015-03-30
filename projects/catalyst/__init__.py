@@ -18,7 +18,10 @@ DEFAULTS = {
     'configure_options:project': {
         'VTK_DEBUG_LEAKS:BOOL': 'ON',
         'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
-    }
+    },
+
+    'cdash_url': 'https://open.cdash.org',
+    'cdash_project': 'ParaView',
 }
 
 OPTIONS = {

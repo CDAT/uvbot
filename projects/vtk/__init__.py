@@ -22,6 +22,9 @@ DEFAULTS = {
         'VTK_USER_LARGE_DATA:BOOL': 'ON',
     },
     'supports_parallel_testing:project' : True,
+
+    'cdash_url': 'https://open.cdash.org',
+    'cdash_project': 'VTK',
 }
 
 OPTIONS = {
