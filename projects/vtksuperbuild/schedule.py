@@ -57,6 +57,7 @@ def make_schedulers(buildnames, secrets):
                 category='integration-branch',
                 project=poll.REPO),
             hour=23, # 11pm
+            branch='master',
             onlyIfChanged=False,
             builderNames=buildnames,
             reason='Nightly vtk superbuild vtk-master check.',
