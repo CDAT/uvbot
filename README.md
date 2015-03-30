@@ -228,4 +228,5 @@ run:
 sudo update-rc.d buildslave defaults
 ```
 
-and hope for the best.
+and hope for the best. Or upgrade to Debian Jessie or Ubuntu 14.10 and use
+systemd.
