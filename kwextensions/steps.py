@@ -302,6 +302,7 @@ def makeExtraOptionsString(props):
     props_dict = {
         'prop:model' : 'Experimental',
         'prop:ctest_empty_binary_directory': False,
+        'prop:ctest_local_extra_options_file': '',
         'prop:sourcedir' : "source",
         'prop:ctest_test_timeout' : 180, # 3 mins default timeout.
         'prop:ctest_track' : "buildbot",
@@ -362,6 +363,8 @@ def makeExtraOptionsString(props):
             set (ctest_upload_file_patterns "%(ctest_upload_file_patterns)s")
 
             set (ctest_use_empty_binary_directory "%(prop:ctest_empty_binary_directory)s")
+
+            set (ctest_local_extra_options_file "%(prop:ctest_local_extra_options_file)s")
             """ % props_dict
 
 class CTestExtraOptionsDownload(StringDownload):

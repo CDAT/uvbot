@@ -7,6 +7,10 @@ import paraview.schedule
 import paraviewsuperbuild.schedule
 import catalyst.schedule
 
+# CMB
+import cmb.schedule
+import cmbsuperbuild.schedule
+
 
 __all__ = [
     'make_schedulers',
@@ -22,6 +26,10 @@ SCHEDULES = {
     'ParaView': paraview.schedule,
     'ParaViewSuperbuild': paraviewsuperbuild.schedule,
     'Catalyst' : catalyst.schedule,
+
+    # CMB
+    'CMB': cmb.schedule,
+    'CMBSuperbuild': cmbsuperbuild.schedule,
 }
 
 

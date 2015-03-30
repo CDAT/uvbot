@@ -23,6 +23,10 @@ PROJECTS = [
     'ParaView',
     'ParaViewSuperbuild',
     'Catalyst',
+
+    # CMB
+    'CMB',
+    'CMBSuperbuild',
 ]
 
 
