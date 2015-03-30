@@ -220,4 +220,12 @@ start up a VNC server for the buildslave.
 
 ### sysvinit
 
-Find a machine with one of these and copy it ;) .
+Find a script to drop into `/etc/init.d/buildslave` which does the required
+incantations. Probably best to copy from an existing one. Once that is done,
+run:
+
+```sh
+sudo update-rc.d buildslave defaults
+```
+
+and hope for the best.
