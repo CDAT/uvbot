@@ -11,7 +11,6 @@ SLAVE = BuildSlave('debian4dash', secrets.SECRETS['debian4dash']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/usr/local', # 2.8.12
-        'sharedresourcesroot': '/home/kitware/Dashboards',
 
         'os': 'linux',
         'distribution': 'debian-4-x86_64',

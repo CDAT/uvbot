@@ -11,7 +11,6 @@ SLAVE = BuildSlave('miranda', secrets.SECRETS['miranda']['password'],
     max_builds=1,
     properties={
         'cmakeroot': 'C:/Tools/cmake-3.2.1-x64',
-        'sharedresourcesroot': 'C:/Dashboards/MyTests',
 
         'os': 'windows',
         'distribution': 'windows-7-x86_64',

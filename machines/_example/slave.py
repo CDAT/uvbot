@@ -17,8 +17,6 @@ SLAVE = BuildSlave('_example', secrets.SECRETS['_example']['password'],
     properties={
         # REQUIRED: The prefix path for CMake (.../bin/cmake should exist under here).
         'cmakeroot': '/opt/apps/cmake-3.0.1',
-        # Where projects may store information on the machine (data, results, etc.).
-        'sharedresourcesroot': '/home/kitware/Dashboards/MyTests',
 
         # The operating system; one of: ('linux', 'windows', 'osx')
         'os': 'linux',

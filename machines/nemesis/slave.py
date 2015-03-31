@@ -11,7 +11,6 @@ SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
     max_builds=1,
     properties={
         'cmakeroot': 'C:/Users/kitware/misc/root/cmake', # CMake 3.2.1
-        'sharedresourcesroot': 'C:/Users/kitware/dashboards',
 
         'os': 'windows',
         'distribution': 'windows-7-x86_64',

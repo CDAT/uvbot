@@ -11,7 +11,6 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/usr',
-        'sharedresourcesroot': '/home/kitware/Dashboards',
 
         'os': 'linux',
         'distribution': 'fedora-19-x86_64',

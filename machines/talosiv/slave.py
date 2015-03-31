@@ -11,7 +11,6 @@ SLAVE = BuildSlave('talosiv', secrets.SECRETS['talosiv']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/Applications/CMake_3.1.1.app/Contents', # 3.1.1
-        'sharedresourcesroot': '/Users/dashboard/Dashboards',
 
         'os': 'osx',
         'distribution': 'osx-10.10-x86_64',

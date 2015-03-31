@@ -11,7 +11,6 @@ SLAVE = BuildSlave('megas', secrets.SECRETS['megas']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/usr',
-        'sharedresourcesroot': '/home/kitware/dashboards',
 
         'os': 'linux',
         'distribution': 'fedora-21-x86_64',

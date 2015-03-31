@@ -11,7 +11,6 @@ SLAVE = BuildSlave('blight', secrets.SECRETS['blight']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/opt/apps/cmake-3.0.1',
-        'sharedresourcesroot': '/home/kitware/Dashboards/MyTests',
 
         'os': 'linux',
         'distribution': 'ubuntu-12.04-x86_64',
