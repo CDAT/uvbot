@@ -138,6 +138,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
 
     builders = []
     for name, (buildprops, buildset) in setprops.items():
+        buildprops['buildset'] = buildset
         for key, default in composite_keys:
             buildprops = _merge_options(buildprops, key, default)
 
