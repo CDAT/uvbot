@@ -44,7 +44,11 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': base_features,
+        'features': base_features + (
+            '_strict',
+        ),
+
+        'category': 'experimental',
     },
 ]
 
