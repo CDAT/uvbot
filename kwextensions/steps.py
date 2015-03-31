@@ -22,8 +22,11 @@ def makeCTestDashboardCommand(props):
     props_dict = {'prop:ctest_stages' : 'all'}
     for (key, (value, source)) in props.asDict().iteritems():
         props_dict["prop:%s" % key] = value
+    verbose = '-V'
+    if props_dict.get('prop:dashboard_status', None) == 'experimental':
+        verbose = '-VV'
     command = ['%(prop:cmakeroot)s/bin/ctest' % props_dict,
-            '-V',
+            verbose,
             '-Dctest_extra_options_file:STRING=%(prop:builddir)s/ctest_extra_options.cmake' % props_dict,
             '-Dctest_stages:STRING=%(prop:ctest_stages)s' % props_dict,
             '-C', props.getProperty('configure_options')['CMAKE_BUILD_TYPE:STRING'], # FIXME: this is bad
