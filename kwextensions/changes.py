@@ -362,7 +362,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
         # Add a link to CDash for test results.
         if project in self.cdash_info:
-            (cdash_host, cdash_project) = self.cdash_info(project)
+            (cdash_host, cdash_project) = self.cdash_info[project]
             q = cdash.Query(cdash_project)
             q.add_filter(('buildname/string', cdash.StringOp.CONTAINS, commit['id'][:8]))
             q.add_filter(('buildstarttime/date', cdash.DateOp.IS_AFTER, datetime.now()))
