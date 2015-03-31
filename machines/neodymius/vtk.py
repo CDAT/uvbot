@@ -48,7 +48,7 @@ iccbuildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, iccbuildsets, iccprops)
+BUILDERS = projects.make_builders(slave, vtk, iccbuildsets, iccprops)
 
 gccbuildsets = [
     {
@@ -62,4 +62,4 @@ gccbuildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, vtk, gccbuildsets, defprops)
+BUILDERS += projects.make_builders(slave, vtk, gccbuildsets, defprops)

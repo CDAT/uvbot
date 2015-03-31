@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('dashlin1', secrets.SECRETS['dashlin1']['password'],
@@ -14,16 +15,18 @@ SLAVE = BuildSlave('dashlin1', secrets.SECRETS['dashlin1']['password'],
 
         'os': 'linux',
         'distribution': 'ubuntu-12.04-x86_64',
-        'compiler': 'gcc-4.6.3',
+    })
 
-        'generator:buildslave': 'Unix Makefiles',
-        'buildflags:buildslave': '-j9',
+SLAVEPROPS = {
+    'compiler': 'gcc-4.6.3',
 
-        'maximum_parallel_level': 9,
+    'generator:buildslave': 'Unix Makefiles',
+    'buildflags:buildslave': '-j9',
 
-        'configure_options:buildslave': {
-            'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-            'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
-        },
-    }
-)
+    'maximum_parallel_level': 9,
+
+    'configure_options:buildslave': {
+        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
+        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+    },
+}

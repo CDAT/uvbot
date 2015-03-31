@@ -41,7 +41,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops,
+BUILDERS = projects.make_builders(slave, paraview, buildsets, defprops,
         dirlen=8)
 
 kitbuildsets = [
@@ -64,5 +64,5 @@ kitbuildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraview, kitbuildsets, defprops,
+BUILDERS += projects.make_builders(slave, paraview, kitbuildsets, defprops,
     dirlen=8)

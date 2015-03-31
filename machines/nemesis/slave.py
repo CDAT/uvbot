@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
@@ -14,19 +15,21 @@ SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
 
         'os': 'windows',
         'distribution': 'windows-7-x86_64',
-        'compiler': 'msvc-2013-x64',
+    })
 
-        'generator:buildslave': 'Ninja',
-        'buildflags:buildslave': '-l9',
+SLAVEPROPS = {
+    'compiler': 'msvc-2013-x64',
 
-        'maximum_parallel_level': 5,
+    'generator:buildslave': 'Ninja',
+    'buildflags:buildslave': '-l9',
 
-        'configure_options:buildslave': {
-            'CMAKE_MAKE_PROGRAM:FILEPATH': 'C:/Users/kitware/misc/root/cmake/bin/ninja.exe',
-            'CMAKE_NINJA_FORCE_RESPONSE_FILE:BOOL': 'ON', # paths are too long
-        },
+    'maximum_parallel_level': 5,
 
-        'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/vcvarsall.bat',
-        'vcvarsargument': 'x64',
-    }
-)
+    'configure_options:buildslave': {
+        'CMAKE_MAKE_PROGRAM:FILEPATH': 'C:/Users/kitware/misc/root/cmake/bin/ninja.exe',
+        'CMAKE_NINJA_FORCE_RESPONSE_FILE:BOOL': 'ON', # paths are too long
+    },
+
+    'vcvarsall': 'C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/vcvarsall.bat',
+    'vcvarsargument': 'x64',
+}

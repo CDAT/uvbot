@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('tarvalon', secrets.SECRETS['tarvalon']['password'],
@@ -14,13 +15,15 @@ SLAVE = BuildSlave('tarvalon', secrets.SECRETS['tarvalon']['password'],
 
         'os': 'windows',
         'distribution': 'windows-7-x86_64',
-        'compiler': 'msvc-2010-x64',
+    })
 
-        'generator:buildslave': 'Visual Studio 10 Win64',
-        'buildflags:buildslave': '',
+SLAVEPROPS = {
+    'compiler': 'msvc-2010-x64',
 
-        'maximum_parallel_level': 5,
+    'generator:buildslave': 'Visual Studio 10 Win64',
+    'buildflags:buildslave': '',
 
-        'configure_options:buildslave': {},
-    }
-)
+    'maximum_parallel_level': 5,
+
+    'configure_options:buildslave': {},
+}

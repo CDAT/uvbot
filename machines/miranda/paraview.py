@@ -100,7 +100,7 @@ buildsets64 = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets64,
+BUILDERS = projects.make_builders(slave, paraview, buildsets64,
     projects.merge_config(defprops, vs9props, x64props, ninjaprops),
     dirlen=8)
 
@@ -115,6 +115,6 @@ buildsets32 = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraview, buildsets32,
+BUILDERS += projects.make_builders(slave, paraview, buildsets32,
     projects.merge_config(defprops, vs9props, x32props, ninjaprops),
     dirlen=8)

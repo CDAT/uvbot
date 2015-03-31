@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('talosiv', secrets.SECRETS['talosiv']['password'],
@@ -14,14 +15,16 @@ SLAVE = BuildSlave('talosiv', secrets.SECRETS['talosiv']['password'],
 
         'os': 'osx',
         'distribution': 'osx-10.10-x86_64',
-        'compiler': 'clang-apple-6.0',
+    })
 
-        'generator:buildslave': 'Unix Makefiles',
-        'buildflags:buildslave': '-j9 -l9',
+SLAVEPROPS = {
+    'compiler': 'clang-apple-6.0',
 
-        'configure_options:buildslave': {
-            'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-            'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
-        },
-    }
-)
+    'generator:buildslave': 'Unix Makefiles',
+    'buildflags:buildslave': '-j9 -l9',
+
+    'configure_options:buildslave': {
+        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
+        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+    },
+}

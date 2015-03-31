@@ -41,5 +41,4 @@ buildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets, defprops)
-
+BUILDERS += projects.make_builders(slave, vtksuperbuild, buildsets, defprops)

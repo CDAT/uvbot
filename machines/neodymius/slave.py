@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
@@ -14,18 +15,20 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
 
         'os': 'linux',
         'distribution': 'fedora-19-x86_64',
-        'compiler': 'gcc-4.8.3',
+    })
 
-        'generator:buildslave': 'Unix Makefiles',
-        'buildflags:buildslave': '-j9',
+SLAVEPROPS = {
+    'compiler': 'gcc-4.8.3',
 
-        'maximum_parallel_level': 9,
+    'generator:buildslave': 'Unix Makefiles',
+    'buildflags:buildslave': '-j9',
 
-        'configure_options:buildslave': {
-            'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-            'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+    'maximum_parallel_level': 9,
 
-            'MPIEXEC:FILEPATH': 'mpiexec.hydra',
-        },
-    }
-)
+    'configure_options:buildslave': {
+        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
+        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+
+        'MPIEXEC:FILEPATH': 'mpiexec.hydra',
+    },
+}

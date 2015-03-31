@@ -116,7 +116,7 @@ def _merge_options(props, key, default):
 
 
 def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
-    baseprops = merge_config(project.DEFAULTS.copy(), props)
+    baseprops = merge_config(project.DEFAULTS.copy(), slave.SLAVEPROPS, props)
 
     setprops = {}
     for buildset in buildsets:
@@ -159,7 +159,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
                 else:
                     buildprops['ctest_track_suffix'] = '-%s' % category
 
-        buildname = '%s-%s-%s' % (project.NAME, slave.slavename, name)
+        buildname = '%s-%s-%s' % (project.NAME, slave.SLAVE.slavename, name)
 
         if dirlen:
             kwargs['slavebuilddir'] = hashlib.md5(buildname).hexdigest()[:dirlen]
@@ -168,7 +168,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
             name=buildname,
             factory=factory.get_factory(buildset),
             properties=buildprops,
-            slavenames=[slave.slavename],
+            slavenames=[slave.SLAVE.slavename],
             category=builder_category,
             env=buildprops.get('slaveenv', {}),
             **kwargs

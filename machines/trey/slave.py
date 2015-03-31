@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('trey', secrets.SECRETS['trey']['password'],
@@ -14,16 +15,18 @@ SLAVE = BuildSlave('trey', secrets.SECRETS['trey']['password'],
 
         'os': 'osx',
         'distribution': 'osx-10.10-x86_64',
-        'compiler': 'clang-apple-6.0',
+    })
 
-        'generator:buildslave': 'Ninja',
-        'buildflags:buildslave': '-l5',
+SLAVEPROPS = {
+    'compiler': 'clang-apple-6.0',
 
-        'maximum_parallel_level': 5,
+    'generator:buildslave': 'Ninja',
+    'buildflags:buildslave': '-l5',
 
-        'configure_options:buildslave': {
-            'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-            'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
-        },
-    }
-)
+    'maximum_parallel_level': 5,
+
+    'configure_options:buildslave': {
+        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
+        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+    },
+}

@@ -46,7 +46,7 @@ osx105buildsets = [
 
 # temporarily disabling 10.5 superbuilds. Kamino is too busy. We can only afford
 # 1 superbuild at this moment.
-#BUILDERS += projects.make_builders(slave.SLAVE, paraviewsuperbuild, osx105buildsets, osx105props)
+#BUILDERS += projects.make_builders(slave, paraviewsuperbuild, osx105buildsets, osx105props)
 
 osx107props = projects.merge_config(defprops, {
     'configure_options:builderconfig': {
@@ -69,4 +69,4 @@ osx107buildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraviewsuperbuild, osx107buildsets, osx107props)
+BUILDERS += projects.make_builders(slave, paraviewsuperbuild, osx107buildsets, osx107props)

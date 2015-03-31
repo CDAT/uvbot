@@ -39,4 +39,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)
+BUILDERS = projects.make_builders(slave, paraview, buildsets, defprops)

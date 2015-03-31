@@ -81,7 +81,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraview, buildsets, defprops)
+BUILDERS = projects.make_builders(slave, paraview, buildsets, defprops)
 
 qt5props = projects.merge_config(defprops, {
     'test_excludes:builderconfig': [
@@ -115,4 +115,4 @@ qt5buildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraview, qt5buildsets, qt5props)
+BUILDERS += projects.make_builders(slave, paraview, qt5buildsets, qt5props)

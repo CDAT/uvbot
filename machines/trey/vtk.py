@@ -29,4 +29,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets, defprops)
+BUILDERS = projects.make_builders(slave, vtk, buildsets, defprops)

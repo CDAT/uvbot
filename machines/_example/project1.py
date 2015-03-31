@@ -84,7 +84,7 @@ buildsets = [
 # The 'projects' module contains a `make_builders` function which takes the
 # project and buildsets and generates the proper build name and CMake
 # configuration for each.
-BUILDERS = projects.make_builders(slave.SLAVE, project1, buildsets, defprops,
+BUILDERS = projects.make_builders(slave, project1, buildsets, defprops,
     # Other keyword arguments are passed to the BuilderConfig constructor.
     # Important ones may include 'category' for putting the builds into a
     # category for separating the builds out in the view and 'env' for
@@ -120,4 +120,4 @@ specialbuildsets = [
 ]
 
 # Make sure to *append* these new buildsets.
-BUILDERS += projects.make_builders(slave.SLAVE, project1, specialbuildsets, specialprops)
+BUILDERS += projects.make_builders(slave, project1, specialbuildsets, specialprops)

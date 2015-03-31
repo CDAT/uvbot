@@ -85,7 +85,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
+BUILDERS = projects.make_builders(slave, paraviewsuperbuild, buildsets,
     projects.merge_config(defprops, vs9props, x64props),
     dirlen=8)
 
@@ -99,6 +99,6 @@ buildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, paraviewsuperbuild, buildsets,
+BUILDERS += projects.make_builders(slave, paraviewsuperbuild, buildsets,
     projects.merge_config(defprops, vs9props, x32props),
     dirlen=8)

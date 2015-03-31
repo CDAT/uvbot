@@ -54,7 +54,7 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, vtk, buildsets, defprops)
+BUILDERS = projects.make_builders(slave, vtk, buildsets, defprops)
 
 gccprops = projects.merge_config(defprops, {
     'compiler': 'gcc-4.2.1',
@@ -87,4 +87,4 @@ gccbuildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, vtk, gccbuildsets, gccprops)
+BUILDERS += projects.make_builders(slave, vtk, gccbuildsets, gccprops)

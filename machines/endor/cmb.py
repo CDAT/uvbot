@@ -21,4 +21,4 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave.SLAVE, cmb, buildsets, defprops)
+BUILDERS = projects.make_builders(slave, cmb, buildsets, defprops)

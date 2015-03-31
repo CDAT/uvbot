@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('debian4dash', secrets.SECRETS['debian4dash']['password'],
@@ -14,16 +15,18 @@ SLAVE = BuildSlave('debian4dash', secrets.SECRETS['debian4dash']['password'],
 
         'os': 'linux',
         'distribution': 'debian-4-x86_64',
-        'compiler': 'gcc-4.1.2',
+    })
 
-        'generator:buildslave': 'Unix Makefiles',
-        'buildflags:buildslave': '-j3',
+SLAVEPROPS = {
+    'compiler': 'gcc-4.1.2',
 
-        'maximum_parallel_level': 3,
+    'generator:buildslave': 'Unix Makefiles',
+    'buildflags:buildslave': '-j3',
 
-        'configure_options:buildslave': {
-            'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-            'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
-        },
-    }
-)
+    'maximum_parallel_level': 3,
+
+    'configure_options:buildslave': {
+        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
+        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+    },
+}

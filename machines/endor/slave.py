@@ -4,6 +4,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 SLAVE = BuildSlave('endor', secrets.SECRETS['endor']['password'],
@@ -14,9 +15,11 @@ SLAVE = BuildSlave('endor', secrets.SECRETS['endor']['password'],
 
         'os': 'linux',
         'distribution': 'ubuntu-12.04-x86_64',
-        'compiler': 'gcc-4.6.3',
+    })
 
-        'generator:buildslave': 'Unix Makefiles',
-        'buildflags:buildslave': '-j9 -l9',
-    }
-)
+SLAVEPROPS = {
+    'compiler': 'gcc-4.6.3',
+
+    'generator:buildslave': 'Unix Makefiles',
+    'buildflags:buildslave': '-j9 -l9',
+}

@@ -6,6 +6,7 @@ from machines import secrets
 
 __all__ = [
     'SLAVE',
+    'SLAVEPROPS',
 ]
 
 # The first arguments are the name of the slave and the password the slave will
@@ -27,28 +28,30 @@ SLAVE = BuildSlave('_example', secrets.SECRETS['_example']['password'],
         'distribution': 'ubuntu-12.04-x86_64',
         # The compiler and its version.
         'compiler': 'gcc-4.6.3',
-
-        # The CMake generator to use.
-        'generator:buildslave': 'Unix Makefiles',
-        # Flags to pass to the build tool (for parallelism). Also recommended
-        # is `-l#` (load average) for machines with concurrent builds to not
-        # swamp the machine.
-        'buildflags:buildslave': '-j9',
-        # If a project supports parallel testing, this is the parallel testing
-        # level that will be given to ctest for this machine
-        'maximum_parallel_level': 9
-
-        # CMake options *all* projects with this slave should receive.
-        'configure_options:buildslave': {
-            'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-            'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
-        },
-
-        # Environment variables which should be used on the slave for *all*
-        # projects. Existing environment variables may be referenced as
-        # `${ENVVAR}` (the braces are important).
-        'slaveenv': {
-            'PATH': '/path/for/ninja:${PATH}',
-        },
     }
 )
+
+SLAVEPROPS = {
+    # The CMake generator to use.
+    'generator:buildslave': 'Unix Makefiles',
+    # Flags to pass to the build tool (for parallelism). Also recommended
+    # is `-l#` (load average) for machines with concurrent builds to not
+    # swamp the machine.
+    'buildflags:buildslave': '-j9',
+    # If a project supports parallel testing, this is the parallel testing
+    # level that will be given to ctest for this machine
+    'maximum_parallel_level': 9
+
+    # CMake options *all* projects with this slave should receive.
+    'configure_options:buildslave': {
+        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
+        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
+    },
+
+    # Environment variables which should be used on the slave for *all*
+    # projects. Existing environment variables may be referenced as
+    # `${ENVVAR}` (the braces are important).
+    'slaveenv': {
+        'PATH': '/path/for/ninja:${PATH}',
+    },
+}
