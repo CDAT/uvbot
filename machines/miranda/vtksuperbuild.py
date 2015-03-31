@@ -33,14 +33,7 @@ vs9props = {
 }
 
 #------------------------------------------------------------------------------
-ninjaprops = {
-    'generator': 'Ninja',
-    'buildflags': '-l9',
-}
-
-#------------------------------------------------------------------------------
 x64props = {
-    'generator': 'Visual Studio 9 2008 Win64',
     'compiler': 'msvc-2008-x64',
     'vcvarsargument': 'amd64',
 
@@ -64,7 +57,6 @@ x64props = {
 }
 
 x32props = {
-    'generator': 'Visual Studio 9 2008',
     'compiler': 'msvc-2008-x32',
     'vcvarsargument': 'x86',
 
@@ -98,7 +90,7 @@ buildsets = [
 ]
 
 BUILDERS = projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets,
-    projects.merge_config(defprops, vs9props, x64props, ninjaprops),
+    projects.merge_config(defprops, vs9props, x64props),
     dirlen=8)
 
 #------------------------------------------------------------------------------
@@ -112,5 +104,5 @@ buildsets = [
 ]
 
 BUILDERS += projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets,
-    projects.merge_config(defprops, vs9props, x32props, ninjaprops),
+    projects.merge_config(defprops, vs9props, x32props),
     dirlen=8)
