@@ -14,6 +14,7 @@ from . import talosiv
 from . import tarvalon
 from . import trey
 from . import miranda
+from . import hythloth
 
 __all__ = [
     'MACHINES',
@@ -36,6 +37,7 @@ MACHINES = [
     tarvalon,
     trey,
     miranda,
+    hythloth,
 ]
 
 import os
