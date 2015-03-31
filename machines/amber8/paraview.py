@@ -45,18 +45,6 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
-        'category': 'exotic',
-        'features': (
-            'python',
-            'mpi',
-            'gui',
-            'opengl2',
-        ),
-    },
-    {
-        'os': 'linux',
-        'libtype': 'static',
-        'buildtype': 'release',
         'features': (),
     },
     # disabling unified for now since it just fails anyways (and amber8 is

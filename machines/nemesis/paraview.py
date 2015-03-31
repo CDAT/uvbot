@@ -39,6 +39,18 @@ buildsets = [
         'buildtype': 'release',
         'features': base_features,
     },
+    {
+        'os': 'windows',
+        'libtype': 'shared',
+        'buildtype': 'debug',
+        'category': 'experimental',
+        'features': (
+            'gui',
+            'python',
+            'mpi',
+            'opengl2',
+            ),
+    },
 ]
 
 BUILDERS = projects.make_builders(slave, paraview, buildsets, defprops,
@@ -49,15 +61,6 @@ kitbuildsets = [
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': base_features + (
-            'kits',
-        ),
-    },
-    {
-        'os': 'windows',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'category': 'experimental',
         'features': base_features + (
             'kits',
         ),
