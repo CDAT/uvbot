@@ -1,3 +1,8 @@
+import projects
+from projects.common import features
+from projects.common import options
+from projects.common import superbuild
+
 __all__ = [
     'NAME',
 
@@ -11,15 +16,7 @@ __all__ = [
 
 NAME = 'paraview'
 
-DEFAULTS = {
-    'generator': 'Unix Makefiles',
-    'buildflags': '-j1',
-
-    'upload_file_patterns:project': [
-        '*.tar.gz',
-        '*.tgz',
-    ],
-
+DEFAULTS = projects.merge_config(superbuild.defaults, {
     'configure_options:project': {
         'BUILD_TESTING:BOOL': 'ON',
 
@@ -46,24 +43,16 @@ DEFAULTS = {
 
     'cdash_url': 'https://open.cdash.org',
     'cdash_project': 'ParaView',
-}
+})
 
 OPTIONS = {
-    'os': {
-        'linux': {},
+    'os': projects.merge_config(superbuild.os, {
         'windows': {
-            'upload_file_patterns:project': [
-                '*.zip',
-                '*.exe',
-            ],
-
             'configure_options:project': {
                 'ENABLE_cosmotools:BOOL': 'OFF',
                 'ENABLE_manta:BOOL': 'OFF',
                 'ENABLE_nektarreader:BOOL': 'OFF',
             },
-
-            'generator': 'Ninja',
         },
         'osx': {
             'test_excludes:project': [
@@ -72,66 +61,22 @@ OPTIONS = {
                 'TestPythonView',
             ],
 
-            'upload_file_patterns:project': [
-                '*.dmg',
-            ],
-
             'configure_options:project': {
-                # Manta is not supported on OsX in our superbuild.
+                # Manta is not supported on OS X in our superbuild.
                 'ENABLE_manta:BOOL': 'OFF',
             },
-
-            # CMake is picking make -i as default, which ends up ignoring errors and wasting time!
-            'MAKE_COMMAND:STRING': '/usr/bin/make',
         },
-    },
-    'libtype': {
-        'shared': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'ON',
-            },
-        },
-        'static': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'OFF',
-            },
-        },
-    },
-    'buildtype': {
-        'release': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Release',
-            },
-        },
-        'debug': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Debug',
-            },
-        },
-    },
-    'category': {
-        'expected': {},
-        'exotic': {},
-        'experimental': {},
-        'default' : 'expected',
-    },
+    }),
+    'libtype': options.libtypes,
+    'buildtype': options.buildtypes,
+    'category': options.categories,
 }
 OPTIONORDER = ('os', 'libtype', 'buildtype')
 
 FEATURES = {
     'superbuild': ({}, {}),
-    'osx10.5': ({}, {
-        'configure_options:feature': {
-            'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk',
-            'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.5',
-        },
-    }),
-    'osx10.7': ({}, {
-        'configure_options:feature': {
-            'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk',
-            'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.7',
-        },
-    }),
+    'osx10.5': features.osx105,
+    'osx10.7': features.osx107,
     '32bit': ({}, {}),
 
     '_webdoc': ({}, {

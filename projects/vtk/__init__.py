@@ -1,4 +1,6 @@
 import projects
+from projects.common import features
+from projects.common import options
 
 __all__ = [
     'NAME',
@@ -28,46 +30,10 @@ DEFAULTS = {
 }
 
 OPTIONS = {
-    'os': {
-        'linux': {},
-        'windows': {},
-        'osx': {},
-    },
-    'libtype': {
-        'shared': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'ON',
-            },
-        },
-        'static': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'OFF',
-            },
-        },
-    },
-    'buildtype': {
-        'release': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Release',
-            },
-        },
-        'debug': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Debug',
-            },
-        },
-        'relwithdebinfo': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'RelWithDebInfo',
-            },
-        },
-    },
-    'category': {
-        'expected': {},
-        'exotic': {},
-        'experimental': {},
-        'default' : 'expected',
-    },
+    'os': options.os,
+    'libtype': options.libtypes,
+    'buildtype': options.buildtypes,
+    'category': options.categories,
 }
 OPTIONORDER = ('os', 'libtype', 'buildtype',)
 
@@ -96,19 +62,10 @@ FEATURES = {
     'opengl2': projects.make_feature_cmake_options({
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     }),
-    'icc': ({}, {
-        'slaveenv': {
-            'CC': 'icc',
-            'CXX': 'icpc',
-        }
-    }),
-    'clang': ({}, {}),
+    'icc': features.icc,
+    'clang': features.clang,
     'tbb': ({}, {}),
-    'vs': ({}, {
-        'configure_options:feature': {
-            'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
-        },
-    }),
+    'vs': features.vs,
     'asan': ({}, {}),
     'ubsan': ({}, {}),
 

@@ -1,4 +1,6 @@
 import projects
+from projects.common import features
+from projects.common import options
 
 __all__ = [
     'NAME',
@@ -30,41 +32,10 @@ DEFAULTS = {
 }
 
 OPTIONS = {
-    'os': {
-        'linux': {},
-        'windows': {},
-        'osx': {},
-    },
-    'libtype': {
-        'shared': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'ON',
-            },
-        },
-        'static': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'OFF',
-            }
-        },
-    },
-    'buildtype': {
-        'release': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Release',
-            },
-        },
-        'debug': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Debug',
-            },
-        },
-    },
-    'category': {
-        'expected': {},
-        'exotic': {},
-        'experimental': {},
-        'default' : 'expected',
-    },
+    'os': options.os,
+    'libtype': options.libtypes,
+    'buildtype': options.buildtypes,
+    'category': options.categories,
 }
 OPTIONORDER = ('os', 'libtype', 'buildtype')
 
@@ -103,17 +74,8 @@ FEATURES = {
             '^pvcrs\.',
         ],
     }),
-    'icc': ({}, {
-        'slaveenv': {
-            'CC': 'icc',
-            'CXX': 'icpc',
-        }
-    }),
-    'vs': ({}, {
-        'configure_options:feature': {
-            'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
-        },
-    }),
+    'icc': features.icc,
+    'vs': features.vs,
     '32bit': ({}, {}),
 
     '_nocollab': ({}, {

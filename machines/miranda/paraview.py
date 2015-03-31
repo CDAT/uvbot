@@ -36,13 +36,14 @@ vs9props = {
 
 #------------------------------------------------------------------------------
 ninjaprops = {
-    'generator': 'Ninja',
-    'buildflags': '-l9',
+    'generator:builderconfig': 'Ninja',
+    'buildflags:builderconfig': '-l9',
 }
 
 #------------------------------------------------------------------------------
 x64props = {
-    'generator': 'Visual Studio 9 2008 Win64',
+    'generator:builderconfig': 'Visual Studio 9 2008 Win64',
+    'buildflags:builderconfig': '',
     'compiler': 'msvc-2008-x64',
     'vcvarsargument': 'amd64',
 
@@ -58,7 +59,8 @@ x64props = {
 }
 
 x32props = {
-    'generator': 'Visual Studio 9 2008',
+    'generator:builderconfig': 'Visual Studio 9 2008',
+    'buildflags:builderconfig': '',
     'compiler': 'msvc-2008-x32',
     'vcvarsargument': 'x86',
 

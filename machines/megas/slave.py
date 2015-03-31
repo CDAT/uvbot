@@ -16,8 +16,8 @@ SLAVE = BuildSlave('megas', secrets.SECRETS['megas']['password'],
         'distribution': 'fedora-21-x86_64',
         'compiler': 'gcc-4.9.2',
 
-        'generator': 'Ninja',
-        'buildflags': '-l9',
+        'generator:buildslave': 'Ninja',
+        'buildflags:buildslave': '-l9',
 
         'catalyst:upload_source_tarball' : 1,
 

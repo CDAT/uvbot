@@ -16,8 +16,8 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
         'distribution': 'fedora-19-x86_64',
         'compiler': 'gcc-4.8.3',
 
-        'generator': 'Unix Makefiles',
-        'buildflags': '-j9',
+        'generator:buildslave': 'Unix Makefiles',
+        'buildflags:buildslave': '-j9',
 
         'maximum_parallel_level': 9,
 

@@ -127,6 +127,8 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
     factory = import_module("%s.factory" % project.__name__)
 
     composite_keys = (
+        ('generator', None),
+        ('buildflags', ''),
         ('configure_options', {}),
         ('test_include_labels', []),
         ('test_excludes', []),
