@@ -164,6 +164,9 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         if dirlen:
             kwargs['slavebuilddir'] = hashlib.md5(buildname).hexdigest()[:dirlen]
 
+        if buildprops['generator'] is None:
+            raise RuntimeError, 'no generator for build: %s' % buildname
+
         builders.append(BuilderConfig(
             name=buildname,
             factory=factory.get_factory(buildset),
