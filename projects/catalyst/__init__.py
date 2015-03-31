@@ -1,3 +1,5 @@
+from projects.common import options
+
 __all__ = [
     'NAME',
 
@@ -29,24 +31,8 @@ OPTIONS = {
         'linux': {},
         'osx': {},
     },
-    'buildtype': {
-        'release': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Release',
-            },
-        },
-        'debug': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Debug',
-            },
-        },
-    },
-    'category': {
-        'expected': {},
-        'exotic': {},
-        'experimental': {},
-        'default' : 'expected',
-    },
+    'buildtype': options.buildtypes,
+    'category': options.categories,
 }
 
 OPTIONORDER = ('os', 'buildtype',)

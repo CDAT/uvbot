@@ -1,3 +1,5 @@
+from projects.common import options
+
 __all__ = [
     'NAME',
     'DEFAULTS',
@@ -47,20 +49,8 @@ OPTIONS = {
             'MAKE_COMMAND:STRING': '/usr/bin/make',
             },
     },
-    'libtype': {
-        'shared': {
-            'configure_options:project': {
-                'BUILD_SHARED_LIBS:BOOL': 'ON',
-            },
-        },
-    },
-    'buildtype': {
-        'release': {
-            'configure_options:project': {
-                'CMAKE_BUILD_TYPE:STRING': 'Release',
-            },
-        },
-    },
+    'libtype': options.libtypes,
+    'buildtype': options.buildtypes,
 }
 
 OPTIONORDER = ('os', 'libtype', 'buildtype')
