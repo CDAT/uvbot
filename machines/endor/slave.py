@@ -16,7 +16,7 @@ SLAVE = BuildSlave('endor', secrets.SECRETS['endor']['password'],
         'distribution': 'ubuntu-12.04-x86_64',
         'compiler': 'gcc-4.6.3',
 
-        'generator': 'Unix Makefiles',
-        'buildflags': '-j9 -l9',
+        'generator:buildslave': 'Unix Makefiles',
+        'buildflags:buildslave': '-j9 -l9',
     }
 )

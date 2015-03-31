@@ -16,8 +16,8 @@ SLAVE = BuildSlave('nemesis', secrets.SECRETS['nemesis']['password'],
         'distribution': 'windows-7-x86_64',
         'compiler': 'msvc-2013-x64',
 
-        'generator': 'Ninja',
-        'buildflags': '-l9',
+        'generator:buildslave': 'Ninja',
+        'buildflags:buildslave': '-l9',
 
         'maximum_parallel_level': 5,
 

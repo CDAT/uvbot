@@ -16,8 +16,8 @@ SLAVE = BuildSlave('debian4dash', secrets.SECRETS['debian4dash']['password'],
         'distribution': 'debian-4-x86_64',
         'compiler': 'gcc-4.1.2',
 
-        'generator': 'Unix Makefiles',
-        'buildflags': '-j3',
+        'generator:buildslave': 'Unix Makefiles',
+        'buildflags:buildslave': '-j3',
 
         'maximum_parallel_level': 3,
 

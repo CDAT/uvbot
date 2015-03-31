@@ -2,8 +2,8 @@ import projects
 from . import options
 
 defaults = {
-    'generator': 'Unix Makefiles',
-    'buildflags': '-j1',
+    'generator:project': 'Unix Makefiles',
+    'buildflags:project': '-j1',
 
     'upload_file_patterns:project': [
         '*.tar.gz',
@@ -18,7 +18,7 @@ os = projects.merge_config(options.os, {
             '*.exe',
         ],
 
-        'generator': 'Ninja',
+        'generator:project': 'Ninja',
     },
     'osx': {
         'upload_file_patterns:project': [

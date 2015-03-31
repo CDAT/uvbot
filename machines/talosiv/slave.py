@@ -16,8 +16,8 @@ SLAVE = BuildSlave('talosiv', secrets.SECRETS['talosiv']['password'],
         'distribution': 'osx-10.10-x86_64',
         'compiler': 'clang-apple-6.0',
 
-        'generator': 'Unix Makefiles',
-        'buildflags': '-j9 -l9',
+        'generator:buildslave': 'Unix Makefiles',
+        'buildflags:buildslave': '-j9 -l9',
 
         'configure_options:buildslave': {
             'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',

@@ -15,8 +15,8 @@ SLAVE = BuildSlave('kamino', secrets.SECRETS['kamino']['password'],
         'os': 'osx',
         'distribution': 'osx-10.7-x86_64',
 
-        'generator': 'Unix Makefiles',
-        'buildflags': '-j5 -l5',
+        'generator:buildslave': 'Unix Makefiles',
+        'buildflags:buildslave': '-j5 -l5',
 
         'maximum_parallel_level': 5,
 

@@ -16,8 +16,8 @@ SLAVE = BuildSlave('tarvalon', secrets.SECRETS['tarvalon']['password'],
         'distribution': 'windows-7-x86_64',
         'compiler': 'msvc-2010-x64',
 
-        'generator': 'Visual Studio 10 Win64',
-        'buildflags': '',
+        'generator:buildslave': 'Visual Studio 10 Win64',
+        'buildflags:buildslave': '',
 
         'maximum_parallel_level': 5,
 

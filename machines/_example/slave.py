@@ -29,11 +29,11 @@ SLAVE = BuildSlave('_example', secrets.SECRETS['_example']['password'],
         'compiler': 'gcc-4.6.3',
 
         # The CMake generator to use.
-        'generator': 'Unix Makefiles',
+        'generator:buildslave': 'Unix Makefiles',
         # Flags to pass to the build tool (for parallelism). Also recommended
         # is `-l#` (load average) for machines with concurrent builds to not
         # swamp the machine.
-        'buildflags': '-j9',
+        'buildflags:buildslave': '-j9',
         # If a project supports parallel testing, this is the parallel testing
         # level that will be given to ctest for this machine
         'maximum_parallel_level': 9
