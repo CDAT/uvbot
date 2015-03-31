@@ -36,6 +36,8 @@ defprops = {
         'DYLD_LIBRARY_PATH': '/Users/kitware/Dashboards/Support/tbb/lib/libc++:${DYLD_LIBRARY_PATH}',
         'PATH': '/Users/kitware/Dashboards/Support/openmpi/bin:${PATH}',
     },
+
+    'supports_parallel_testing:sandbox': True,
 }
 
 buildsets = [
@@ -43,6 +45,7 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'clang',
             'java',
@@ -78,6 +81,7 @@ gccbuildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'java',
             'mpi',
