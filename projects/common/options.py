@@ -1,6 +1,12 @@
 os = {
     'linux': {},
-    'osx': {},
+    'osx': {
+        'configure_options:project': {
+            # CMake is picking make -i as default, which ends up ignoring
+            # errors and wasting time!
+            'MAKE_COMMAND:STRING': '/usr/bin/make',
+        },
+    },
     'windows': {},
 }
 libtypes = {
