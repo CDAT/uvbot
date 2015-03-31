@@ -11,7 +11,6 @@ SLAVE = BuildSlave('tarvalon', secrets.SECRETS['tarvalon']['password'],
     max_builds=1,
     properties={
         'cmakeroot': 'C:/Support/cmake-3.2.1-win32-x86', # 3.2.1
-        'sharedresourcesroot': 'C:/Dashboards',
 
         'os': 'windows',
         'distribution': 'windows-7-x86_64',

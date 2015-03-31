@@ -11,7 +11,6 @@ SLAVE = BuildSlave('dashlin1', secrets.SECRETS['dashlin1']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/home/kitware/Dashboards/Support/cmake/install', # 2.8.11
-        'sharedresourcesroot': '/home/kitware/Dashboards/MyTests',
 
         'os': 'linux',
         'distribution': 'ubuntu-12.04-x86_64',

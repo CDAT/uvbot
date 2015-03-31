@@ -11,7 +11,6 @@ SLAVE = BuildSlave('amber8', secrets.SECRETS['amber8']['password'],
     max_builds=1,
     properties={
         'cmakeroot': '/home/kitware/cmake', # 2.8.9
-        'sharedresourcesroot': '/home/kitware/Dashboards/MyTests',
 
         'os': 'linux',
         'distribution': 'ubuntu-12.04-x86_64',

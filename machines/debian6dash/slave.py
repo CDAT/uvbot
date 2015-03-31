@@ -12,7 +12,6 @@ SLAVE = BuildSlave('debian6dash', secrets.SECRETS['debian6dash']['password'],
     properties={
         #'cmakeroot': '/usr', # 2.8.2
         'cmakeroot': '/home/kitware/misc/root/cmake', # 3.1.3
-        'sharedresourcesroot': '/home/kitware/dashboards',
 
         'os': 'linux',
         'distribution': 'debian-6-x86_64',
