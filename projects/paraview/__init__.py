@@ -1,4 +1,5 @@
 import projects
+from projects.common import features
 from projects.common import options
 
 __all__ = [
@@ -73,17 +74,8 @@ FEATURES = {
             '^pvcrs\.',
         ],
     }),
-    'icc': ({}, {
-        'slaveenv': {
-            'CC': 'icc',
-            'CXX': 'icpc',
-        }
-    }),
-    'vs': ({}, {
-        'configure_options:feature': {
-            'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
-        },
-    }),
+    'icc': features.icc,
+    'vs': features.vs,
     '32bit': ({}, {}),
 
     '_nocollab': ({}, {

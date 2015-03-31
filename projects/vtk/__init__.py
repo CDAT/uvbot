@@ -1,4 +1,5 @@
 import projects
+from projects.common import features
 from projects.common import options
 
 __all__ = [
@@ -61,19 +62,10 @@ FEATURES = {
     'opengl2': projects.make_feature_cmake_options({
         'VTK_RENDERING_BACKEND:STRING': ('OpenGL', 'OpenGL2'),
     }),
-    'icc': ({}, {
-        'slaveenv': {
-            'CC': 'icc',
-            'CXX': 'icpc',
-        }
-    }),
-    'clang': ({}, {}),
+    'icc': features.icc,
+    'clang': features.clang,
     'tbb': ({}, {}),
-    'vs': ({}, {
-        'configure_options:feature': {
-            'CMAKE_CXX_MP_FLAG:BOOL': 'ON',
-        },
-    }),
+    'vs': features.vs,
     'asan': ({}, {}),
     'ubsan': ({}, {}),
 

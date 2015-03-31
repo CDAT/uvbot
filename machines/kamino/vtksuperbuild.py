@@ -10,6 +10,8 @@ BUILDERS = []
 
 defprops = {
     'configure_options:builderconfig': {
+        'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
+
         'download_location:PATH': '/Users/kitware/Dashboards/MyTests/VTKSuperbuild-downloads',
 
         'JAVA_AWT_INCLUDE_PATH:PATH': '/System/Library/Frameworks/JavaVM.framework/Headers',

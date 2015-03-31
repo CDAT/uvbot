@@ -1,4 +1,5 @@
 import projects
+from projects.common import features
 from projects.common import options
 from projects.common import superbuild
 
@@ -33,21 +34,7 @@ OPTIONORDER = ('os', 'libtype', 'buildtype')
 
 FEATURES = {
     'superbuild': ({}, {}),
-    'osx10.5': ({}, {
-        'configure_options:feature': {
-            'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk',
-            'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
-            'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.5',
-
-        },
-    }),
-    'osx10.7': ({}, {
-        'configure_options:feature': {
-            'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk',
-            'CMAKE_OSX_ARCHITECTURES:STRING': 'x86_64',
-            'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.7',
-        },
-    }),
+    'osx10.5': features.osx105,
+    'osx10.7': features.osx107,
     '32bit': ({}, {}),
-    '64bit': ({}, {}),
 }
