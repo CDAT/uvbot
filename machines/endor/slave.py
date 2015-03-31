@@ -9,7 +9,7 @@ __all__ = [
 SLAVE = BuildSlave('endor', secrets.SECRETS['endor']['password'],
     max_builds=1,
     properties={
-        'cmakeroot': '/usr',
+        'cmakeroot': '/usr/local', # 2.8.12.2
         'sharedresourcesroot': '/home/kitware/dashboards',
 
         'os': 'linux',
