@@ -1,4 +1,5 @@
 from . import amber8
+from . import bigmac
 from . import blight
 from . import dashlin1
 from . import debian4dash
@@ -21,6 +22,7 @@ __all__ = [
 
 MACHINES = [
     amber8,
+    bigmac,
     blight,
     dashlin1,
     debian4dash,
