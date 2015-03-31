@@ -9,7 +9,7 @@ from . import paraview
 from . import vtk
 
 BUILDERS = {
-#    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
+    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
     'ParaView' : paraview.BUILDERS,
     'VTK': vtk.BUILDERS,
 }
