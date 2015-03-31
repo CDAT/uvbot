@@ -6,10 +6,12 @@ r'''
 from . import slave
 from . import paraview
 from . import paraviewsuperbuild
+from . import vtk
 
 BUILDERS = {
     'ParaView': paraview.BUILDERS,
     'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
+    'VTK': vtk.BUILDERS,
 }
 
 def get_buildslave():

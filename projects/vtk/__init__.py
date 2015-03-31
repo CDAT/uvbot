@@ -74,4 +74,6 @@ FEATURES = {
             'BUILD_EXAMPLES:BOOL': 'OFF',
         },
     }),
+
+    '_strict': features.strict,
 }

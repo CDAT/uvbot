@@ -20,20 +20,16 @@ defprops = {
 
         'JAVA_JVM_LIBRARY:PATH': '-framework JavaVM',
         'JAVA_AWT_LIBRARY:PATH': '-framework JavaVM',
-        
+
         'Java_JAR_EXECUTABLE:FILEPATH': '/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/jar',
         'Java_JAVAC_EXECUTABLE:FILEPATH': '/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/javac',
         'Java_JAVADOC_EXECUTABLE:FILEPATH': '/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/javadoc',
         'Java_JAVAH_EXECUTABLE:FILEPATH': '/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/javah',
         'Java_JAVA_EXECUTABLE:FILEPATH': '/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java',
-
     },
 }
 
-osx105props = projects.merge_config(defprops, {
-})
-
-osx105buildsets = [
+buildsets = [
     {
         'os': 'osx',
         'libtype': 'shared',
@@ -45,5 +41,5 @@ osx105buildsets = [
     },
 ]
 
-BUILDERS += projects.make_builders(slave.SLAVE, vtksuperbuild, osx105buildsets, osx105props)
+BUILDERS += projects.make_builders(slave.SLAVE, vtksuperbuild, buildsets, defprops)
 

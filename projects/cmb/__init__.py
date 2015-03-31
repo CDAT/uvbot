@@ -1,3 +1,4 @@
+from projects.common import features
 from projects.common import options
 
 __all__ = [
@@ -25,4 +26,6 @@ OPTIONS = {
 }
 OPTIONORDER = ('os', 'libtype', 'buildtype',)
 
-FEATURES = {}
+FEATURES = {
+    '_strict': features.strict,
+}
