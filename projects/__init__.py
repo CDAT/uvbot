@@ -147,6 +147,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
         builder_category = project.NAME
         if 'category' in buildset:
             category = buildset['category']
+            buildprops['dashboard_status'] = category
             builder_category = "-".join([project.NAME, category])
 
             if category != default_category:
