@@ -37,7 +37,6 @@ defprops = {
         'PATH': '/Users/kitware/Dashboards/Support/openmpi/bin:${PATH}',
     },
 
-    'supports_parallel_testing:sandbox': True,
 }
 
 buildsets = [
@@ -53,6 +52,7 @@ buildsets = [
             'python',
             'qt',
             'tbb',
+            '_parallel',
         ),
     },
 ]
@@ -87,6 +87,7 @@ gccbuildsets = [
             'mpi',
             'python',
             'tbb',
+            '_parallel',
         ),
     },
 ]

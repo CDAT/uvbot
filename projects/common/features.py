@@ -56,3 +56,8 @@ strict = ({}, {
         'NSZombieEnabled': 'YES',
     },
 })
+
+parallel = ({}, {
+    'supports_parallel_testing:feature': True,
+    },
+})

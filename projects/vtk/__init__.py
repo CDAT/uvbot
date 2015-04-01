@@ -76,4 +76,5 @@ FEATURES = {
     }),
 
     '_strict': features.strict,
+    '_parallel': features.parallel,
 }
