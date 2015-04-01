@@ -11,6 +11,7 @@ from . import kamino
 from . import megas
 from . import nemesis
 from . import neodymius
+from . import renar
 from . import talosiv
 from . import tarvalon
 from . import trey
@@ -34,6 +35,7 @@ MACHINES = [
     megas,
     nemesis,
     neodymius,
+    renar,
     talosiv,
     tarvalon,
     trey,
