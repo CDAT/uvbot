@@ -59,6 +59,7 @@ def make_schedulers(buildnames, secrets):
             reason='CMB \'master\' changed.',
             properties={
                 'ctest_empty_binary_directory': True,
+                'cmb_install_on_success': True,
                 'ctest_track': 'master-packages',
             },
             codebases=codebases),
