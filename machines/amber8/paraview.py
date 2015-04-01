@@ -36,6 +36,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'python',
             'mpi',
@@ -45,6 +46,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (),
     },
     # disabling unified for now since it just fails anyways (and amber8 is

@@ -4,11 +4,9 @@ r'''
 '''
 
 from . import slave
-from . import vtk
 from . import paraview
 
 BUILDERS = {
-    'VTK': vtk.BUILDERS,
     'ParaView' : paraview.BUILDERS,
 }
 
