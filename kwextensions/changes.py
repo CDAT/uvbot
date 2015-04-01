@@ -206,6 +206,10 @@ class GitlabPoller(base.PollingChangeSource, StateMixin):
             msg += ' [Last polled: %s]' % self.last_poll_time.strftime('%c')
         return msg
 
+    def safe_now(self):
+        # Allow slaves to be up to 5 minutes behind the master.
+        return datetime.now() - timedelta(seconds=5 * 60)
+
 
 class GitlabMergeRequestPoller(GitlabPoller):
     compare_attrs = [
@@ -422,7 +426,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
                 'rooturl': 'https://%s' % self.host,
                 'try_user_fork': True,
                 'owner': source_project_info['owner']['username'],
-                'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
+                'cdash_time': self.safe_now().strftime(cdash.TIMEFORMAT),
                 'buildbot_commands': command_list,
             })
 
@@ -488,5 +492,5 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
                     properties={
                         'rooturl': 'https://%s' % self.host,
                         'try_user_fork': False,
-                        'cdash_time': datetime.now().strftime(cdash.TIMEFORMAT),
+                        'cdash_time': self.safe_now().strftime(cdash.TIMEFORMAT),
                     })
