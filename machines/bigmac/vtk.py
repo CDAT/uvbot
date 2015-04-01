@@ -25,6 +25,7 @@ buildsets = [
         'features': (
             'clang',
             'python',
+            '_parallel',
         ),
     },
     {
