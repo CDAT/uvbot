@@ -39,11 +39,12 @@ iccbuildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'python',
             'java',
-
             'icc',
+            '_parallel',
         ),
     },
 ]
@@ -55,9 +56,11 @@ gccbuildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'python',
             'java',
+            '_parallel',
         ),
     },
 ]

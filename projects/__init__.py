@@ -105,6 +105,7 @@ def _merge_options(props, key, default):
         'builderconfig',
         'project',
         'feature',
+        'priority',
     ]
     merged = merge_config(props, {key: default})
     for subkey in subkeys:

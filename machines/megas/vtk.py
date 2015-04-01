@@ -46,6 +46,7 @@ buildsets = [
         'buildtype': 'release',
         'features': base_features + (
             '_strict',
+            '_parallel',
         ),
 
         'category': 'experimental',
