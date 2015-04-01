@@ -76,6 +76,7 @@ FEATURES = {
     }),
     'icc': features.icc,
     'vs': features.vs,
+    'clang': features.clang,
     '32bit': ({}, {}),
 
     '_nocollab': ({}, {
