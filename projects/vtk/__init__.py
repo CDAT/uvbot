@@ -77,4 +77,14 @@ FEATURES = {
 
     '_strict': features.strict,
     '_parallel': features.parallel,
+    # Don't use with +gui for now
+    'osmesa': ({}, {
+        'configure_options:feature': {
+            'VTK_OPENGL_HAS_OSMESA:BOOL': 'ON',
+            'VTK_USE_OFFSCREEN:BOOL': 'ON',
+            'VTK_USE_X:BOOL': 'OFF',
+        },
+    }),
+
+
 }
