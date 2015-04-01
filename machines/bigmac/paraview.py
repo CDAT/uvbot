@@ -34,6 +34,7 @@ buildsets = [
         'features': (
             'clang',
             'python',
+            'gui',
             'opengl2',
         ),
     }
