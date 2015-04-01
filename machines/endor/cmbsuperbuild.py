@@ -17,7 +17,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'relwithdebinfo',
-        'features': (),
+        'features': ('superbuild',),
     },
 ]
 
