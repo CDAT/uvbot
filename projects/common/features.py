@@ -60,4 +60,4 @@ strict = ({}, {
 parallel = ({}, {
     'supports_parallel_testing:feature': True,
     },
-})
+)
