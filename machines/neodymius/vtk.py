@@ -41,7 +41,6 @@ iccbuildsets = [
         'buildtype': 'release',
         'features': (
             'python',
-            'java',
             'icc',
             '_parallel',
         ),
@@ -57,7 +56,6 @@ gccbuildsets = [
         'buildtype': 'release',
         'features': (
             'python',
-            'java',
             '_parallel',
         ),
     },

@@ -81,7 +81,6 @@ gccbuildsets = [
         'libtype': 'shared',
         'buildtype': 'release',
         'features': (
-            'java',
             'mpi',
             'python',
             'tbb',
