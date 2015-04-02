@@ -37,6 +37,8 @@ buildsets = [
             'clang',
             'python',
             'opengl2',
+
+            '_parallel',
         ),
     }
 ]
