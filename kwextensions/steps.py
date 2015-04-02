@@ -224,6 +224,22 @@ class CTestDashboard(ShellCommand):
                 command=makeCTestDashboardCommand,
                 **kwargs)
 
+    def _cdash_query(self):
+        ctest_build_name = self.getProperty('ctest_build_name')
+
+        query = cdash.Query(project=self.cdash_projectname)
+        query.add_filter(('buildname/string', cdash.StringOp.STARTS_WITH, ctest_build_name))
+        query.add_filter(('buildstarttime/date', cdash.DateOp.IS_AFTER, self.getProperty('cdash_time')))
+
+        return query
+
+    def startCommand(self, command, warnings):
+        # add a link to summary on cdash.
+        cdash_root = self.getProperty('cdash_url')
+        self.addURL("cdash", self._cdash_query().get_url('%s/index.php' % cdash_root))
+
+        ShellCommand.startCommand(self, command, warnings)
+
     def createSummary(self, log):
         """
         Generate summary for this build. We use special output from CTest and
@@ -266,19 +282,11 @@ class CTestDashboard(ShellCommand):
             if read_warning_summary and read_error_summary and read_test_summary:
                 break
 
-        ctest_build_name = self.getProperty("ctest_build_name")
-        cdash_root = self.getProperty("cdash_url")
-        cdash_projectname = self.cdash_projectname
+        cdash_root = self.getProperty('cdash_url')
+        cdash_index_url = '%s/index.php' % cdash_root
+        cdash_test_url = '%s/queryTests.php' % cdash_root
 
-        cdash_index_url = cdash_root + "/index.php"
-        cdash_test_url = cdash_root + "/queryTests.php"
-
-        query = cdash.Query(project=cdash_projectname)
-        query.add_filter(("buildname/string", cdash.StringOp.STARTS_WITH, ctest_build_name))
-        query.add_filter(("buildstarttime/date", cdash.DateOp.IS_AFTER, self.getProperty('cdash_time')))
-
-        # add a link to summary on cdash.
-        self.addURL("cdash", query.get_url(cdash_index_url))
+        query = self._cdash_query()
 
         if self.warnCount:
             self.addURL("warnings (%d)" % self.warnCount, query.get_url(cdash_index_url))
