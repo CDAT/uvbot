@@ -51,7 +51,6 @@ buildsets = [
             'python',
             'qt',
             'tbb',
-            '_parallel',
         ),
     },
 ]
@@ -84,7 +83,6 @@ gccbuildsets = [
             'mpi',
             'python',
             'tbb',
-            '_parallel',
         ),
     },
 ]

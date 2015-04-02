@@ -25,7 +25,6 @@ buildsets = [
         'features': (
             'clang',
             'python',
-            '_parallel',
         ),
     },
     {
@@ -37,8 +36,6 @@ buildsets = [
             'clang',
             'python',
             'opengl2',
-
-            '_parallel',
         ),
     }
 ]
