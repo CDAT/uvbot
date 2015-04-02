@@ -38,12 +38,14 @@ buildsets = [
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'mpi',
             'qt',
             'vs',
 
             '_noexamples',
+            '_parallel',
         ),
     },
 ]
