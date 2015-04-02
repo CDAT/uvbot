@@ -44,7 +44,6 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'clang',
             'java',
@@ -81,7 +80,6 @@ gccbuildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'java',
             'mpi',
