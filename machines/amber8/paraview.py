@@ -25,7 +25,6 @@ defprops = {
     },
 
     'slaveenv': {
-        'DISPLAY': ':0',
         # since we're using mesa, no need to do offscreen screenshots.
         'PV_NO_OFFSCREEN_SCREENSHOTS': '1',
     },
@@ -40,6 +39,7 @@ buildsets = [
         'features': (
             'python',
             'mpi',
+            'osmesa',
         ),
     },
     {
@@ -47,7 +47,9 @@ buildsets = [
         'libtype': 'static',
         'buildtype': 'release',
         'category': 'experimental',
-        'features': (),
+        'features': (
+            'osmesa',
+        ),
     },
     # disabling unified for now since it just fails anyways (and amber8 is
     # swamped). We should debug and renable it in time.
