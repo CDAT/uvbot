@@ -47,8 +47,6 @@ buildsets = [
         'features': base_features + (
             '_strict',
         ),
-
-        'category': 'experimental',
     },
 ]
 
