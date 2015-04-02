@@ -62,6 +62,7 @@ buildsets = [
             'mpi',
             'python',
             'qt',
+            '_noparallel',
         ),
     },
 ]

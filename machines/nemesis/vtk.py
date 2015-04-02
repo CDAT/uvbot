@@ -20,6 +20,7 @@ base_features = (
     'mpi',
 
     '_noexamples',
+    '_noparallel',
 )
 buildsets = [
     {

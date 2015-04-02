@@ -61,3 +61,8 @@ parallel = ({}, {
     'supports_parallel_testing:feature': True,
     },
 )
+
+noparallel = ({}, {
+    'supports_parallel_testing:feature': False,
+    },
+)

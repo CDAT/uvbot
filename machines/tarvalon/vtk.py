@@ -45,7 +45,6 @@ buildsets = [
             'vs',
 
             '_noexamples',
-            '_parallel',
         ),
     },
 ]
