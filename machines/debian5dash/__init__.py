@@ -1,5 +1,5 @@
 r'''
-    Machine: debian-lenny-dashboard.kitwarein.com
+    Machine: debian-lenny-dashboard.kitware.com
     Owner: ben.boeckel@kitware.com
 '''
 

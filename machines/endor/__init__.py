@@ -1,5 +1,5 @@
 r'''
-    Machine: endor.kitwarein.com
+    Machine: endor.kitware.com
     Owner: andy.bauer@kitware.com
 '''
 
