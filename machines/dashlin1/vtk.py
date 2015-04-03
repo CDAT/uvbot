@@ -58,11 +58,11 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'mpi',
             'python',
             'qt',
-            '_noparallel',
         ),
     },
 ]

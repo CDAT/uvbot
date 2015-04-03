@@ -20,13 +20,13 @@ base_features = (
     'mpi',
 
     '_noexamples',
-    '_noparallel',
 )
 buildsets = [
     {
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': base_features,
     },
 ]

@@ -38,7 +38,6 @@ buildsets = [
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'mpi',
             'qt',
