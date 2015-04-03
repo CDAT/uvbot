@@ -64,6 +64,10 @@ OPTIONS = {
             'configure_options:project': {
                 # Manta is not supported on OS X in our superbuild.
                 'ENABLE_manta:BOOL': 'OFF',
+
+                # We don't support acusolve on OsX. We don't have x86_64
+                # bit versions for the proprietary libraries.
+                'ENABLE_acusolve:BOOL': 'OFF',
             },
         },
     }),
