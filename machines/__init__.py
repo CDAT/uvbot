@@ -7,16 +7,16 @@ from . import debian5dash
 from . import debian6dash
 from . import debian7dash
 from . import endor
+from . import hythloth
 from . import kamino
 from . import megas
+from . import miranda
 from . import nemesis
 from . import neodymius
 from . import renar
 from . import talosiv
 from . import tarvalon
 from . import trey
-from . import miranda
-from . import hythloth
 
 __all__ = [
     'MACHINES',
@@ -32,16 +32,16 @@ MACHINES = [
     #debian6dash,
     #debian7dash,
     endor,
+    hythloth,
     kamino,
     megas,
+    miranda,
     nemesis,
     neodymius,
     renar,
     talosiv,
     tarvalon,
     trey,
-    miranda,
-    hythloth,
 ]
 
 import os
