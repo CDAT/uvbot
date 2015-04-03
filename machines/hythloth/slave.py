@@ -20,8 +20,8 @@ SLAVE = BuildSlave('hythloth', secrets.SECRETS['hythloth']['password'],
 
 SLAVEPROPS = {
     'compiler': 'gcc-debian-testing',
-    'generator': 'Unix Makefiles',
-    'buildflags': '-j4 -l5',
+    'generator:buildslave': 'Unix Makefiles',
+    'buildflags:buildslave': '-j4 -l5',
 
     'maximum_parallel_level': 4,
 
