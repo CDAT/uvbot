@@ -96,6 +96,8 @@ FEATURES = {
             'VTK_OPENGL_HAS_OSMESA:BOOL': 'ON',
             'VTK_USE_OFFSCREEN:BOOL': 'ON',
             'VTK_USE_X:BOOL': 'OFF',
+            'OPENGL_gl_LIBRARY:FILEPATH': '',
+            'OPENGL_glu_LIBRARY:FILEPATH': '',
         },
     }),
 
