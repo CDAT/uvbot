@@ -70,8 +70,8 @@ FEATURES = {
     }, extra_with={
         'test_excludes:feature': [
             # Enough problems that these are just noise right now.
-            '^pvcs\.',
-            '^pvcrs\.',
+            '^pvcs',
+            '^pvcrs',
         ],
     }),
     'icc': features.icc,
