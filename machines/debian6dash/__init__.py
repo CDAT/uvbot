@@ -1,5 +1,5 @@
 r'''
-    Machine: debian-squeeze-dashboard.kitwarein.com
+    Machine: debian-squeeze-dashboard.kitware.com
     Owner: ben.boeckel@kitware.com
 '''
 

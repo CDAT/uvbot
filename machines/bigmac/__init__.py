@@ -1,5 +1,5 @@
 r'''
-    Machine: bigmac.kitwarein.com
+    Machine: bigmac.kitware.com
     Owner: marcus.hanwell@kitware.com
 '''
 
