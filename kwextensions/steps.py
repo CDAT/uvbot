@@ -251,22 +251,27 @@ class CTestDashboard(ShellCommand):
         self.totalTestsCount = 0
         self.testSuccessRate = 0
 
+        failed_tests = []
+
         read_warning_summary = False
         read_error_summary = False
         read_test_summary = False
-        errorsRe = re.compile(r"\s*(\d+) Compiler errors")
-        warningsRe = re.compile(r"\s*(\d+) Compiler warnings")
+        read_failed_tests_header = False
+        errorsRe = re.compile(r"(\d+) Compiler errors")
+        warningsRe = re.compile(r"(\d+) Compiler warnings")
         testRe = re.compile(r"(\d+)% tests passed, (\d+) tests failed out of (\d)+")
-
+        failedTestsStartRe = re.compile(r"The following tests FAILED:")
+        failedTestRe = re.compile(r"(\d)+ - ([^ ]+)")
         for line in log.readlines():
+            line = line.strip()
             if not read_warning_summary:
-                g = warningsRe.match(line.strip())
+                g = warningsRe.match(line)
                 if g:
                     self.warnCount = int(g.group(1))
                     read_warning_summary = True
                     continue
             if not read_error_summary:
-                g = errorsRe.match(line.strip())
+                g = errorsRe.match(line)
                 if g:
                     self.errorCount = int(g.group(1))
                     read_error_summary = True
@@ -279,8 +284,19 @@ class CTestDashboard(ShellCommand):
                     self.totalTestsCount = int(g.group(3))
                     read_test_summary = True
                     continue
-            if read_warning_summary and read_error_summary and read_test_summary:
-                break
+            if not read_failed_tests_header:
+                g = failedTestsStartRe.match(line)
+                if g:
+                    read_failed_tests_header = True
+                    continue
+            elif len(failed_tests) < self.failedTestsCount:
+                g = failedTestRe.match(line)
+                if g:
+                    failed_tests.append(g.group(2))
+                    continue
+
+        # Set property a with the failed tests for steps downstream.
+        self.setProperty("ctest_failed_test", failed_tests, "CTestDashboard")
 
         cdash_root = self.getProperty('cdash_url')
         cdash_index_url = '%s/index.php' % cdash_root
