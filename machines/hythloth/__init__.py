@@ -4,8 +4,10 @@ r'''
 '''
 
 from . import slave
+from . import vtk
 
 BUILDERS = {
+    'VTK': vtk.BUILDERS,
 }
 
 def get_buildslave():
