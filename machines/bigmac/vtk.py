@@ -21,7 +21,6 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'category': 'experimental',
         'features': (
             'clang',
             'python',
