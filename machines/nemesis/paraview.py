@@ -23,21 +23,25 @@ base_features = (
     'gui',
     'python',
     'mpi',
-
-    '_noexamples',
 )
 buildsets = [
     {
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': base_features,
+        'category': 'experimental',
+        'features': base_features + (
+            '_parallel',
+        ),
     },
     {
         'os': 'windows',
         'libtype': 'static',
         'buildtype': 'release',
-        'features': base_features,
+        'category': 'experimental',
+        'features': base_features + (
+            '_parallel',
+        ),
     },
     {
         'os': 'windows',
@@ -49,19 +53,23 @@ buildsets = [
             'python',
             'mpi',
             'opengl2',
-            ),
+
+            '_noexamples',
+        ),
     },
 ]
 
 BUILDERS = projects.make_builders(slave, paraview, buildsets, defprops,
-        dirlen=8)
+    dirlen=8)
 
 kitbuildsets = [
     {
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': base_features + (
+            '_parallel',
             'kits',
         ),
     },
