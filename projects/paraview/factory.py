@@ -4,7 +4,7 @@ __all__ = [
 ]
 
 from buildbot.process.factory import BuildFactory
-from buildbot.process.properties import Property, Interpolate
+from buildbot.process.properties import Property, Interpolate, renderer
 from buildbot.steps.master import SetProperty
 from buildbot.steps.source.git import Git
 
@@ -54,6 +54,12 @@ def _doStepIf(step):
     ctest_failed_tests = step.getProperty("ctest_failed_tests", [])
     return len(ctest_failed_tests) > 0 and len(ctest_failed_tests) < MaxFailedTestCount
 
+@renderer
+def _convertTestsToRegEx(props):
+    """Converts a list of test names to a list of regex matching the test names"""
+    ctest_failed_tests = props.getProperty("ctest_failed_tests", [])
+    return ["^%s$" % x for x in ctest_failed_tests]
+
 def get_factory(buildset):
     """Argument is the selected buildset. That could be used to build the
     factory as needed."""
@@ -91,7 +97,7 @@ def get_factory(buildset):
     for i in range(retrycount):
         # Convert the "ctest_failed_tests" property to "ctest_test_includes".
         factory.addStep(SetProperty(property="test_includes",
-            value=Property("ctest_failed_tests"),
+            value=_convertTestsToRegEx,
             doStepIf=_doStepIf))
         # Download the new ctest_extra_options.cmake file.
         factory.addStep(CTestExtraOptionsDownload(doStepIf=_doStepIf))
