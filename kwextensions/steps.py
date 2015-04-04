@@ -213,9 +213,11 @@ class CTestDashboard(ShellCommand):
     name="build-n-test"
     description="building-n-testing"
     descriptionDone="built and tested"
-    def __init__(self, cdash_projectname, command=None, **kwargs):
+    def __init__(self, cdash_projectname, maxFailedTestCount=0, command=None, **kwargs):
         self.warnCount = 0
         self.errorCount = 0
+        self.failedTestsCount = 0
+        self.maxFailedTestCount = maxFailedTestCount
         self.cdash_projectname = cdash_projectname
 
         # TODO: we maybe can convert all these arguments to be passed in through
@@ -251,22 +253,27 @@ class CTestDashboard(ShellCommand):
         self.totalTestsCount = 0
         self.testSuccessRate = 0
 
+        failed_tests = []
+
         read_warning_summary = False
         read_error_summary = False
         read_test_summary = False
-        errorsRe = re.compile(r"\s*(\d+) Compiler errors")
-        warningsRe = re.compile(r"\s*(\d+) Compiler warnings")
+        read_failed_tests_header = False
+        errorsRe = re.compile(r"(\d+) Compiler errors")
+        warningsRe = re.compile(r"(\d+) Compiler warnings")
         testRe = re.compile(r"(\d+)% tests passed, (\d+) tests failed out of (\d)+")
-
+        failedTestsStartRe = re.compile(r"The following tests FAILED:")
+        failedTestRe = re.compile(r"(\d)+ - ([^ ]+)")
         for line in log.readlines():
+            line = line.strip()
             if not read_warning_summary:
-                g = warningsRe.match(line.strip())
+                g = warningsRe.match(line)
                 if g:
                     self.warnCount = int(g.group(1))
                     read_warning_summary = True
                     continue
             if not read_error_summary:
-                g = errorsRe.match(line.strip())
+                g = errorsRe.match(line)
                 if g:
                     self.errorCount = int(g.group(1))
                     read_error_summary = True
@@ -279,8 +286,19 @@ class CTestDashboard(ShellCommand):
                     self.totalTestsCount = int(g.group(3))
                     read_test_summary = True
                     continue
-            if read_warning_summary and read_error_summary and read_test_summary:
-                break
+            if not read_failed_tests_header:
+                g = failedTestsStartRe.match(line)
+                if g:
+                    read_failed_tests_header = True
+                    continue
+            elif len(failed_tests) < self.failedTestsCount:
+                g = failedTestRe.match(line)
+                if g:
+                    failed_tests.append(g.group(2))
+                    continue
+
+        # Set property a with the failed tests for steps downstream.
+        self.setProperty("ctest_failed_tests", failed_tests, "CTestDashboard")
 
         cdash_root = self.getProperty('cdash_url')
         cdash_index_url = '%s/index.php' % cdash_root
@@ -302,9 +320,9 @@ class CTestDashboard(ShellCommand):
         result = ShellCommand.evaluateCommand(self, cmd)
         if result != SUCCESS:
             return result
-        if self.errorCount or self.failedTestsCount:
+        if self.errorCount or self.failedTestsCount > self.maxFailedTestCount:
             return FAILURE
-        if self.warnCount:
+        if self.warnCount or self.failedTestsCount:
             return WARNINGS
         return SUCCESS
 
@@ -325,7 +343,7 @@ def makeExtraOptionsString(props):
         props_dict["prop:%s" % key] = value
     props_dict['ctest_configure_options'] = ';'.join(['-D%s=%s' % i for i in props.getProperty('configure_options', {}).items()])
     props_dict['ctest_test_excludes'] = '|'.join(props.getProperty('test_excludes'))
-    props_dict['ctest_test_includes'] = ''
+    props_dict['ctest_test_includes'] = '|'.join(props.getProperty('test_includes', []))
     if props.getProperty('ignore_exclusions', False):
         props_dict['ctest_test_includes'] = props_dict['ctest_test_excludes']
         props_dict['ctest_test_excludes'] = ''
