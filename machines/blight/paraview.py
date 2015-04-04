@@ -74,11 +74,9 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'python',
             'mpi',
-            '_parallel',
         ),
     },
 ]

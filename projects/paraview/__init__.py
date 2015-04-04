@@ -26,6 +26,7 @@ DEFAULTS = {
         'PARAVIEW_ENABLE_CATALYST:BOOL': 'ON',
         'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
     },
+    'supports_parallel_testing:project' : True,
 
     'cdash_url': 'https://open.cdash.org',
     'cdash_project': 'ParaView',
@@ -102,5 +103,5 @@ FEATURES = {
     }),
 
     '_strict': features.strict,
-    '_parallel': features.parallel,
+    '_noparallel': features.noparallel,
 }

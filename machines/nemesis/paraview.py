@@ -31,19 +31,13 @@ buildsets = [
         'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
-        'features': base_features + (
-            '_parallel',
-        ),
+        'features': base_features,
     },
     {
         'os': 'windows',
         'libtype': 'static',
         'buildtype': 'release',
-        'category': 'experimental',
-        'features': base_features + (
-            '_parallel',
-        ),
+        'features': base_features,
     },
     {
         'os': 'windows',
@@ -57,6 +51,7 @@ buildsets = [
             'opengl2',
 
             '_noexamples',
+            '_noparallel',
         ),
     },
 ]
@@ -71,7 +66,6 @@ kitbuildsets = [
         'buildtype': 'release',
         'category': 'experimental',
         'features': base_features + (
-            '_parallel',
             'kits',
         ),
     },
