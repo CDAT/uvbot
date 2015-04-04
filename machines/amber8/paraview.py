@@ -35,7 +35,6 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'python',
             'mpi',
@@ -46,7 +45,6 @@ buildsets = [
         'os': 'linux',
         'libtype': 'static',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'osmesa',
         ),
