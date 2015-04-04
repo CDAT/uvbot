@@ -13,6 +13,8 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
+        # NOTE: this is a release-only build of Qt hence, this machine cannot
+        # support debug builds with gui enabled.
         'QT_QMAKE_EXECUTABLE:FILEPATH': 'C:/Users/kitware/misc/root/qt-4.8.6/bin/qmake.exe',
 
         'PARAVIEW_DATA_STORE:PATH': 'C:/Users/kitware/dashboards/data/paraview',
@@ -46,7 +48,7 @@ buildsets = [
     {
         'os': 'windows',
         'libtype': 'shared',
-        'buildtype': 'debug',
+        'buildtype': 'release',
         'category': 'experimental',
         'features': (
             'gui',
