@@ -83,14 +83,6 @@ base_features = (
 buildsets64 = [
     {
         'os': 'windows',
-        'libtype': 'static',
-        'buildtype': 'release',
-        'features': base_features + (
-            'python',
-        ),
-    },
-    {
-        'os': 'windows',
         'libtype': 'shared',
         'buildtype': 'debug',
         'features': base_features + (
