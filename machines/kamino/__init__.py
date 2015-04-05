@@ -4,12 +4,10 @@ r'''
 '''
 
 from . import slave
-from . import paraviewsuperbuild
 from . import vtk
 from . import vtksuperbuild
 
 BUILDERS = {
-    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
     'VTK': vtk.BUILDERS,
     'VTKSuperbuild': vtksuperbuild.BUILDERS,
 }
