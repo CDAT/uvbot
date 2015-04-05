@@ -12,7 +12,7 @@ defprops = {
     'test_excludes:builderconfig': [
         # Driver bugs.
         'vtkRenderingCoreCxx-TestAreaSelections',
-        'vtkRenderingCoreCxx-TestPolygonSelections',
+        'vtkRenderingCoreCxx-TestPolygonSelection',
     ],
 
     'configure_options:builderconfig': {
@@ -36,7 +36,6 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'category': 'experimental',
         'features': (
             'clang',
             'python',
