@@ -13,7 +13,7 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
         'cmakeroot': '/usr',
 
         'os': 'linux',
-        'distribution': 'fedora-19-x86_64',
+        'distribution': 'fedora-20-x86_64',
     })
 
 SLAVEPROPS = {
