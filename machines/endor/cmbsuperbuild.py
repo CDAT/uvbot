@@ -7,6 +7,8 @@ __all__ = [
 ]
 
 defprops = {
+    'developer_install_root': '/home/kitware/dashboards/data/cmb/developer',
+
     'configure_options:builderconfig': {
         'ENABLE_hdf5:BOOL': 'ON',
     },
