@@ -9,6 +9,7 @@ __all__ = [
 defprops = {
     'configure_options:builderconfig': {
         'ENABLE_hdf5:BOOL': 'ON',
+        'USE_SYSTEM_qt:BOOL': 'ON',
     },
 }
 
