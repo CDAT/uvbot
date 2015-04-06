@@ -8,7 +8,7 @@ from . import cmb
 from . import cmbsuperbuild
 
 BUILDERS = {
-    #'CMB': cmb.BUILDERS,
+    'CMB': cmb.BUILDERS,
     'CMBSuperbuild': cmbsuperbuild.BUILDERS,
 }
 
