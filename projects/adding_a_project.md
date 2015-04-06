@@ -19,7 +19,7 @@ __all__ = [
 
 # The name of the origin repository on Gitlab
 REPO = 'VTK/VTK'
-# Any branches of interest
+# Any integration branches to be tested
 BRANCHES = [
     'master',
 ]
@@ -55,11 +55,17 @@ FEATURES = {}
 
 `NAME` contains the name of the project.
 
-`DEFAULTS` is a hash of project-wide properties.  Properties are used by
-buildbot to determine how to perform parts of the build, and can come from
-four sources.  Project-level properties override buildslave-level properties
-and builder-level properties and can be overridden by features.  Below is an
-example `DEFAULTS` hash.
+`DEFAULTS` is a hash of project-wide properties. Properties are used by
+buildbot to determine how to perform parts of the build. By default,
+the buildslave properties will overwrite any builder properties. Instead,
+we use "composite keys" to override this behavior for certain keys. These keys
+have four levels: *buildslave*, *builderconfig*, *project*, and *feature*.
+Properties suffixed with this subkey (with a colon) are merged together with
+later levels overriding earlier levels. Lists and dictionaries are merged when
+this happens. The keys which use this are: `generator`, `buildflags`,
+`configure_options`, `test_include_labels`, `test_excludes`,
+`upload_file_patterns`, and `supports_parallel_testing`. Below is an example
+`DEFAULTS` hash.
 
 ```python
 DEFAULTS = {
@@ -126,8 +132,8 @@ OPTIONS = {
 These common options include `os`, `libtype`, `buildtype` and `category`.
 
 `OPTIONORDER` is a list of the option names (`libtype` in the above example)
-to determine in what order the options are appended into the build name. Each
-option name should appear once in this list.
+to determine in what order the options are appended into the build name.
+Options not listed here will not appear in the build name.
 
 `FEATURES` is a dictionary of optional build parameters that can be enabled or
 disabled in a build.  Unlike options, features only have two states, on and off
@@ -163,12 +169,15 @@ FEATURES = {
 ```
 
 Multiple CMake options can be passed in this dictionary with a tuple for their
-value and the correct feature description dictionary will be created.
+value and the correct feature description dictionary will be created.  This
+function also takes keyword arguments `extra_with` and `extra_without` for
+properties that should only be set in one state of the feature.
 
 Similar to the common options above, there are common features that projects
 may share in `projects/common/features.py`.  These are things like using the
 clang or icc compilers or overriding the `supports_parallel_testing` value for
-the project.
+the project.  Features that are enabled for a build are appended to the build
+name unless their names start with `_`.
 
 ## Project Build Schedulers
 
