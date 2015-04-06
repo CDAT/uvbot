@@ -7,6 +7,8 @@ __all__ = [
 ]
 
 defprops = {
+    'developer_install_root': '/Users/dashboard/Dashboards/data/cmb/developer',
+
     'configure_options:builderconfig': {
         'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.9',
 
@@ -26,7 +28,7 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'features': (),
+        'features': ('superbuild',),
     },
 ]
 

@@ -38,6 +38,42 @@ def _extra(props):
            set (ctest_configure_options "${ctest_configure_options};${ctest_configure_options_extra}")
            ''' % ';'.join(extra_options)
 
+@properties.renderer
+def _install_superbuild(props):
+    do_install = props.getProperty('cmb_install_on_success', False)
+    if not do_install:
+        return ''
+
+    make_install = props.hasProperty('developer_install_root')
+    if make_install:
+        make_install = '1'
+    else:
+        make_install = '0'
+    install_root = props.getProperty('developer_install_root', '')
+    return '''
+           function (buildbot_post_all)
+               if (NOT success OR NOT %s)
+                   return ()
+               endif ()
+
+               set(cmb_install_root "%s")
+
+               message("------- Installing developer mode build to: ${cmb_install_root}")
+
+               # Start a new build so as not to mess with the existing output
+               # results.
+               ctest_start(Experimental)
+               # Set the override and use a developer build.
+               ctest_configure(
+                   OPTIONS "-D__BUILDBOT_INSTALL_LOCATION:PATH=${cmb_install_root};-DENABLE_cmb_BUILD_MODE:STRING=Developer")
+               # Do the build again.
+               ctest_build()
+               # Copy the developer config over.
+               file(COPY        "${CTEST_BINARY_DIRECTORY}/cmb-Developer-Config.cmake"
+                    DESTINATION "${cmb_install_root}")
+           endfunction ()
+           ''' % (make_install, install_root)
+
 def get_source_steps(sourcedir='source'):
     codebase = projects.get_codebase_name(poll.REPO)
     update = Git(repourl=Interpolate('%%(src:%s:repository)s' % codebase),
@@ -74,9 +110,10 @@ def get_factory(buildset):
     factory.addStep(SetCTestBuildNameProperty(codebases=codebases))
     factory.addStep(DownloadCommonCTestScript())
     factory.addStep(CTestExtraOptionsDownload(
-        s=Interpolate('%(kw:default)s%(kw:extra)s',
+        s=Interpolate('%(kw:default)s%(kw:extra)s%(kw:installsuperbuild)s',
             default=CTestExtraOptionsDownload.DefaultRenderer,
-            extra=_extra)))
+            extra=_extra,
+            installsuperbuild=_install_superbuild)))
     if buildset['os'] == 'windows':
         # DownloadLauncher is only needed for Windows.
         factory.addStep(DownloadLauncher())
