@@ -341,7 +341,11 @@ def makeExtraOptionsString(props):
         if isinstance(value, str):
             value = value.replace("\\", '/')
         props_dict["prop:%s" % key] = value
-    props_dict['ctest_configure_options'] = ';'.join(['-D%s=%s' % i for i in props.getProperty('configure_options', {}).items()])
+    configure_arguments = ['-D%s=%s' % i for i in props.getProperty('configure_options', {}).items()]
+    if props.hasProperty('configure_initial_cache'):
+        configure_arguments += ['-C', props.getProperty('configure_initial_cache')]
+    configure_arguments += props.getProperty('configure_arguments', [])
+    props_dict['ctest_configure_options'] = ';'.join(configure_arguments)
     props_dict['ctest_test_excludes'] = '|'.join(props.getProperty('test_excludes'))
     props_dict['ctest_test_includes'] = '|'.join(props.getProperty('test_includes', []))
     if props.getProperty('ignore_exclusions', False):
