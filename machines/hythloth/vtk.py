@@ -65,8 +65,6 @@ defprops = {
 
     },
 
-    'referencedir': '/home/buildbot/buildbot-share/vtk',
-
     'slaveenv': {
         'DISPLAY': ':40',
         'CC': 'gcc',
