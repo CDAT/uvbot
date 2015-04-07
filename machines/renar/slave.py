@@ -18,7 +18,7 @@ SLAVE = BuildSlave('renar', secrets.SECRETS['renar']['password'],
 
 SLAVEPROPS = {
     'generator:buildslave': 'Unix Makefiles',
-    'buildflags:buildslave': '-j20',
+    'buildflags:buildslave': '-j20 -l20',
 
     'maximum_parallel_level': 20,
 
