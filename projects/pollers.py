@@ -11,6 +11,8 @@ import paraviewsuperbuild.poll
 # CMB
 import cmb.poll
 import cmbsuperbuild.poll
+import smtk.poll
+import smtksuperbuild.poll
 
 
 __all__ = [
@@ -45,6 +47,8 @@ _add_project_poll(paraviewsuperbuild.poll)
 # CMB
 _add_project_poll(cmb.poll)
 _add_project_poll(cmbsuperbuild.poll)
+_add_project_poll(smtk.poll)
+_add_project_poll(smtksuperbuild.poll)
 
 
 def make_pollers(secrets):

@@ -28,6 +28,8 @@ PROJECTS = [
     # CMB
     'CMB',
     'CMBSuperbuild',
+    'SMTK',
+    'SMTKSuperbuild',
 ]
 
 
