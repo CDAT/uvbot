@@ -35,7 +35,7 @@ defprops = {
         # Mesa
         'OPENGL_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Mesa-install/include',
         'OPENGL_gl_LIBRARY:FILEPATH': '/home/kitware/Dashboards/Mesa-install/lib/libMesaGL.so',
-        'OPENGL_glu_LIBARARY:FILEPATH': '',
+        'OPENGL_glu_LIBRARY:FILEPATH': '',
         'OSMESA_INCLUDE_DIR:PATH': '/home/kitware/Dashboards/Mesa-install/include',
         'OSMESA_LIBRARY:FILEPATH': '/home/kitware/Dashboards/Mesa-install/lib/libMesaOSMesa.so',
 
