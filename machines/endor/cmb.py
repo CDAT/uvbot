@@ -8,6 +8,10 @@ __all__ = [
 
 defprops = {
     'configure_initial_cache': '/home/kitware/dashboards/data/cmb/developer/cmb-Developer-Config.cmake',
+
+    'slaveenv': {
+        'DISPLAY': ':0',
+    },
 }
 
 buildsets = [
