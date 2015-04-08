@@ -30,6 +30,7 @@ defprops = {
         'vtkChartsCorePython-TestParallelCoordinatesColors',
         'vtkFiltersProgrammablePython-progGlyphsBySource',
         'vtkRenderingCorePython-TestOpacity2',
+        'vtkRenderingCorePython-rendererSource',
         'vtkRenderingCorePython-TestOpacityVectors',
         'vtkRenderingCorePython-TestWindowToImageTransparency',
         'vtkRenderingVolumePython-volTM3DCompressedCropRegions',
