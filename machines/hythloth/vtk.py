@@ -25,7 +25,7 @@ defprops = {
         'Java_JAVAH_EXECUTABLE:FILEPATH': '/usr/lib/jvm/java-7-openjdk-amd64/bin/javah',
         'Java_JAVA_EXECUTABLE:FILEPATH': '/usr/lib/jvm/java-7-openjdk-amd64/bin/java',
         'JAVA_AWT_INCLUDE_PATH:PATH': '/usr/lib/jvm/java-7-openjdk-amd64/include',
-        'JAVA_AWT_LIBRARY:FILEPATH': '/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libawt.so;/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjawt.so',
+        'JAVA_AWT_LIBRARY:FILEPATH': '/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libawt.so\\;/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjawt.so',
         'JAVA_INCLUDE_PATH:PATH': '/usr/lib/jvm/java-7-openjdk-amd64/include',
         'JAVA_INCLUDE_PATH2:PATH': '/usr/lib/jvm/java-7-openjdk-amd64/include/linux',
         'JAVA_JVM_LIBRARY:FILEPATH': '/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so',
@@ -44,7 +44,7 @@ defprops = {
 
         # TCL/TK
         'TCL_LIBRARY:FILEPATH': '/usr/lib/x86_64-linux-gnu/libtcl8.6.so',
-        'TK_LIBARARY:FILEPATH': '/usr/lib/x86_64-linux-gnu/libtk8.6.so',
+        'TK_LIBRARY:FILEPATH': '/usr/lib/x86_64-linux-gnu/libtk8.6.so',
         'TCL_INCLUDE_PATH:PATH': '/usr/include/tcl8.6',
         'TK_INCLUDE_PATH:PATH': '/usr/include/tcl8.6',
 
