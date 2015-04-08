@@ -9,6 +9,10 @@ __all__ = [
 defprops = {
     'configure_options:builderconfig': {
         'VTK_DATA_STORE:PATH': '/home/kitware/Dashboards/ExternalData/vtk',
+
+        'OPENGL_INCLUDE_DIR:PATH': '/opt/mesa/include',
+        'OPENGL_gl_LIBRARY:FILEPATH': '/opt/mesa/lib/libGL.so',
+        'OPENGL_glu_LIBRARY:FILEPATH': '',
     },
 
     'slaveenv': {
