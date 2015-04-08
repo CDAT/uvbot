@@ -10,6 +10,8 @@ import catalyst.schedule
 # CMB
 import cmb.schedule
 import cmbsuperbuild.schedule
+import smtk.schedule
+import smtksuperbuild.schedule
 
 
 __all__ = [
@@ -30,6 +32,8 @@ SCHEDULES = {
     # CMB
     'CMB': cmb.schedule,
     'CMBSuperbuild': cmbsuperbuild.schedule,
+    'SMTK': smtk.schedule,
+    'SMTKSuperbuild': smtksuperbuild.schedule,
 }
 
 
