@@ -29,6 +29,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'gui',
             'python',
