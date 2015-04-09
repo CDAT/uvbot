@@ -7,23 +7,21 @@ __all__ = [
     'SLAVEPROPS',
 ]
 
-SLAVE = BuildSlave('debian6dash', secrets.SECRETS['debian6dash']['password'],
+SLAVE = BuildSlave('garant', secrets.SECRETS['garant']['password'],
     max_builds=1,
     properties={
-        #'cmakeroot': '/home/kitware/misc/root/cmake', # 3.1.3
-        'cmakeroot': '/usr', # 2.8.9
-
+        'cmakeroot': '/usr',
         'os': 'linux',
-        'distribution': 'debian-7-x86_64',
+        'distribution': 'ubuntu-14.04',
     })
 
 SLAVEPROPS = {
-    'compiler': 'gcc-4.7.2',
+    'compiler': 'gcc-4.8.2',
 
-    'generator:buildslave': 'Unix Makefiles',
-    'buildflags:buildslave': '-j3',
+#    'generator:buildslave': 'Ninja',
+#    'buildflags:buildslave': '-l9',
 
-    'maximum_parallel_level': 3,
+    'maximum_parallel_level': 4,
 
     'configure_options:buildslave': {
         'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',

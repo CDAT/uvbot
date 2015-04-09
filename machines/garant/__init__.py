@@ -1,13 +1,13 @@
 r'''
-    Machine: hythloth.kitware.com
-    Owner: brad.king@kitware.com
+    Machine: garant.kitware.com
+    Owner: jonathan.beezley@kitware.com
 '''
 
 from . import slave
-from . import vtk
+from . import geojs
 
 BUILDERS = {
-    'VTK': vtk.BUILDERS,
+    'GeoJS' : geojs.BUILDERS,
 }
 
 def get_buildslave():

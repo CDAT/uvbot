@@ -1,11 +1,11 @@
-from . import curius
+from . import garant
 
 __all__ = [
     'MACHINES',
 ]
 
 MACHINES = [
-    curius,
+    garant,
 ]
 
 import os
