@@ -13,6 +13,7 @@ defprops = {
         'vtkFiltersGeneralCxx-BoxClipTetrahedra',
         'vtkInteractionWidgetsCxx-TestLogoWidgetDepthPeeling',
         'vtkRenderingOpenGLCxx-TestBlurAndSobelPasses',
+        'vtkRenderingOpenGLCxx-TestValuePainter',
         'vtkRenderingCoreCxx-TestGlyph3DMapperPicking',
         'vtkRenderingCoreCxx-TestOpacity',
         'vtkRenderingCoreCxx-TestBlockOpacity',
@@ -30,6 +31,7 @@ defprops = {
         'vtkChartsCorePython-TestParallelCoordinatesColors',
         'vtkFiltersProgrammablePython-progGlyphsBySource',
         'vtkRenderingCorePython-TestOpacity2',
+        'vtkRenderingCorePython-rendererSource',
         'vtkRenderingCorePython-TestOpacityVectors',
         'vtkRenderingCorePython-TestWindowToImageTransparency',
         'vtkRenderingVolumePython-volTM3DCompressedCropRegions',
@@ -58,6 +60,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'release',
+        'category': 'experimental',
         'features': (
             'mpi',
             'python',

@@ -7,8 +7,11 @@ __all__ = [
 ]
 
 defprops = {
+    'developer_install_root': '/home/kitware/dashboards/data/cmb/developer',
+
     'configure_options:builderconfig': {
         'ENABLE_hdf5:BOOL': 'ON',
+        'USE_SYSTEM_qt:BOOL': 'ON',
     },
 }
 
@@ -17,7 +20,7 @@ buildsets = [
         'os': 'linux',
         'libtype': 'shared',
         'buildtype': 'relwithdebinfo',
-        'features': (),
+        'features': ('superbuild',),
     },
 ]
 

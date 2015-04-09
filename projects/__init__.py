@@ -3,6 +3,7 @@ import copy
 import hashlib
 
 from buildbot.config import BuilderConfig
+from datetime import datetime
 
 
 __all__ = [
@@ -176,6 +177,7 @@ def make_builders(slave, project, buildsets, props, dirlen=0, **kwargs):
             slavenames=[slave.SLAVE.slavename],
             category=builder_category,
             env=buildprops.get('slaveenv', {}),
+            nextBuild=_pick_next_build,
             **kwargs
         ))
 
@@ -247,3 +249,18 @@ def get_change_filter_fn_for_buildbot_commands(accepted_values=[]):
         # if any command in accepted_values is in cur_value, we're golden!
         return True if accepted_values.intersection(cur_value) else False
     return filter_fn
+
+def _pick_next_build(bldr, requests):
+    """Function to determine which build to process next for a builder.
+    We'll prioritize 'merge-request' except between 8 pm and 6 am, when
+    we prioritize 'integration-branch' changes."""
+    now = datetime.now()
+    if now.hour >= 20 or now.hour < 6:
+        priority_category = 'integration-branch'
+    else:
+        priority_category = 'merge-request'
+    for r in requests:
+        for c in r.source.changes:
+            if c.category == priority_category:
+                return r
+    return requests[0]

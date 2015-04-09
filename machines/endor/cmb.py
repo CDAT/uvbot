@@ -7,8 +7,10 @@ __all__ = [
 ]
 
 defprops = {
-    'configure_options:builderconfig': {
-        #'ctest_local_extra_options_file:FILEPATH': '/home/kitware/dashboards/projects/cmb/developer/cmb-Developer-Config.cmake',
+    'configure_initial_cache': '/home/kitware/dashboards/data/cmb/developer/cmb-Developer-Config.cmake',
+
+    'slaveenv': {
+        'DISPLAY': ':0',
     },
 }
 

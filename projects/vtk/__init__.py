@@ -23,7 +23,7 @@ DEFAULTS = {
         'VTK_LEGACY_REMOVE:BOOL': 'ON',
         'VTK_USER_LARGE_DATA:BOOL': 'ON',
     },
-    #'supports_parallel_testing:project' : True,
+    'supports_parallel_testing:project' : True,
 
     'cdash_url': 'https://open.cdash.org',
     'cdash_project': 'VTK',
@@ -76,5 +76,15 @@ FEATURES = {
     }),
 
     '_strict': features.strict,
-    '_parallel': features.parallel,
+    '_noparallel': features.noparallel,
+    # Don't use with +gui for now
+    'osmesa': ({}, {
+        'configure_options:feature': {
+            'VTK_OPENGL_HAS_OSMESA:BOOL': 'ON',
+            'VTK_USE_OFFSCREEN:BOOL': 'ON',
+            'VTK_USE_X:BOOL': 'OFF',
+        },
+    }),
+
+
 }

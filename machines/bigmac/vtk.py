@@ -9,6 +9,12 @@ __all__ = [
 defprops = {
     'compiler': 'clang-apple-6.0',
 
+    'test_excludes:builderconfig': [
+        # Driver bugs.
+        'vtkRenderingCoreCxx-TestAreaSelections',
+        'vtkRenderingCoreCxx-TestPolygonSelection',
+    ],
+
     'configure_options:builderconfig': {
         'VTK_DATA_STORE:PATH': '/Users/kitware/VTKData',
         'CTEST_TEST_TIMEOUT': '120',
@@ -21,18 +27,15 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'category': 'experimental',
         'features': (
             'clang',
             'python',
-            '_parallel',
         ),
     },
     {
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'debug',
-        'category': 'experimental',
         'features': (
             'clang',
             'python',

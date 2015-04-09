@@ -1,5 +1,5 @@
 r'''
-    Machine: debian-wheezy-dashboard.kitwarein.com
+    Machine: debian-wheezy-dashboard.kitware.com
     Owner: ben.boeckel@kitware.com
 '''
 

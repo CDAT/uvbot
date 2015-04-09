@@ -4,7 +4,7 @@ __all__ = [
 ]
 
 from buildbot.process.factory import BuildFactory
-from buildbot.process.properties import Property, Interpolate
+from buildbot.process.properties import Property, Interpolate, renderer
 from buildbot.steps.master import SetProperty
 from buildbot.steps.source.git import Git
 
@@ -47,10 +47,23 @@ def get_source_steps(sourcedir="source"):
     steps.append(SetGotRevision(codebase=codebase, workdir=sourcedir))
     return steps
 
+MaxFailedTestCount = 15
+
+def _doStepIf(step):
+    global MaxFailedTestCount
+    ctest_failed_tests = step.getProperty("ctest_failed_tests", [])
+    return len(ctest_failed_tests) > 0 and len(ctest_failed_tests) < MaxFailedTestCount
+
+@renderer
+def _convertTestsToRegEx(props):
+    """Converts a list of test names to a list of regex matching the test names"""
+    ctest_failed_tests = props.getProperty("ctest_failed_tests", [])
+    return ["^%s$" % x for x in ctest_failed_tests]
 
 def get_factory(buildset):
     """Argument is the selected buildset. That could be used to build the
     factory as needed."""
+    global MaxFailedTestCount
 
     codebase = projects.get_codebase_name(poll.REPO)
 
@@ -69,7 +82,28 @@ def get_factory(buildset):
     factory.addStep(
             SetProperty(property="ctest_dashboard_script",
                 value=Interpolate('%(prop:builddir)s/common.ctest')))
-    factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME))
-    #factory.addStep(makeUploadTestSubmoduleScript())
-    #factory.addStep(AreSubmodulesValid())
+    factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME,
+        maxFailedTestCount=MaxFailedTestCount))
+
+    retrycount = 1
+    if retrycount:
+        # Ensure we don't empty the binary directory.
+        factory.addStep(SetProperty(property="ctest_empty_binary_directory", value=False))
+        # This time, force serial tests.
+        factory.addStep(SetProperty(property="supports_parallel_testing", value=False))
+        # Do only testing (skip configure & build)
+        factory.addStep(SetProperty(property="ctest_stages", value="test"))
+
+    for i in range(retrycount):
+        # Convert the "ctest_failed_tests" property to "ctest_test_includes".
+        factory.addStep(SetProperty(property="test_includes",
+            value=_convertTestsToRegEx,
+            doStepIf=_doStepIf))
+        # Download the new ctest_extra_options.cmake file.
+        factory.addStep(CTestExtraOptionsDownload(doStepIf=_doStepIf))
+        # Rerun the dashboard for the failed tests.
+        maxFailedTestCount = MaxFailedTestCount if i < (retrycount-1) else 0
+        factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME,
+            maxFailedTestCount=maxFailedTestCount,
+            doStepIf=_doStepIf))
     return factory

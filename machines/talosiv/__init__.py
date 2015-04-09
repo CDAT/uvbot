@@ -1,5 +1,5 @@
 r'''
-    Machine: talosiv.kitwarein.com
+    Machine: talosiv.kitware.com
     Owner: bob.obara@kitware.com
 '''
 
@@ -8,7 +8,7 @@ from . import cmb
 from . import cmbsuperbuild
 
 BUILDERS = {
-    #'CMB': cmb.BUILDERS,
+    'CMB': cmb.BUILDERS,
     'CMBSuperbuild': cmbsuperbuild.BUILDERS,
 }
 

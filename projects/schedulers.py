@@ -10,6 +10,8 @@ import catalyst.schedule
 # CMB
 import cmb.schedule
 import cmbsuperbuild.schedule
+import smtk.schedule
+import smtksuperbuild.schedule
 
 # GeoJS
 import geojs.schedule

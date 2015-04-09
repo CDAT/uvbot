@@ -7,9 +7,7 @@ __all__ = [
 ]
 
 defprops = {
-    'configure_options:builderconfig': {
-        #'ctest_local_extra_options_file:FILEPATH': '/Users/dashboard/Dashboards/projects/cmb/developer/cmb-Developer-Config.cmake',
-    },
+    'configure_initial_cache': '/Users/dashboard/Dashboards/data/cmb/developer/cmb-Developer-Config.cmake',
 }
 
 buildsets = [

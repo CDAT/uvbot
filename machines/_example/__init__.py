@@ -1,5 +1,5 @@
 r'''
-    Machine: $HOSTNAME.kitwarein.com
+    Machine: $HOSTNAME.kitware.com
     Owner: $EMAIL_OF_WHO_HAS_ROOT
 '''
 

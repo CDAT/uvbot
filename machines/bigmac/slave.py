@@ -18,9 +18,9 @@ SLAVE = BuildSlave('bigmac', secrets.SECRETS['bigmac']['password'],
 
 SLAVEPROPS = {
     'generator:buildslave': 'Unix Makefiles',
-    'buildflags:buildslave': '-j5 -l5',
+    'buildflags:buildslave': '-j15 -l12',
 
-    'maximum_parallel_level': 5,
+    'maximum_parallel_level': 12,
 
     'configure_options:buildslave': {
         'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',

@@ -13,14 +13,14 @@ SLAVE = BuildSlave('neodymius', secrets.SECRETS['neodymius']['password'],
         'cmakeroot': '/usr',
 
         'os': 'linux',
-        'distribution': 'fedora-19-x86_64',
+        'distribution': 'fedora-20-x86_64',
     })
 
 SLAVEPROPS = {
     'compiler': 'gcc-4.8.3',
 
     'generator:buildslave': 'Unix Makefiles',
-    'buildflags:buildslave': '-j9',
+    'buildflags:buildslave': '-j9 -l9',
 
     'maximum_parallel_level': 9,
 

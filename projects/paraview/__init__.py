@@ -26,6 +26,7 @@ DEFAULTS = {
         'PARAVIEW_ENABLE_CATALYST:BOOL': 'ON',
         'PARAVIEW_BUILD_CATALYST_ADAPTORS:BOOL': 'ON',
     },
+    'supports_parallel_testing:project' : True,
 
     'cdash_url': 'https://open.cdash.org',
     'cdash_project': 'ParaView',
@@ -70,8 +71,8 @@ FEATURES = {
     }, extra_with={
         'test_excludes:feature': [
             # Enough problems that these are just noise right now.
-            '^pvcs\.',
-            '^pvcrs\.',
+            '^pvcs',
+            '^pvcrs',
         ],
     }),
     'icc': features.icc,
@@ -90,6 +91,17 @@ FEATURES = {
             'BUILD_EXAMPLES:BOOL': 'OFF',
         },
     }),
+    # Don't use with +gui for now
+    'osmesa': ({}, {
+        'configure_options:feature': {
+            'VTK_OPENGL_HAS_OSMESA:BOOL': 'ON',
+            'VTK_USE_OFFSCREEN:BOOL': 'ON',
+            'VTK_USE_X:BOOL': 'OFF',
+            'OPENGL_gl_LIBRARY:FILEPATH': '',
+            'OPENGL_glu_LIBRARY:FILEPATH': '',
+        },
+    }),
 
     '_strict': features.strict,
+    '_noparallel': features.noparallel,
 }

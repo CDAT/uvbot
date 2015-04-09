@@ -45,6 +45,7 @@ def make_schedulers(buildnames, secrets):
             builderNames=buildnames,
             reason='CMBSuperbuild \'master\' changed.',
             properties={
+                'cmb_install_on_success': True,
                 'ctest_empty_binary_directory': True,
                 'ctest_track': 'master-packages',
             },

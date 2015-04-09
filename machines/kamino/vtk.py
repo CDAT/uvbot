@@ -44,7 +44,6 @@ buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'clang',
             'java',
@@ -52,7 +51,6 @@ buildsets = [
             'python',
             'qt',
             'tbb',
-            '_parallel',
         ),
     },
 ]
@@ -81,13 +79,10 @@ gccbuildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
-            'java',
             'mpi',
             'python',
             'tbb',
-            '_parallel',
         ),
     },
 ]

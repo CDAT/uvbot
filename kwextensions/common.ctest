@@ -138,9 +138,19 @@ if (success AND (ctest_stages STREQUAL "all" OR ";${ctest_stages};" MATCHES ";te
     if (ctest_parallel_level)
         list(APPEND test_args PARALLEL_LEVEL "${ctest_parallel_level}")
     endif ()
+
+    if (COMMAND buildbot_pre_test)
+        buildbot_pre_test()
+    endif ()
+
     ctest_test(
         ${test_args}
         RETURN_VALUE    test_result)
+
+    if (COMMAND buildbot_post_test)
+        buildbot_post_test()
+    endif ()
+
     ctest_submit(PARTS Test)
 
     if (test_result)
@@ -166,4 +176,8 @@ if (ctest_upload_file_patterns AND
         ctest_upload(FILES ${files})
         ctest_submit(PARTS Upload)
     endif ()
+endif ()
+
+if (COMMAND buildbot_post_all)
+    buildbot_post_all()
 endif ()

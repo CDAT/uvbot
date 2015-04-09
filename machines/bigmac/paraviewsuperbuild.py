@@ -35,7 +35,6 @@ osx107buildsets = [
         'os': 'osx',
         'libtype': 'shared',
         'buildtype': 'release',
-        'category': 'experimental',
         'features': (
             'osx10.7',
             'superbuild',
