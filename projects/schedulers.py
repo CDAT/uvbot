@@ -11,6 +11,8 @@ import catalyst.schedule
 import cmb.schedule
 import cmbsuperbuild.schedule
 
+# GeoJS
+import geojs.schedule
 
 __all__ = [
     'make_schedulers',
@@ -18,18 +20,21 @@ __all__ = [
 
 
 SCHEDULES = {
-    # VTK
-    'VTK' : vtk.schedule,
-    'VTKSuperbuild' : vtksuperbuild.schedule,
+     # GeoJS
+     'GeoJS' : geojs.schedule,
 
-    # ParaView
-    'ParaView': paraview.schedule,
-    'ParaViewSuperbuild': paraviewsuperbuild.schedule,
-    'Catalyst' : catalyst.schedule,
-
-    # CMB
-    'CMB': cmb.schedule,
-    'CMBSuperbuild': cmbsuperbuild.schedule,
+#    # VTK
+#    'VTK' : vtk.schedule,
+#    'VTKSuperbuild' : vtksuperbuild.schedule,
+#
+#    # ParaView
+#    'ParaView': paraview.schedule,
+#    'ParaViewSuperbuild': paraviewsuperbuild.schedule,
+#    'Catalyst' : catalyst.schedule,
+#
+#    # CMB
+#    'CMB': cmb.schedule,
+#    'CMBSuperbuild': cmbsuperbuild.schedule,
 }
 
 

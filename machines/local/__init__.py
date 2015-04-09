@@ -16,26 +16,28 @@ def try_import_project(project, scope):
         mod = DummyProject()
     scope[project] = mod
 
-try_import_project('vtk', globals())
-try_import_project('vtksuperbuild', globals())
-
-try_import_project('catalyst', globals())
-try_import_project('paraview', globals())
-try_import_project('paraviewsuperbuild', globals())
-
-try_import_project('cmb', globals())
-try_import_project('cmbsuperbuild', globals())
+try_import_project('geojs', globals())
+#try_import_project('vtk', globals())
+#try_import_project('vtksuperbuild', globals())
+#
+#try_import_project('catalyst', globals())
+#try_import_project('paraview', globals())
+#try_import_project('paraviewsuperbuild', globals())
+#
+#try_import_project('cmb', globals())
+#try_import_project('cmbsuperbuild', globals())
 
 BUILDERS = {
-    'VTK': vtk.BUILDERS,
-    'VTKSuperbuild': vtksuperbuild.BUILDERS,
-
-    'Catalyst': catalyst.BUILDERS,
-    'ParaView': paraview.BUILDERS,
-    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
-
-    'CMB': cmb.BUILDERS,
-    'CMBSuperbuild': cmbsuperbuild.BUILDERS,
+    'GeoJS': geojs.BUILDERS,
+#    'VTK': vtk.BUILDERS,
+#    'VTKSuperbuild': vtksuperbuild.BUILDERS,
+#
+#    'Catalyst': catalyst.BUILDERS,
+#    'ParaView': paraview.BUILDERS,
+#    'ParaViewSuperbuild': paraviewsuperbuild.BUILDERS,
+#
+#    'CMB': cmb.BUILDERS,
+#    'CMBSuperbuild': cmbsuperbuild.BUILDERS,
 }
 
 def get_buildslave():
