@@ -26,6 +26,24 @@ osx107 = ({}, {
         'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.7',
     },
 })
+osx109 = ({}, {
+    'configure_options:feature': {
+        'CMAKE_OSX_SDK:STRING': 'macosx10.9',
+
+        # Deprecated; remove when the branch lands.
+        'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk',
+        'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.9',
+    },
+})
+osx1010 = ({}, {
+    'configure_options:feature': {
+        'CMAKE_OSX_SDK:STRING': 'macosx10.10',
+
+        # Deprecated; remove when the branch lands.
+        'CMAKE_OSX_SYSROOT:PATH': '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk',
+        'CMAKE_OSX_DEPLOYMENT_TARGET:STRING': '10.10',
+    },
+})
 
 # Compilers
 icc = ({}, {
