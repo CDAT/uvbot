@@ -13,6 +13,7 @@ defprops = {
         'vtkFiltersGeneralCxx-BoxClipTetrahedra',
         'vtkInteractionWidgetsCxx-TestLogoWidgetDepthPeeling',
         'vtkRenderingOpenGLCxx-TestBlurAndSobelPasses',
+        'vtkRenderingOpenGLCxx-TestValuePainter',
         'vtkRenderingCoreCxx-TestGlyph3DMapperPicking',
         'vtkRenderingCoreCxx-TestOpacity',
         'vtkRenderingCoreCxx-TestBlockOpacity',
