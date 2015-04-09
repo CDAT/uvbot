@@ -66,7 +66,7 @@ defprops = {
     },
 
     'slaveenv': {
-        'DISPLAY': ':40',
+        'DISPLAY': ':42',
         'CC': 'gcc',
         'CXX': 'g++',
         'LD_LIBRARY_PATH': '/home/kitware/Dashboards/Mesa-install/lib:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/xawt:${LD_LIBRARY_PATH}',
