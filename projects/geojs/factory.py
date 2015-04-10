@@ -7,6 +7,8 @@ from buildbot.process.factory import BuildFactory
 from buildbot.process.properties import Property, Interpolate
 from buildbot.steps.master import SetProperty
 from buildbot.steps.source.git import Git
+from buildbot.steps.shell import ShellCommand
+from buildbot.steps.slave import CopyDirectory
 
 from kwextensions.steps import CTestDashboard,\
                                DownloadCommonCTestScript,\
@@ -26,7 +28,7 @@ def get_source_steps(sourcedir="source"):
     update = Git(repourl=poll.REPO_SITE + ':' + poll.REPO,
         mode='incremental',
         method='clean',
-        submodules=False,
+        submodules=True,
         workdir=sourcedir,
         reference=Property("referencedir"),
         codebase=codebase,
@@ -43,6 +45,18 @@ def get_factory(buildset):
     factory = BuildFactory()
     for step in get_source_steps():
         factory.addStep(step)
+
+    factory.addStep(
+        ShellCommand(command=["npm", "install"], workdir="source")
+    )
+
+    factory.addStep(
+        ShellCommand(command=["./node_modules/.bin/grunt"], workdir="source")
+    )
+    return factory
+
+
+def _pass(factory):
     factory.addStep(SetCTestBuildNameProperty(codebases=[codebase]))
     factory.addStep(DownloadCommonCTestScript())
     factory.addStep(CTestExtraOptionsDownload())
