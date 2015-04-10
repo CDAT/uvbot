@@ -5,6 +5,7 @@ __all__ = [
     'CDASH_PROJECTNAME',
 ]
 
+REPO_SITE = 'git@gitlab.kitware.com'
 REPO = 'OpenGeoscience/GeoJS'
 BRANCHES = [
     'master',

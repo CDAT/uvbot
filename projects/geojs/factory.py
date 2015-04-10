@@ -23,7 +23,7 @@ def get_source_steps(sourcedir="source"):
     @param sourcedir is the directory where to checkout the source.
     """
     codebase = projects.get_codebase_name(poll.REPO)
-    update = Git(repourl=Interpolate("%(src:"+codebase+":repository)s"),
+    update = Git(repourl=poll.REPO_SITE + ':' + poll.REPO,
         mode='incremental',
         method='clean',
         submodules=False,
