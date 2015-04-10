@@ -1,19 +1,6 @@
 from kwextensions.changes import GitlabMergeRequestPoller, GitlabIntegrationBranchPoller
 
-# VTK
-import vtk.poll
-import vtksuperbuild.poll
-
-# ParaView
-import paraview.poll
-import paraviewsuperbuild.poll
-
-# CMB
-import cmb.poll
-import cmbsuperbuild.poll
-import smtk.poll
-import smtksuperbuild.poll
-
+import geojs.poll
 
 __all__ = [
     'make_pollers',
@@ -37,18 +24,7 @@ def _add_project_poll(poll):
 
 
 # VTK
-_add_project_poll(vtk.poll)
-_add_project_poll(vtksuperbuild.poll)
-
-# ParaView
-_add_project_poll(paraview.poll)
-_add_project_poll(paraviewsuperbuild.poll)
-
-# CMB
-_add_project_poll(cmb.poll)
-_add_project_poll(cmbsuperbuild.poll)
-_add_project_poll(smtk.poll)
-_add_project_poll(smtksuperbuild.poll)
+_add_project_poll(geojs.poll)
 
 
 def make_pollers(secrets):
