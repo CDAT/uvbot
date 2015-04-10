@@ -24,28 +24,8 @@
         <a href="{{ path_to_root or '.' }}">Home</a>
         {% if authz.advertiseAction('view', request) %}
         - <a href="{{ path_to_root }}waterfall">Waterfall</a>
-        <a href="{{ path_to_root }}grid?width=12">Grid</a> [
-          <a href="{{ path_to_root }}grid?width=12&category=vtk-expected&category=vtk-exotic"><strong>VTK:</strong></a>
-          <a href="{{ path_to_root }}grid?width=12&category=vtk-expected">expected</a>
-          <a href="{{ path_to_root }}grid?width=12&category=vtk-exotic">exotic</a>
-          <a href="{{ path_to_root }}grid?width=12&category=vtk-experimental">experimental</a>
-          <a href="{{ path_to_root }}grid?width=12&category=vtk">superbuild</a>
-
-          <a href="{{ path_to_root }}grid?width=12&category=paraview-expected&category=paraview-exotic"><strong>ParaView:</strong></a>
-          <a href="{{ path_to_root }}grid?width=12&category=paraview-expected">expected</a>
-          <a href="{{ path_to_root }}grid?width=12&category=paraview-exotic">exotic</a>
-          <a href="{{ path_to_root }}grid?width=12&category=paraview-experimental">experimental</a>
-
-          <a href="{{ path_to_root }}grid?width=12&category=cmb-expected&category=cmb-exotic"><strong>CMB:</strong></a>
-          <a href="{{ path_to_root }}grid?width=12&category=cmb-expected">expected</a>
-          <a href="{{ path_to_root }}grid?width=12&category=cmb-exotic">exotic</a>
-          <a href="{{ path_to_root }}grid?width=12&category=cmb-experimental">experimental</a>
-        ]
-        <a href="{{ path_to_root }}console">Console</a> [<strong>
-          <a href="{{ path_to_root }}console?category=vtk-expected&category=vtk-exotic&category=vtk-experimental">VTK</a>
-          <a href="{{ path_to_root }}console?category=paraview-expected&category=paraview-exotic&category=paraview-experimental">ParaView</a>
-          <a href="{{ path_to_root }}console?category=cmb-expected&category=cmb-exotic&category=cmb-experimental">CMB</a>
-        </strong>]
+        <a href="{{ path_to_root }}grid?width=12">Grid</a>
+        <a href="{{ path_to_root }}console">Console</a>
         <a href="{{ path_to_root }}builders">Builders</a>
         {% if authz.advertiseAction('showUsersPage', request) %}
           <a href="{{ path_to_root }}users">Users</a>
