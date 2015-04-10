@@ -7,7 +7,7 @@ from . import slave
 from . import geojs
 
 BUILDERS = {
-    'GeoJS' : geojs.BUILDERS,
+    'geojs': geojs.BUILDERS,
 }
 
 def get_buildslave():

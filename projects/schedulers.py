@@ -1,20 +1,5 @@
-# VTK
-import vtk.schedule
-import vtksuperbuild.schedule
-
-# ParaView
-import paraview.schedule
-import paraviewsuperbuild.schedule
-import catalyst.schedule
-
-# CMB
-import cmb.schedule
-import cmbsuperbuild.schedule
-import smtk.schedule
-import smtksuperbuild.schedule
-
 # GeoJS
-import geojs.schedule
+from geojs import schedule
 
 __all__ = [
     'make_schedulers',
@@ -23,20 +8,7 @@ __all__ = [
 
 SCHEDULES = {
      # GeoJS
-     'GeoJS' : geojs.schedule,
-
-#    # VTK
-#    'VTK' : vtk.schedule,
-#    'VTKSuperbuild' : vtksuperbuild.schedule,
-#
-#    # ParaView
-#    'ParaView': paraview.schedule,
-#    'ParaViewSuperbuild': paraviewsuperbuild.schedule,
-#    'Catalyst' : catalyst.schedule,
-#
-#    # CMB
-#    'CMB': cmb.schedule,
-#    'CMBSuperbuild': cmbsuperbuild.schedule,
+     'geojs': schedule,
 }
 
 

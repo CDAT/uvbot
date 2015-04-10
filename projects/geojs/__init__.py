@@ -1,4 +1,3 @@
-import projects
 from projects.common import features
 from projects.common import options
 
@@ -22,8 +21,8 @@ DEFAULTS = {
     },
     #'supports_parallel_testing:project' : True,
 
-    'cdash_url': 'https://open.cdash.org',
-    'cdash_project': 'GeoJS',
+    'cdash_url': 'https://my.cdash.org',
+    'cdash_project': 'geojs',
 }
 
 OPTIONS = {

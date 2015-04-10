@@ -1,5 +1,5 @@
 import projects
-from projects import geojs 
+from projects import geojs
 from . import slave
 
 __all__ = [
@@ -13,8 +13,6 @@ defprops = {
     'configure_options:builderconfig': {
     },
 
-#    'referencedir': '/home/kitware/dashboards/buildbot-share/paraview',
-
     'slaveenv': {
         'DISPLAY': ':0',
         'PATH': '${PATH}',
@@ -22,11 +20,8 @@ defprops = {
 }
 
 base_features = (
-#    'gui',
-#    'python',
-#    'kits',
-#    'mpi',
 )
+
 buildsets = [
     {
         'os': 'linux',
@@ -34,12 +29,6 @@ buildsets = [
         'buildtype': 'release',
         'features': base_features,
     },
-#    {
-#        'os': 'linux',
-#        'libtype': 'static',
-#        'buildtype': 'release',
-#        'features': base_features,
-#    },
 ]
 
 BUILDERS = projects.make_builders(slave, geojs, buildsets, defprops)

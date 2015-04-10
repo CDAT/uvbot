@@ -10,4 +10,4 @@ BRANCHES = [
     'master',
 ]
 CDASH_ROOT = 'https://my.cdash.org'
-CDASH_PROJECTNAME = 'GeoJS'
+CDASH_PROJECTNAME = 'geojs'
