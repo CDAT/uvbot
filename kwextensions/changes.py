@@ -220,6 +220,7 @@ class GitlabMergeRequestPoller(GitlabPoller):
 
     # TODO: add options for required access level.
     def __init__(self, host, token, web_host, projects=[], cdash_info={}, **kwargs):
+        self._forceLowerCase = kwargs.pop('forceLowerCase', True)
         GitlabPoller.__init__(self, 'GitlabMergeRequestPoller(%s)', host, token, **kwargs)
 
         self.web_host = web_host
@@ -257,7 +258,9 @@ class GitlabMergeRequestPoller(GitlabPoller):
     def poll(self):
         self.last_poll_time = datetime.now()
         for project in self.projects:
-            pid = urllib.quote(project.lower(), '')
+            if self._forceLowerCase:
+                project = project.lower()
+            pid = urllib.quote(project, '')
             yield self._poll_project(pid, project)
         yield self.setState('lastRev', self.last_rev)
 
@@ -437,6 +440,7 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
     ]
 
     def __init__(self, host, token, projects=[], **kwargs):
+        self._forceLowerCase = kwargs.pop('forceLowerCase', True)
         GitlabPoller.__init__(self, 'GitlabIntegrationBranchPoller(%s)', host, token, **kwargs)
 
         self.projects = projects
@@ -454,7 +458,9 @@ class GitlabIntegrationBranchPoller(GitlabPoller):
     def poll(self):
         self.last_poll_time = datetime.now()
         for project, branches in self.projects.items():
-            pid = urllib.quote(project.lower(), '')
+            if self._forceLowerCase:
+                project = project.lower()
+            pid = urllib.quote(project, '')
             yield self._poll_project(pid, project, branches)
         yield self.setState('lastRev', self.last_rev)
 
