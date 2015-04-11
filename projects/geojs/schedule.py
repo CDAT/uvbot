@@ -14,22 +14,8 @@ __all__ = [
 def make_schedulers(buildnames, secrets):
     codebases = projects.get_codebase(poll=poll, secrets=secrets)
     return [
-#        AnyBranchScheduler(
-#            name='GeoJS Merge Request Scheduler',
-#            change_filter=filter.ChangeFilter(
-#                category='merge-request',
-#                project=poll.REPO,
-#                filter_fn=projects.get_change_filter_fn_for_buildbot_commands(accepted_values=['test'])
-#            ),
-#            treeStableTimer=None,
-#            builderNames=buildnames,
-#            reason="GeoJS 'merge-request' created/changed.",
-#            codebases=codebases,
-#            properties={
-#                'ctest_track': 'buildbot',
-#            }),
         AnyBranchScheduler(
-            name='GeoJS Integration Branch Scheduler',
+            name='GeoJS Branch Change Scheduler',
             change_filter=filter.ChangeFilter(
                 category='integration-branch',
                 project=poll.REPO),
@@ -39,23 +25,18 @@ def make_schedulers(buildnames, secrets):
             codebases=codebases,
             properties={
                 'ctest_empty_binary_directory': True,
-                'ctest_track': 'master',
+                'ctest_track': 'Experimental',
             }),
         Nightly(
-            name='GeoJS Weekly Integration Branch Scheduler',
-            change_filter=filter.ChangeFilter(
-                category='integration-branch',
-                project=poll.REPO),
+            name='GeoJS Nightly Scheduler',
             branch='master',
-            dayOfWeek=6, # Saturday
-            hour=23, # 11pm
+            hour=23,
             onlyIfChanged=False,
             builderNames=buildnames,
-            reason='Weekly test exclusion check.',
             codebases=codebases,
             properties={
                 'ctest_empty_binary_directory': True,
-                'ctest_track': 'Experimental',
+                'ctest_track': 'Nightly',
                 'ignore_exclusions': True,
             }),
     ]

@@ -25,7 +25,6 @@ def make_web_status(secrets):
         http_port=secrets['web_status_port'],
         authz=authz_cfg,
         change_hook_dialects={
-            'base': True,
             'gitlab': True
         }
     )
