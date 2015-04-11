@@ -11,11 +11,10 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
+        'SELENIUM_PORT': '8101'
     },
 
     'slaveenv': {
-        'DISPLAY': ':0',
-        'PATH': '${PATH}',
     },
 }
 
@@ -25,9 +24,7 @@ base_features = (
 buildsets = [
     {
         'os': 'linux',
-        'libtype': 'shared',
-        'buildtype': 'release',
-        'features': base_features,
+        'features': ('selenium', 'chrome')
     },
 ]
 

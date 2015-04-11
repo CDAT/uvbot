@@ -13,6 +13,7 @@ SLAVE = BuildSlave('garant', secrets.SECRETS['garant']['password'],
         'cmakeroot': '/usr',
         'os': 'linux',
         'distribution': 'ubuntu-14.04',
+        'selenium': '8101'
     })
 
 SLAVEPROPS = {

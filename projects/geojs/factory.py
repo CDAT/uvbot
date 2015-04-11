@@ -52,8 +52,11 @@ class StartWebServer(ShellCommand):
 
     script = _script
 
-    def __init__(self, port=8000, **kw):
+    def __init__(self, **kw):
         """Create the shell command."""
+        port = Interpolate(
+            '%(slave:selenium)s'
+        )
         kw['command'] = 'chmod +x server.sh;  ./server.sh ' + str(port)
         kw['description'] = 'Starting a web server on port {}'.format(port)
         kw['descriptionDone'] = 'Web server started on port {}'.format(port)
@@ -65,8 +68,11 @@ class KillWebServer(ShellCommand):
 
     """Kills a web server."""
 
-    def __init__(self, port=8000, **kw):
+    def __init__(self, **kw):
         """Create the shell command."""
+        port = Interpolate(
+            '%(slave:selenium)s'
+        )
         kw['command'] = 'kill `cat .pid-{}`'.format(port)
         kw['description'] = 'Killing the web server on port {}'.format(port)
         kw['descriptionDone'] = 'Web server killed'.format(port)
@@ -157,7 +163,6 @@ def get_factory(buildset):
     # start up server
     factory.addStep(
         StartWebServer(
-            port=50100,
             workdir='source'
         )
     )
@@ -179,7 +184,6 @@ def get_factory(buildset):
     # kill the web server
     factory.addStep(
         KillWebServer(
-            port=50100,
             workdir='source'
         )
     )
