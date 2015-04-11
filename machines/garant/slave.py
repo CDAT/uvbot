@@ -18,13 +18,9 @@ SLAVE = BuildSlave('garant', secrets.SECRETS['garant']['password'],
 SLAVEPROPS = {
     'compiler': 'gcc-4.8.2',
 
-#    'generator:buildslave': 'Ninja',
-#    'buildflags:buildslave': '-l9',
+    'generator:buildslave': 'Unix Makefiles',
 
     'maximum_parallel_level': 4,
 
-    'configure_options:buildslave': {
-        'CMAKE_CXX_FLAGS:STRING': '-Wall -Wextra -Wshadow -Woverloaded-virtual -Wno-deprecated',
-        'CMAKE_C_FLAGS:STRING': '-Wall -Wextra -Wshadow',
-    },
+    'configure_options:buildslave': {},
 }
