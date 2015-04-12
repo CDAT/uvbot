@@ -11,7 +11,7 @@ defprops = {
     ],
 
     'configure_options:builderconfig': {
-        'SELENIUM_PORT': '8101'
+        'TESTING_PORT': '8101'
     },
 
     'slaveenv': {
