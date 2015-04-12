@@ -1,6 +1,6 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
 from buildbot.schedulers.timed import Nightly
-from buildbot.changes import filter
+# from buildbot.changes import filter
 
 
 from . import poll
@@ -16,9 +16,6 @@ def make_schedulers(buildnames, secrets):
     return [
         AnyBranchScheduler(
             name='GeoJS Branch Change Scheduler',
-            change_filter=filter.ChangeFilter(
-                category='integration-branch',
-                project=poll.REPO),
             treeStableTimer=None,
             builderNames=buildnames,
             reason="GeoJS 'master' changed.",
