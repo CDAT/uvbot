@@ -7,11 +7,8 @@ import json
 import hmac
 import hashlib
 
-import pymongo
 import tangelo
 import requests
-
-import dashboard
 
 global _geojs_test_mongo
 
@@ -38,28 +35,10 @@ if not _auth_token or not _secret_key:
     raise Exception('GEOJS_DASHBOARD_KEY and GEOJS_HOOK_KEY required.')
 
 
-def mongo_client():
-    '''
-    Get a global reference to the mongo client.
-    '''
-    global _geojs_test_mongo
-    if _geojs_test_mongo is None or not _geojs_test_mongo.alive():
-        _geojs_test_mongo = pymongo.MongoClient()
-    return _geojs_test_mongo
-
-
-def mongo_database():
-    '''
-    Return the database containing the queue collection.
-    '''
-    return mongo_client()['geojs_dashboard']
-
-
 def add_push(obj):
     '''
     Add a push to the test queue.
     '''
-    db = mongo_database()
 
     # get the branch name w/o refs/heads
     branch = '/'.join(obj['ref'].split('/')[2:])
@@ -190,7 +169,7 @@ def get(*arg, **kwarg):
     '''
     Just to make sure the server is listening.
     '''
-    return 'I hear you!'
+    return 'How can I help you?'
 
 
 @tangelo.restful
@@ -224,20 +203,3 @@ def post(*arg, **kwarg):
         return tangelo.HTTPStatusCode(400, "Unhandled event")
 
     return 'OK'
-
-
-def main():
-    '''
-    On commandline call, get all queued tests, run them, and set the status.
-    '''
-
-    db = mongo_database()
-    queue = db['queue']
-
-    for item in queue.find():
-        run_test(item)
-        queue.remove(item)
-
-
-if __name__ == '__main__':
-    main()
