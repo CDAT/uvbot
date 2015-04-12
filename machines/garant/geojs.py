@@ -16,6 +16,8 @@ defprops = {
 
     'slaveenv': {
     },
+
+   'selenium': '8101'
 }
 
 base_features = (
@@ -24,7 +26,8 @@ base_features = (
 buildsets = [
     {
         'os': 'linux',
-        'features': ('selenium', 'chrome')
+        'features': ('selenium', 'chrome'),
+        'buildtype': 'release'
     },
 ]
 

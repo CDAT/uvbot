@@ -54,9 +54,10 @@ class StartWebServer(ShellCommand):
 
     def __init__(self, **kw):
         """Create the shell command."""
-        port = Interpolate(
-            '%(slave:selenium)s'
-        )
+        # port =Interpolate(
+        #     '%(slave:selenium)s'
+        # )
+        port = 8101
         kw['command'] = 'chmod +x server.sh;  ./server.sh ' + str(port)
         kw['description'] = 'Starting a web server on port {}'.format(port)
         kw['descriptionDone'] = 'Web server started on port {}'.format(port)
@@ -70,9 +71,10 @@ class KillWebServer(ShellCommand):
 
     def __init__(self, **kw):
         """Create the shell command."""
-        port = Interpolate(
-            '%(slave:selenium)s'
-        )
+        # port = Interpolate(
+        #     '%(slave:selenium)s'
+        # )
+        port = 8101
         kw['command'] = 'kill `cat .pid-{}`'.format(port)
         kw['description'] = 'Killing the web server on port {}'.format(port)
         kw['descriptionDone'] = 'Web server killed'.format(port)

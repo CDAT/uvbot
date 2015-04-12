@@ -25,9 +25,10 @@ DEFAULTS = {
 }
 
 OPTIONS = {
-    'os': options.os
+    'os': options.os,
+    'buildtype': options.buildtypes
 }
-OPTIONORDER = ('os', )
+OPTIONORDER = ('os', 'buildtype')
 
 FEATURES = {
     'selenium': projects.make_feature_cmake_options({
