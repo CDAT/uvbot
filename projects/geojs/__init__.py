@@ -20,7 +20,7 @@ DEFAULTS = {
         'BUILD_EXAMPLES:BOOL': 'ON',
         'BUILD_TESTING:BOOL': 'ON',
     },
-    'cdash_url': 'https://my.cdash.org',
+    'cdash_url': 'http://my.cdash.org',
     'cdash_project': 'geojs',
 }
 

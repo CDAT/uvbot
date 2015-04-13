@@ -10,5 +10,5 @@ REPO = 'OpenGeoscience/geojs'
 BRANCHES = [
     'master',
 ]
-CDASH_ROOT = 'https://my.cdash.org'
+CDASH_ROOT = 'http://my.cdash.org'
 CDASH_PROJECTNAME = 'geojs'
