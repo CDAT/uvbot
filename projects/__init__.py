@@ -219,7 +219,7 @@ def get_codebase(project=None, poll=None, secrets={}):
         poll = import_module("%s.poll" % project.__name__)
     return {
         get_codebase_name(poll.REPO) : {
-            "repository" : "%s/%s.git" % (secrets['gitlab_host'], poll.REPO.lower()),
+            "repository" : poll.REPO,
             "branch" : "master",
             "revision" : None,
         }

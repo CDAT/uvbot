@@ -90,7 +90,7 @@ def get_source_steps(sourcedir="source"):
     """
     codebase = projects.get_codebase_name(poll.REPO)
     update = Git(
-        repourl=poll.REPO_SITE + ':' + poll.REPO,
+        repourl=poll.REPO_SITE,
         mode='incremental',
         method='clean',
         submodules=True,
