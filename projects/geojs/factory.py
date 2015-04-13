@@ -84,7 +84,7 @@ class KillWebServer(ShellCommand):
 
 
 def get_source_steps(sourcedir="source"):
-    """Return a list of steps needed to checkout VTK source properly.
+    """Return a list of steps needed to checkout the source properly.
 
     @param sourcedir is the directory where to checkout the source.
     """
