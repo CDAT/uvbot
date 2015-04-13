@@ -1,4 +1,5 @@
 from kwextensions.changes import GitlabMergeRequestPoller, GitlabIntegrationBranchPoller
+from buildbot.changes.gitpoller import GitPoller
 
 import geojs.poll
 
@@ -30,26 +31,13 @@ _add_project_poll(geojs.poll)
 def make_pollers(secrets):
     pollers = [
         # Poll for merge requests.
-        GitlabMergeRequestPoller(
-            host=secrets['gitlab_host'],
-            token=secrets['gitlab_api_token'],
-            web_host=secrets['web_status_url'],
-            projects=REPOS,
-            cdash_info=CDASH_INFO,
-            verify_ssl=False,
-            pollInterval=10*60, # in seconds
+        GitPoller(
+            repourl=geojs.poll.REPO_SITE,
+            branches=['master'],
+            pollInterval=3600,
             pollAtLaunch=True,
-            forceLowerCase=False),
-
-        # Poll for changes to the integration branches.
-        GitlabIntegrationBranchPoller(
-            host=secrets['gitlab_host'],
-            token=secrets['gitlab_api_token'],
-            projects=BRANCHES,
-            verify_ssl=False,
-            pollInterval=10*60, # in seconds
-            pollAtLaunch=True,
-            forceLowerCase=False),
+            category='polled'
+        )
     ]
 
     return pollers
