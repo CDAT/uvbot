@@ -17,8 +17,7 @@ defprops = {
 
     'slaveenv': {
     },
-
-   'selenium': '8101'
+    'webport': '8101'
 }
 
 base_features = (
