@@ -33,7 +33,7 @@ def make_pollers(secrets):
         # Poll for merge requests.
         GitPoller(
             repourl=geojs.poll.REPO_SITE,
-            branches=['master'],
+            branches=True,
             pollInterval=3600,
             pollAtLaunch=True,
             category='polled'

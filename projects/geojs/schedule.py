@@ -16,7 +16,7 @@ def make_schedulers(buildnames, secrets):
     return [
         AnyBranchScheduler(
             name='GeoJS Branch Change Scheduler',
-            treeStableTimer=None,
+            treeStableTimer=300,
             builderNames=buildnames,
             reason="GeoJS repository changed.",
             codebases=codebases,
@@ -25,7 +25,7 @@ def make_schedulers(buildnames, secrets):
                 'ctest_track': 'Experimental',
             },
             change_filter=filter.ChangeFilter(
-                repository_re='geojs.git$'
+                repository_re=r'.*geojs\.git.*'
             )),
         Nightly(
             name='GeoJS Nightly Scheduler',
@@ -40,6 +40,6 @@ def make_schedulers(buildnames, secrets):
                 'ignore_exclusions': True,
             },
             change_filter=filter.ChangeFilter(
-                repository_re='geojs.git$'
+                repository_re=r'.*geojs\.git.*'
             )),
     ]
