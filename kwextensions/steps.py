@@ -451,7 +451,7 @@ class GetShortRevision(object):
     def getRenderingFor(self, props):
         codebases = self.step.codebases
         if not codebases or (len(codebases) == 1 and codebases[0] == ''):
-            return prop.getProperty("got_revision")[0:8]
+            return props.getProperty("got_revision")[0:8]
         retVal = []
         for codebase in codebases:
             retVal.append(props.getProperty("got_revision")[codebase][0:8])
