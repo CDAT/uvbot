@@ -20,7 +20,6 @@ def get_source_steps(sourcedir="source"):
 
     @param sourcedir is the directory where to checkout the source.
     """
-    codebase = projects.get_codebase_name(poll.REPO)
     update = Git(
         repourl=poll.REPO_SITE,
         mode='incremental',
@@ -28,7 +27,6 @@ def get_source_steps(sourcedir="source"):
         submodules=True,
         workdir=sourcedir,
         reference=Property("referencedir"),
-        codebase=codebase
     )
     steps = []
     steps.append(update)
@@ -47,12 +45,11 @@ def get_factory(buildset):
 
     That could be used to build the factory as needed.
     """
-    codebase = projects.get_codebase_name(poll.REPO)
     factory = BuildFactory()
     for step in get_source_steps():
         factory.addStep(step)
 
-    factory.addStep(SetCTestBuildNameProperty(codebases=[codebase]))
+    factory.addStep(SetCTestBuildNameProperty())
     factory.addStep(DownloadCommonCTestScript())
     factory.addStep(CTestExtraOptionsDownload())
     if buildset["os"] == "windows":
