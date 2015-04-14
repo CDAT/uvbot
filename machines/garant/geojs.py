@@ -1,3 +1,5 @@
+from buildbot import locks
+
 import projects
 from projects import geojs
 from . import slave
@@ -31,4 +33,8 @@ buildsets = [
     },
 ]
 
-BUILDERS = projects.make_builders(slave, geojs, buildsets, defprops)
+locks = [
+    locks.SlaveLock("web_server", maxCount=1).access('exclusive')
+]
+
+BUILDERS = projects.make_builders(slave, geojs, buildsets, defprops, locks=locks)
