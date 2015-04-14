@@ -2,6 +2,7 @@ from kwextensions.changes import GitlabMergeRequestPoller, GitlabIntegrationBran
 from buildbot.changes.gitpoller import GitPoller
 
 import geojs.poll
+import uvcdat.poll
 
 __all__ = [
     'make_pollers',
@@ -34,6 +35,13 @@ def make_pollers(secrets):
         GitPoller(
             repourl=geojs.poll.REPO_SITE,
             branches=True,
+            pollInterval=3600,
+            pollAtLaunch=True,
+            category='polled'
+        ),
+        GitPoller(
+            repourl=uvcdat.poll.REPO_SITE,
+            branches=['master', 'buildbot-test'],
             pollInterval=3600,
             pollAtLaunch=True,
             category='polled'
