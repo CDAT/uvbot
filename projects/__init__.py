@@ -16,7 +16,8 @@ __all__ = [
 
 
 PROJECTS = [
-     'geojs'
+     'geojs',
+     'uvcdat'
 #    # VTK
 #    'VTK',
 #    'VTKSuperbuild',

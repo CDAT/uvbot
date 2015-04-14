@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 SLAVE = BuildSlave('garant', secrets.SECRETS['garant']['password'],
-    max_builds=1,
+    max_builds=2,
     properties={
         'cmakeroot': '/usr',
         'os': 'linux',
@@ -18,10 +18,7 @@ SLAVE = BuildSlave('garant', secrets.SECRETS['garant']['password'],
 
 SLAVEPROPS = {
     'compiler': 'gcc-4.8.2',
-
     'generator:buildslave': 'Unix Makefiles',
-
     'maximum_parallel_level': 4,
-
     'configure_options:buildslave': {},
 }

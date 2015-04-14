@@ -5,9 +5,11 @@ r'''
 
 from . import slave
 from . import geojs
+from . import uvcdat
 
 BUILDERS = {
     'geojs': geojs.BUILDERS,
+    'uvcdat': uvcdat.BUILDERS
 }
 
 def get_buildslave():

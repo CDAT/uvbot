@@ -1,5 +1,6 @@
 # GeoJS
-from geojs import schedule
+from geojs import schedule as geojs_schedule
+from uvcdat import schedule as uvcdat_schedule
 
 __all__ = [
     'make_schedulers',
@@ -8,7 +9,8 @@ __all__ = [
 
 SCHEDULES = {
      # GeoJS
-     'geojs': schedule,
+     'geojs': geojs_schedule,
+     'uvcdat': uvcdat_schedule,
 }
 
 
