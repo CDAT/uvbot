@@ -23,7 +23,7 @@ def make_schedulers(buildnames, secrets):
                 'ctest_empty_binary_directory': True,
                 'ctest_track': 'Experimental',
             },
-            branches=['master']
+            branches=['master', 'buildbot-test']
             ),
         Nightly(
             name='UV-CDAT Nightly Scheduler',
