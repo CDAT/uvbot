@@ -21,6 +21,7 @@ DEFAULTS = {
     },
     'cdash_url': 'https://open.cdash.org',
     'cdash_project': 'UV-CDAT',
+    'supports_parallel_testing:project': True
 }
 
 OPTIONS = {
