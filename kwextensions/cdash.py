@@ -35,6 +35,7 @@ class Query(object):
     def get_query_dict(self):
         query = {}
         query['project'] = self.project
+        query['display'] = 'project'
         query['showfilters'] = self.showfilters
         query['limit'] = self.limit
         query['showfeed'] = self.showfeed
