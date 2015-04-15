@@ -1,5 +1,6 @@
 from buildbot.status import html
 from buildbot.status.web import authz, auth
+from projects.uvcdat import status as uvcdat
 
 
 __all__ = [
@@ -21,10 +22,13 @@ def make_web_status(secrets):
         cancelPendingBuild='auth',
     )
 
-    return html.WebStatus(
-        http_port=secrets['web_status_port'],
-        authz=authz_cfg,
-        change_hook_dialects={
-            'github': True
-        }
-    )
+    return [
+        html.WebStatus(
+            http_port=secrets['web_status_port'],
+            authz=authz_cfg,
+            change_hook_dialects={
+                'github': True
+            }
+        ),
+        uvcdat.make_project_status(secrets)
+    ]
