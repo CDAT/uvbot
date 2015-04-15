@@ -1,5 +1,7 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
 from buildbot.schedulers.timed import Nightly
+from buildbot.schedulers.forcesched import ForceScheduler, \
+        ChoiceStringParameter, FixedParameter, StringParameter
 
 
 __all__ = [
@@ -19,7 +21,7 @@ def make_schedulers(buildnames, secrets):
                 'ctest_track': 'Experimental',
             },
             branches=['master', 'buildbot-test']
-            ),
+        ),
         Nightly(
             name='UV-CDAT Nightly Scheduler',
             branch='master',
@@ -31,5 +33,20 @@ def make_schedulers(buildnames, secrets):
                 'ctest_track': 'Nightly',
                 'ignore_exclusions': True,
             }
+        ),
+        ForceScheduler(
+            name='force-uvcdat',
+            builderNames=buildnames,
+            reason=FixedParameter(
+                name="reason",
+                default="UV-CDAT build triggered manually."
+            ),
+            branch=StringParameter(
+                name='branch',
+                default='master'
+            ),
+            revision=FixedParameter(name='revision', default=''),
+            repository=FixedParameter(name='repository', default=''),
+            project=FixedParameter(name='project', default='')
         )
     ]
