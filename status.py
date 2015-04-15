@@ -29,6 +29,5 @@ def make_web_status(secrets):
             change_hook_dialects={
                 'github': True
             }
-        ),
-        uvcdat.make_project_status(secrets)
+        )
     ]
