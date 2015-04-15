@@ -22,7 +22,7 @@ def make_schedulers(buildnames, secrets):
                 'ctest_track': 'Experimental',
             },
             change_filter=filter.ChangeFilter(
-                repository_re=r'.*uvcdat\.git.*'
+                repository_re=r'.*/uvcdat$'
             )
         ),
         Nightly(
