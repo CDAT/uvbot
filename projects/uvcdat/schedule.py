@@ -14,7 +14,7 @@ def make_schedulers(buildnames, secrets):
     return [
         AnyBranchScheduler(
             name='UV-CDAT Branch Change Scheduler',
-            treeStableTimer=300,
+            treeStableTimer=60,
             builderNames=buildnames,
             reason="UV-CDAT repository changed.",
             properties={
