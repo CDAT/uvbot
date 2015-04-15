@@ -41,7 +41,7 @@ def make_pollers(secrets):
         ),
         GitPoller(
             repourl=uvcdat.poll.REPO_SITE,
-            branches=['master', 'buildbot-test'],
+            branches=True,
             pollInterval=3600,
             pollAtLaunch=True,
             category='polled'

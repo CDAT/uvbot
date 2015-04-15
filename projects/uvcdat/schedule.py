@@ -1,5 +1,6 @@
 from buildbot.schedulers.basic import AnyBranchScheduler
 from buildbot.schedulers.timed import Nightly
+from buildbot.changes import filter
 from buildbot.schedulers.forcesched import ForceScheduler, \
         ChoiceStringParameter, FixedParameter, StringParameter
 
@@ -20,7 +21,9 @@ def make_schedulers(buildnames, secrets):
                 'ctest_empty_binary_directory': True,
                 'ctest_track': 'Experimental',
             },
-            branches=['master', 'buildbot-test']
+            change_filter=filter.ChangeFilter(
+                repository_re=r'.*uvcdat\.git.*'
+            )
         ),
         Nightly(
             name='UV-CDAT Nightly Scheduler',
