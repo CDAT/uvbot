@@ -205,6 +205,7 @@ class GitHubStatus(StatusReceiverMultiService):
             'sha': sha,
             'targetURL': cdash,
             'buildNumber': str(build.getNumber()),
+            'context': 'continuous-integration/kitware-buildbot',
         }
         defer.returnValue(result)
 
@@ -237,6 +238,7 @@ class GitHubStatus(StatusReceiverMultiService):
             state=status['state'].encode('utf-8'),
             target_url=status['targetURL'].encode('utf-8'),
             description=status['description'].encode('utf-8'),
+            context=status['context'].encode('utf-8'),
         )
 
         success_message = (
