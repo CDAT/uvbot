@@ -10,7 +10,6 @@ from kwextensions.steps import CTestDashboard,\
                                DownloadLauncher,\
                                CTestExtraOptionsDownload,\
                                SetCTestBuildNameProperty
-from kwextensions.github_status import post_github_status
 
 import projects
 from . import poll
@@ -63,9 +62,6 @@ def get_factory(buildset):
         )
     )
     factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME))
-    factory.addStep(
-        post_github_status()
-    )
 
     return factory
 
