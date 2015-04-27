@@ -22,6 +22,8 @@ DEFAULTS = {
     },
     'cdash_url': 'http://my.cdash.org',
     'cdash_project': 'geojs',
+    'github_owner': 'OpenGeoscience',
+    'github_repo': 'geojs',
 }
 
 OPTIONS = {
