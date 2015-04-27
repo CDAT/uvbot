@@ -193,11 +193,17 @@ class GitHubStatus(StatusReceiverMultiService):
             log.msg('GitHubStatus: No revision found.')
             defer.returnValue({})
 
+        cdash = ''
+        for step in build.getSteps():
+            if 'cdash' in step.getURLs():
+                cdash = step.getURLs()['cdash']
+                break
+
         result = {
             'repoOwner': repoOwner,
             'repoName': repoName,
             'sha': sha,
-            'targetURL': self._status.getURLForThing(build),
+            'targetURL': cdash,
             'buildNumber': str(build.getNumber()),
         }
         defer.returnValue(result)
