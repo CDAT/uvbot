@@ -46,7 +46,7 @@ message("CTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}")
 set(ENV{LC_ALL} C)
 
 # if we're told to start with an empty binary dir, we do it.
-if (ctest_use_empty_binary_directory)
+if (ctest_use_empty_binary_directory AND NOT ctest_keep_build)
     message("Emptying binary directory ...")
     # XXX(cmake-3.1): ctest_empty_binary_directory() should work again.
     # not using ctest_use_empty_binary_directory() since that kept on failing
@@ -55,7 +55,10 @@ if (ctest_use_empty_binary_directory)
     file(MAKE_DIRECTORY ${CTEST_BINARY_DIRECTORY})
 endif()
 
-ctest_start(${ctest_model} TRACK ${ctest_track})
+if (NOT ctest_keep_build)
+    message("Starting ctest ${ctest_track} ... ")
+    ctest_start(${ctest_model} TRACK ${ctest_track})
+endif()
 
 #==============================================================================
 # Configure

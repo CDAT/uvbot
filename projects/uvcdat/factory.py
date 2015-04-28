@@ -1,9 +1,10 @@
 """GeoJS test factory."""
 
 from buildbot.process.factory import BuildFactory
-from buildbot.process.properties import Property, Interpolate
+from buildbot.process.properties import Property, Interpolate, renderer
 from buildbot.steps.master import SetProperty
 from buildbot.steps.source.git import Git
+from buildbot.steps.shell import ShellCommand
 
 from kwextensions.steps import CTestDashboard,\
                                DownloadCommonCTestScript,\
@@ -11,8 +12,57 @@ from kwextensions.steps import CTestDashboard,\
                                CTestExtraOptionsDownload,\
                                SetCTestBuildNameProperty
 
-import projects
 from . import poll
+
+
+class ACMETest(CTestDashboard):
+
+    """Run configuration and build."""
+
+    def __init__(self, cdash_projectname, stages, source=None):
+        """Initialize the class."""
+        self.warnCount = 0
+        self.errorCount = 0
+        self.failedTestsCount = 0
+        self.maxFailedTestCount = 0
+        self.cdash_projectname = cdash_projectname
+        self.stages = stages
+        if self.stages is 'test':
+            keep = 'ON'
+        else:
+            keep = 'OFF'
+        if source is None:
+            self.source = ''
+        else:
+            self.source = source
+
+        @renderer
+        def command(props):
+            """Generate the ctest commandline."""
+            props_dict = {'prop:ctest_stages': self.stages}
+
+            for (key, (value, source)) in props.asDict().iteritems():
+                props_dict["prop:%s" % key] = value
+
+            return '/bin/bash -c \'' + (self.source + ' '.join([
+                '"%(prop:cmakeroot)s/bin/ctest"',
+                '-V',
+                '"-Dctest_extra_options_file:STRING'
+                '=%(prop:builddir)s/ctest_extra_options.cmake"',
+                '"-Dctest_stages:STRING=%(prop:ctest_stages)s"',
+                '"-Dctest_keep_build=' + keep + '"',
+                '-C',
+                '"' + props.getProperty('configure_options')[
+                    'CMAKE_BUILD_TYPE:STRING'
+                ] + '"',
+                '-S',
+                '"%(prop:ctest_dashboard_script)s"'
+            ])) % props_dict + '\''
+
+        ShellCommand.__init__(
+            self,
+            command=command
+        )
 
 
 def get_source_steps(sourcedir="source"):
@@ -61,7 +111,19 @@ def get_factory(buildset):
             value=Interpolate('%(prop:builddir)s/common.ctest')
         )
     )
-    factory.addStep(CTestDashboard(cdash_projectname=poll.CDASH_PROJECTNAME))
+    factory.addStep(
+        ACMETest(
+            cdash_projectname=poll.CDASH_PROJECTNAME,
+            stages='configure;build',
+        )
+    )
+    factory.addStep(
+        ACMETest(
+            cdash_projectname=poll.CDASH_PROJECTNAME,
+            stages='test',
+            source='. %(prop:builddir)s/build/install/bin/setup_runtime.sh; '
+        )
+    )
 
     return factory
 

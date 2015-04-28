@@ -21,7 +21,8 @@ def post_github_status(repo, state, token, **kw):
     :param description: Short description of the status.
     :param context: A unique context for the status (default kitware/buildbot)
     :param sha: The sha to attach the status to (default "%(src::revision)s")
-    :param apiroot: default https://api.github.com """
+    :param apiroot: default https://api.github.com
+    """
     params = {
         'state': state,
         'context': kw.get('context', 'kitware/buildbot')

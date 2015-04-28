@@ -28,7 +28,7 @@ base_features = (
 buildsets = [
     {
         'os': 'linux',
-        'features': ('selenium', 'chrome'),
+        'features': ('selenium',),
         'buildtype': 'release'
     },
 ]
