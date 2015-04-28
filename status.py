@@ -1,6 +1,7 @@
 from buildbot.status import html
 from buildbot.status.web import authz, auth
-from projects.uvcdat import status as uvcdat
+from kwextensions.github_status2 import GitHubStatus
+from buildbot.process.properties import Interpolate
 
 
 __all__ = [
@@ -29,5 +30,12 @@ def make_web_status(secrets):
             change_hook_dialects={
                 'github': True
             }
-        )
+        ),
+        GitHubStatus(
+            token=secrets['github_status_token'],  # Generate using your user settings->applications in github
+            repoOwner=Interpolate('%(prop:github_owner)s'),
+            repoName=Interpolate('%(prop:github_repo)s'),
+            sha=Interpolate('%(src::revision)s'),
+            startDescription='Build started'
+        ),
     ]
