@@ -41,17 +41,17 @@ class ACMETest(CTestDashboard):
                 props_dict["prop:%s" % key] = value
 
             return (self.source + ' '.join([
-                '%(prop:cmakeroot)s/bin/ctest',
+                '"%(prop:cmakeroot)s/bin/ctest"',
                 '-V',
-                '-Dctest_extra_options_file:STRING'
-                '=%(prop:builddir)s/ctest_extra_options.cmake',
-                '-Dctest_stages:STRING=%(prop:ctest_stages)s',
+                '"-Dctest_extra_options_file:STRING'
+                '=%(prop:builddir)s/ctest_extra_options.cmake"',
+                '"-Dctest_stages:STRING=%(prop:ctest_stages)s"',
                 '-C',
-                props.getProperty('configure_options')[
+                '"' + props.getProperty('configure_options')[
                     'CMAKE_BUILD_TYPE:STRING'
-                ],
+                ] + '"',
                 '-S',
-                '%(prop:ctest_dashboard_script)s'
+                '"%(prop:ctest_dashboard_script)s"'
             ])) % props_dict
 
         ShellCommand.__init__(
