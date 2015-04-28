@@ -116,7 +116,7 @@ def get_factory(buildset):
         ACMETest(
             cdash_projectname=poll.CDASH_PROJECTNAME,
             stages='test',
-            source='. %(prop:builddir)s/install/bin/setup_runtime.sh; '
+            source='. %(prop:builddir)s/build/install/bin/setup_runtime.sh; '
         )
     )
 
