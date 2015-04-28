@@ -238,10 +238,7 @@ class GitHubStatus(StatusReceiverMultiService):
             state=status['state'].encode('utf-8'),
             target_url=status['targetURL'].encode('utf-8'),
             description=status['description'].encode('utf-8'),
-<<<<<<< HEAD
-            context=status['context'].encode('utf-8'),
-=======
->>>>>>> master
+            context=status['context'].encode('utf-8')
         )
 
         success_message = (
