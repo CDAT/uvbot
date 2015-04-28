@@ -27,6 +27,10 @@ class ACMETest(CTestDashboard):
         self.maxFailedTestCount = 0
         self.cdash_projectname = cdash_projectname
         self.stages = stages
+        if self.stages is 'test':
+            keep = 'ON'
+        else:
+            keep = 'OFF'
         if source is None:
             self.source = ''
         else:
@@ -46,6 +50,7 @@ class ACMETest(CTestDashboard):
                 '"-Dctest_extra_options_file:STRING'
                 '=%(prop:builddir)s/ctest_extra_options.cmake"',
                 '"-Dctest_stages:STRING=%(prop:ctest_stages)s"',
+                '"-Dctest_keep_build=' + keep + '"',
                 '-C',
                 '"' + props.getProperty('configure_options')[
                     'CMAKE_BUILD_TYPE:STRING'
