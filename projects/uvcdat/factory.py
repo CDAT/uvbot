@@ -40,7 +40,7 @@ class ACMETest(CTestDashboard):
             for (key, (value, source)) in props.asDict().iteritems():
                 props_dict["prop:%s" % key] = value
 
-            return (self.source + ' '.join([
+            return '/bin/bash -c \'' + (self.source + ' '.join([
                 '"%(prop:cmakeroot)s/bin/ctest"',
                 '-V',
                 '"-Dctest_extra_options_file:STRING'
@@ -52,7 +52,7 @@ class ACMETest(CTestDashboard):
                 ] + '"',
                 '-S',
                 '"%(prop:ctest_dashboard_script)s"'
-            ])) % props_dict
+            ])) % props_dict + '\''
 
         ShellCommand.__init__(
             self,
