@@ -112,16 +112,8 @@ def get_factory(buildset):
         )
     )
     factory.addStep(
-        ACMETest(
+        CTestDashboard(
             cdash_projectname=poll.CDASH_PROJECTNAME,
-            stages='configure;build',
-        )
-    )
-    factory.addStep(
-        ACMETest(
-            cdash_projectname=poll.CDASH_PROJECTNAME,
-            stages='test',
-            source='. %(prop:builddir)s/build/install/bin/setup_runtime.sh; '
         )
     )
 

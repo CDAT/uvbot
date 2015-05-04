@@ -199,13 +199,16 @@ class GitHubStatus(StatusReceiverMultiService):
                 cdash = step.getURLs()['cdash']
                 break
 
+        context = 'continuous-integration/kitware-buildbot/%s/' % \
+                build.getBuilder().getName()
+
         result = {
             'repoOwner': repoOwner,
             'repoName': repoName,
             'sha': sha,
             'targetURL': cdash,
             'buildNumber': str(build.getNumber()),
-            'context': 'continuous-integration/kitware-buildbot',
+            'context': context,
         }
         defer.returnValue(result)
 
