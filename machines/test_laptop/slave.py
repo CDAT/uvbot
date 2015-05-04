@@ -10,7 +10,7 @@ __all__ = [
 SLAVE = BuildSlave('test-laptop', secrets.SECRETS['test-laptop']['password'],
     max_builds=1,
     properties={
-        'cmakeroot': '/usr',
+        'cmakeroot': '/home/kitware/demos/cmake-build',
         'os': 'linux',
         'distribution': 'ubuntu-12.04',
     })
