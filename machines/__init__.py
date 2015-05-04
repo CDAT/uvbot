@@ -1,4 +1,5 @@
 from . import garant
+from . import test_laptop
 
 __all__ = [
     'MACHINES',
@@ -6,6 +7,7 @@ __all__ = [
 
 MACHINES = [
     garant,
+    test_laptop,
 ]
 
 import os
