@@ -16,6 +16,10 @@
 #
 # ctest_stages: all, configure, build, test
 
+if (CMAKE_VERSION VERSION_LESS "2.8.10")
+    message(FATAL_ERROR "CMake is too old and cannot support launchers.  Update to at least ctest version 2.8.10")
+endif()
+
 if (ctest_extra_options_file)
     include("${ctest_extra_options_file}")
 endif()
