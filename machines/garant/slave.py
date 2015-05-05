@@ -20,6 +20,5 @@ SLAVEPROPS = {
     'compiler': 'gcc-4.8.2',
     'generator:buildslave': 'Unix Makefiles',
     'maximum_parallel_level': 4,
-    'configure_options:buildslave': {},
-    'buildflags:buildslave': '-j4'
+    'configure_options:buildslave': {}
 }
