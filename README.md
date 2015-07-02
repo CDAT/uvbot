@@ -45,5 +45,21 @@ contains the following information:
 ```
 
 When that is done, install the requirements listed in [github-proxy/requirements.txt](github-proxy/requirements.txt)
-and run `tangelo -r /path/to/github-proxy` to start the service at `http://localhost:8080/proxy`.  See
-`tangelo -h` for more options.
+and run
+```
+tangelo -r /path/to/github-proxy
+```
+to start the service at `http://localhost:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
+```
+$ curl http://my-server.com:8080/proxy
+How can I help you?
+```
+
+Buildbot setup
+--------------
+
+There are general instructions for setting up a new buildbot instance in
+[buildbot-server/README.md](buildbot-server/README.md).  Some of the contents
+of those instructions are specific to setting up a build for integration
+with Kitware's gitlab server rather than github.  
+
