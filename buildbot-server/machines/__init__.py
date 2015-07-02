@@ -1,13 +1,13 @@
-from . import garant
-from . import test_laptop
+# from . import garant
+# from . import test_laptop
 
 __all__ = [
     'MACHINES',
 ]
 
 MACHINES = [
-    garant,
-    test_laptop,
+#    garant,
+#    test_laptop,
 ]
 
 import os
