@@ -72,12 +72,12 @@ of those instructions are specific to setting up a build for integration
 with Kitware's gitlab server rather than github.  Briefly, the setup procedure
 is as follows:
 
-1. Install the python [requirements](buildbot-server/requirements.txt)
-2. Generate a password for the buildbot web interface
+- Install the python [requirements](buildbot-server/requirements.txt)
+- Generate a password for the buildbot web interface
 ```
 htpasswd -c webstatuspasswords some-username
 ```
-3. Create a secrets file in `/path/to/buildbot-server/secrets.json`
+- Create a secrets file in `/path/to/buildbot-server/secrets.json`
 ```javascript
 {
     "buildbot_root": "/path/to/buildbot-server",
@@ -86,28 +86,28 @@ htpasswd -c webstatuspasswords some-username
     "github_status_token": "authentication token for github with permission to write statuses"
 }
 ```
-4. Initialize the buildbot sqlite database
+- Initialize the buildbot sqlite database
 ```
 buildbot create-master /path/to/buildbot-server
 ```
-5. Define build slaves as described below
-6. Start the build master
+- Define build slaves as described below
+- Start the build master
 ```
 buildbot start /path/to/buildbot-server
 ```
-7.  Initialize the slave computer by installing `buildbot-slave==0.8.12` and running
+-  Initialize the slave computer by installing `buildbot-slave==0.8.12` and running
 ```
 buildslave create /path/to/testing/directory buildbot-server-host buildslave-name password
 ```
 The buildslave will contact the buildbot master and initialize itself in the directory
 you specified.
-8.  Start the build slave
+-  Start the build slave
 ```
 buildslave start /path/to/testing/directory
 ```
-9.  Push a commit to UV-CDAT, you should see it show up in the changes section of the
+-  Push a commit to UV-CDAT, you should see it show up in the changes section of the
 buildbot web interface and a new build should begin with in a minute or two.
-10.  Fix the problems you come across that aren't addressed in this readme and
+-  Fix the problems you come across that aren't addressed in this readme and
 update the instructions so other people don't have the same problems. ;)
 
 Buildbot slave setup
