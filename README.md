@@ -55,7 +55,7 @@ contains the following information:
 When that is done, install the requirements listed in [github-proxy/requirements.txt](github-proxy/requirements.txt)
 and run
 ```
-tangelo -r /path/to/github-proxy
+tangelo -r /path/to/github-proxy --hostname myserver.com --port 8080
 ```
 to start the service at `http://localhost:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
 ```
