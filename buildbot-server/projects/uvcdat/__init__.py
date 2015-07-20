@@ -33,6 +33,11 @@ OPTIONS = {
 OPTIONORDER = ('os', 'buildtype')
 
 FEATURES = {
+    '_buildall': ({}, {
+        'configure_options:feature': {
+          'CDAT_BUILD_MODE:STRING': 'ALL',
+        },
+    }),
     '_noexamples': ({}, {
         'configure_options:feature': {
             'BUILD_EXAMPLES:BOOL': 'OFF',
@@ -40,7 +45,6 @@ FEATURES = {
     }),
     'gui': projects.make_feature_cmake_options({
         'CDAT_BUILD_GUI:BOOL': ('OFF', 'ON')
-    'buildmode': projects.make_feature_cmake_options({
-      'CDAT_BUILD_MODE:STRING': ('DEFAULT','LEAN', 'ALL')
-    })
+    }),
+    }),
 }

@@ -1,12 +1,11 @@
-# from . import garant
-# from . import test_laptop
+from . import oceanonly
 
 __all__ = [
     'MACHINES',
 ]
 
 MACHINES = [
-    "oceanonly",
+    oceanonly,
 ]
 
 import os
