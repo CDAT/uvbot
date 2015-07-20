@@ -1,14 +1,12 @@
 r'''
-    Machine: garant.kitware.com
-    Owner: jonathan.beezley@kitware.com
+    Machine: oceanonly.llnl.gov
+    Owner: doutriaux1@llnl.gov
 '''
 
 from . import slave
-from . import geojs
 from . import uvcdat
 
 BUILDERS = {
-    'geojs': geojs.BUILDERS,
     'uvcdat': uvcdat.BUILDERS
 }
 

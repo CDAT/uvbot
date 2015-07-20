@@ -13,7 +13,7 @@ defprops = {
     'slaveenv': {
         'DISPLAY': ':0'
     },
-    'webport': '8101'
+    'webport': '90102'
 }
 
 base_features = (
@@ -22,8 +22,7 @@ base_features = (
 buildsets = [
     {
         'os': 'linux',
-        'buildtype': 'release',
-        'gui': 'OFF'
+        'buildmode': 'ALL',
     },
 ]
 

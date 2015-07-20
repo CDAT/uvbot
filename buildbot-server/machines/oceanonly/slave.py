@@ -7,18 +7,18 @@ __all__ = [
     'SLAVEPROPS',
 ]
 
-SLAVE = BuildSlave('garant', secrets.SECRETS['garant']['password'],
+SLAVE = BuildSlave('oceanonly', secrets.SECRETS['oceanonly']['password'],
     max_builds=2,
     properties={
-        'cmakeroot': '/usr',
+        'cmakeroot': '/usr/local',
         'os': 'linux',
-        'distribution': 'ubuntu-14.04',
-        'selenium': '8101'
+        'distribution': 'redhat-6',
+        'selenium': '90102'
     })
 
 SLAVEPROPS = {
-    'compiler': 'gcc-4.8.2',
+    'compiler': 'gcc-4.4.7',
     'generator:buildslave': 'Unix Makefiles',
-    'maximum_parallel_level': 4,
+    'maximum_parallel_level': 8,
     'configure_options:buildslave': {}
 }

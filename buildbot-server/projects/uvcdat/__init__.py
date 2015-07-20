@@ -40,5 +40,7 @@ FEATURES = {
     }),
     'gui': projects.make_feature_cmake_options({
         'CDAT_BUILD_GUI:BOOL': ('OFF', 'ON')
+    'buildmode': projects.make_feature_cmake_options({
+      'CDAT_BUILD_MODE:STRING': ('DEFAULT','LEAN', 'ALL')
     })
 }

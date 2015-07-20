@@ -6,8 +6,7 @@ __all__ = [
 ]
 
 MACHINES = [
-#    garant,
-#    test_laptop,
+    "oceanonly",
 ]
 
 import os
