@@ -16,7 +16,7 @@ __all__ = [
 
 
 PROJECTS = [
-     'geojs',
+#     'geojs',
      'uvcdat'
 #    # VTK
 #    'VTK',
@@ -189,10 +189,12 @@ def merge_config(base, *args):
     output = copy.deepcopy(base)
 
     for d in args:
+        print "D:",d
         for k, v in d.items():
             if k in output:
                 # Merge dictionaries.
                 if type(v) == dict:
+                    print output[k]
                     if type(output[k]) == dict:
                         output[k] = merge_config(output[k], v)
                     else:

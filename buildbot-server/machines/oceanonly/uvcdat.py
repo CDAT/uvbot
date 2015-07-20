@@ -22,7 +22,8 @@ base_features = (
 buildsets = [
     {
         'os': 'linux',
-        '_buildall': 'ALL',
+        'buildtype': 'release',
+        'features': ('_buildall',),
     },
 ]
 

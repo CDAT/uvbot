@@ -1,7 +1,6 @@
 from kwextensions.changes import GitlabMergeRequestPoller, GitlabIntegrationBranchPoller
 from buildbot.changes.gitpoller import GitPoller
 
-import geojs.poll
 import uvcdat.poll
 
 __all__ = [
@@ -25,20 +24,11 @@ def _add_project_poll(poll):
     CDASH_INFO[poll.REPO] = (poll.CDASH_ROOT, poll.CDASH_PROJECTNAME)
 
 
-# VTK
-_add_project_poll(geojs.poll)
 
 
 def make_pollers(secrets):
     pollers = [
         # Poll for merge requests.
-        GitPoller(
-            repourl=geojs.poll.REPO_SITE,
-            branches=True,
-            pollInterval=3600,
-            pollAtLaunch=True,
-            category='polled'
-        ),
         GitPoller(
             repourl=uvcdat.poll.REPO_SITE,
             branches=True,
