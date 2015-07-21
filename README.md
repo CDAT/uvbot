@@ -97,7 +97,7 @@ buildbot start /path/to/buildbot-server
 ```
 -  Initialize the slave computer by installing `buildbot-slave==0.8.12` and running
 ```
-buildslave create /path/to/testing/directory buildbot-server-host buildslave-name password
+buildslave create-slave /path/to/testing/directory buildbot-server-host buildslave-name password
 ```
 The buildslave will contact the buildbot master and initialize itself in the directory
 you specified.
