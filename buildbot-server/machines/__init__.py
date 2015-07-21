@@ -1,4 +1,5 @@
 from . import oceanonly
+from . import crunchy
 
 __all__ = [
     'MACHINES',
@@ -6,6 +7,7 @@ __all__ = [
 
 MACHINES = [
     oceanonly,
+    crunchy,
 ]
 
 import os

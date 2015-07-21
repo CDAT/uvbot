@@ -7,7 +7,7 @@ __all__ = [
     'SLAVEPROPS',
 ]
 
-SLAVE = BuildSlave('oceanonly', secrets.SECRETS['oceanonly']['password'],
+SLAVE = BuildSlave('crunchy', secrets.SECRETS['crunchy']['password'],
     max_builds=2,
     properties={
         'cmakeroot': '/usr/local',
