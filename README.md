@@ -15,7 +15,9 @@ Ports used in documentation bellow
 ----------------------------------
 
 8080: github/tangelo communication
+
 8010: builbot-master web interface
+
 9989: builbot-master/buildbot-slave communication
 
 
