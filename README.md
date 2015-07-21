@@ -11,6 +11,13 @@ requires three components possibly on three seperate hosts:
 3. One or more build slaves that build and test the software and report
    statuses to both CDash and the Github status API.
 
+Ports used in documentation bellow
+----------------------------------
+
+8080: github/tangelo communication
+8010: builbot-master web interface
+9989: builbot-master/buildbot-slave communication
+
 
 Github repository setup
 -----------------------
@@ -57,7 +64,7 @@ and run
 ```
 tangelo -r /path/to/github-proxy --hostname myserver.com --port 8080
 ```
-to start the service at `http://localhost:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
+to start the service at `http://myserver.com:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
 ```
 $ curl http://my-server.com:8080/proxy
 How can I help you?
