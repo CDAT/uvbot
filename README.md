@@ -18,7 +18,7 @@ Github repository setup
 To register a new service with Github, you must have admin access to the
 UV-CDAT repository.  Go to the project settings page, under "Webhooks & Services"
 and choose the option "Add webhook".  Point the "Payload URL" to your github proxy
-service (i.e. `http://yourserver.com/proxy`),
+service (i.e. `http://yourserver.com:8080/proxy`),
 choose "Content type" `application/json` and you are ready to receive the events.
 For security, you should create a secret key to validate requests coming from Github.
 
