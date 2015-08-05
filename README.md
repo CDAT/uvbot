@@ -11,6 +11,15 @@ requires three components possibly on three seperate hosts:
 3. One or more build slaves that build and test the software and report
    statuses to both CDash and the Github status API.
 
+Ports used in documentation bellow
+----------------------------------
+
+8080: github/tangelo communication
+
+8010: builbot-master web interface
+
+9989: builbot-master/buildbot-slave communication
+
 
 Github repository setup
 -----------------------
@@ -18,7 +27,7 @@ Github repository setup
 To register a new service with Github, you must have admin access to the
 UV-CDAT repository.  Go to the project settings page, under "Webhooks & Services"
 and choose the option "Add webhook".  Point the "Payload URL" to your github proxy
-service (i.e. `http://yourserver.com/proxy`),
+service (i.e. `http://yourserver.com:8080/proxy`),
 choose "Content type" `application/json` and you are ready to receive the events.
 For security, you should create a secret key to validate requests coming from Github.
 
@@ -42,22 +51,24 @@ contains the following information:
 {
   "projects": {
     "UV-CDAT/uvcdat": {
-      "api-key": "api-key-from-your-webhook-config",
-      "buildbot": "http://your-buildbot-master:9989/",
-      "user": "buildbot-user",
-      "password": "buildbot-password",
+      "api-key": "secret-from-your-webhook-config",
+      "buildbot": "http://your-buildbot-master:8010/",
+      "user": "some-buildbot-user",
+      "password": "some-buildbot-password",
       "events": ["push"]
     }
   }
 }
 ```
 
+Where some-buildbot-user and some-buildbot-server are defined bellow in the htpasswd section
+
 When that is done, install the requirements listed in [github-proxy/requirements.txt](github-proxy/requirements.txt)
 and run
 ```
-tangelo -r /path/to/github-proxy
+tangelo -r /path/to/github-proxy --hostname myserver.com --port 8080
 ```
-to start the service at `http://localhost:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
+to start the service at `http://myserver.com:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
 ```
 $ curl http://my-server.com:8080/proxy
 How can I help you?
@@ -73,9 +84,9 @@ with Kitware's gitlab server rather than github.  Briefly, the setup procedure
 is as follows:
 
 - Install the python [requirements](buildbot-server/requirements.txt)
-- Generate a password for the buildbot web interface
+- Generate a password (some-buildbot-password) for the buildbot web interface
 ```
-htpasswd -c webstatuspasswords some-username
+htpasswd -c webstatuspasswords some-buildbot-user
 ```
 - Create a secrets file in `/path/to/buildbot-server/secrets.json`
 ```javascript
@@ -97,7 +108,7 @@ buildbot start /path/to/buildbot-server
 ```
 -  Initialize the slave computer by installing `buildbot-slave==0.8.12` and running
 ```
-buildslave create /path/to/testing/directory buildbot-server-host buildslave-name password
+buildslave create-slave /path/to/testing/directory buildbot-server-host buildslave-name password
 ```
 The buildslave will contact the buildbot master and initialize itself in the directory
 you specified.
