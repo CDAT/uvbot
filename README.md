@@ -53,13 +53,15 @@ contains the following information:
     "UV-CDAT/uvcdat": {
       "api-key": "api-key-from-your-webhook-config",
       "buildbot": "http://your-buildbot-master:8010/",
-      "user": "buildbot-user",
-      "password": "buildbot-password",
+      "user": "some-buildbot-user",
+      "password": "some-buildbot-password",
       "events": ["push"]
     }
   }
 }
 ```
+
+Where some-buildbot-user and some-buildbot-server are defined bellow in the htpasswd section
 
 When that is done, install the requirements listed in [github-proxy/requirements.txt](github-proxy/requirements.txt)
 and run
@@ -82,9 +84,9 @@ with Kitware's gitlab server rather than github.  Briefly, the setup procedure
 is as follows:
 
 - Install the python [requirements](buildbot-server/requirements.txt)
-- Generate a password for the buildbot web interface
+- Generate a password (some-buildbot-password) for the buildbot web interface
 ```
-htpasswd -c webstatuspasswords some-username
+htpasswd -c webstatuspasswords some-buildbot-user
 ```
 - Create a secrets file in `/path/to/buildbot-server/secrets.json`
 ```javascript
