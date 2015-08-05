@@ -51,7 +51,7 @@ contains the following information:
 {
   "projects": {
     "UV-CDAT/uvcdat": {
-      "api-key": "api-key-from-your-webhook-config",
+      "api-key": "secret-from-your-webhook-config",
       "buildbot": "http://your-buildbot-master:8010/",
       "user": "some-buildbot-user",
       "password": "some-buildbot-password",
