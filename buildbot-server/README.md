@@ -1,16 +1,3 @@
-Kitware buildbot configuration
-==============================
-
-This repository hosts the configuration for the buildbot master server.
-Currently, it runs on 'hera'. Any changes to this repository will require a
-restart of the main server. For now, please contact one of:
-
-  * Ben Boeckel `<ben.boeckel@kitware.com>`
-  * Shawn Waldon `<shawn.waldon@kitware.com>`
-  * Utkarsh Ayachit `<utkarsh.ayachit@kitware.com>`
-
-to restart the server for you.
-
 Currently, buildbot 0.8.10 is the preferred version.
 
 Testing changes
