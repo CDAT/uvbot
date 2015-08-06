@@ -5,7 +5,7 @@ __all__ = [
     'CDASH_PROJECTNAME',
 ]
 
-REPO_SITE = 'https://github.com/UV-CDAT/uvcdat'
+REPO_SITE = 'git@github.com:UV-CDAT/uvcdat'
 REPO = 'UV-CDAT/uvcdat'
 BRANCHES = [
     'master',

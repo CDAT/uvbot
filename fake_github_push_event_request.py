@@ -19,3 +19,5 @@ response = requests.post(url, data=contents, headers={
     "X-Github-Event": "push",
     "X-Github-Delivery": "1b1f7f00-3bb0-11e5-8759-a9b99ff1d684"
 })
+
+print "CODE:",response.status_code

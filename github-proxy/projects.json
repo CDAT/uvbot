@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "UV-CDAT/uvcdat": {
+      "api-key": "**********",
+      "buildbot": "http://aims4.llnl.gov:9982/",
+      "user": "some-buildbot-user",
+      "password": "***********",
+      "events": ["push"]
+    }
+  }
+}
