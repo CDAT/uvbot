@@ -33,6 +33,7 @@ with open(_projects_file) as f:
     projects = json.load(f)['projects']
 
 
+
 def authenticate(key, body, received):
     """Authenticate an event from github."""
     computed = hmac.new(str(key), body, hashlib.sha1).hexdigest()
@@ -47,8 +48,8 @@ def get_project(name):
 def forward(project, obj):
     """Forward an event object to the configured buildbot instance."""
     auth = None
-    if projects.get('user') and projects.get('password'):
-        auth = (projects['user'], projects['password'])
+    if project.get('user') and project.get('password'):
+        auth = (project['user'], project['password'])
 
     resp = requests.post(
         project['buildbot'].rstrip('/') + '/change_hook/github',
