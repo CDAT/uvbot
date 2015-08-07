@@ -52,11 +52,7 @@ set(ENV{LC_ALL} C)
 # if we're told to start with an empty binary dir, we do it.
 if (ctest_use_empty_binary_directory AND NOT ctest_keep_build)
     message("Emptying binary directory ...")
-    # XXX(cmake-3.1): ctest_empty_binary_directory() should work again.
-    # not using ctest_use_empty_binary_directory() since that kept on failing
-    # on windows. Seeing if this works more robustly.
-    file(REMOVE_RECURSE ${CTEST_BINARY_DIRECTORY})
-    file(MAKE_DIRECTORY ${CTEST_BINARY_DIRECTORY})
+    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
 endif()
 
 if (NOT ctest_keep_build)
