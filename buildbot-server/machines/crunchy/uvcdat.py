@@ -23,7 +23,7 @@ buildsets = [
     {
         'os': 'linux',
         'buildtype': 'release',
-        'features': ('_buildall',),
+        'mode': 'ALL',
     },
 ]
 
