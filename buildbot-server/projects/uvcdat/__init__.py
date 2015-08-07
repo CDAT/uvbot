@@ -73,7 +73,15 @@ FEATURES = {
     'mesa': projects.make_feature_cmake_options({
         'CDAT_BUILD_OFFSCREEN:BOOL': ('OFF', 'ON')
     }),
-    '_buildall': ({}, {
+    'mode': ({
+      'configure_options:feature': {
+        'CDAT_BUILD_MODE:STRING': 'LEAN',
+        },
+      },{
+      'configure_options:feature': {
+        'CDAT_BUILD_MODE:STRING': 'DEFAULT',
+        },
+      },{
       'configure_options:feature': {
         'CDAT_BUILD_MODE:STRING': 'ALL',
         },
