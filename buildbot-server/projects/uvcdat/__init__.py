@@ -27,30 +27,11 @@ DEFAULTS = {
 }
 
 
-buildmodes = {
-    'lean': {
-      'configure_options:project': {
-        'CDAT_BUILD_MODE:STRING', 'LEAN',
-        },
-      },
-    'default': {
-      'configure_options:project': {
-        'CDAT_BUILD_MODE:STRING', 'DEFAULT',
-        },
-      },
-    'all': {
-      'configure_options:project': {
-        'CDAT_BUILD_MODE:STRING', 'ALL',
-        },
-      },
-    }
-
 OPTIONS = {
     'os': options.os,
     'buildtype': options.buildtypes,
-#    'buildmode': buildmodes,
 }
-OPTIONORDER = ('os', 'buildtype',)  # 'buildmode')
+OPTIONORDER = ('os', 'buildtype',)
 
 FEATURES = {
     '_noexamples': ({}, {
