@@ -17,7 +17,6 @@ if secret == "":
     print secret
 
 h = hmac.new(secret, contents, hashlib.sha1)
-print "HMAC:",h.hexdigest()
 
 response = requests.post(url, data=contents, headers={
     "Content-type": "application/json",

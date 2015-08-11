@@ -10,7 +10,6 @@ import hashlib
 import tangelo
 import requests
 
-
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
@@ -20,12 +19,11 @@ with open(_projects_file) as f:
     projects = json.load(f)['projects']
 
 
+queue = {}
 
 def authenticate(key, body, received):
     """Authenticate an event from github."""
-    print "RECV",received
     computed = hmac.new(str(key), body, hashlib.sha1).hexdigest()
-    print "COMP:",computed
     # The folowing func does not exist on my home mac
     # trapping in try/except
     try:
@@ -53,7 +51,6 @@ def forward(project, obj):
     #    headers={'CONTENT-TYPE': 'application/x-www-form-urlencoded'}
 
     if resp.ok:
-        print "OK"
         tangelo.http_status(200, 'OK')
         return 'OK'
     else:
@@ -99,11 +96,20 @@ def post(*arg, **kwarg):
         return 'Invalid signature'
 
     event = tangelo.request_header('X-Github-Event')
-    print "PROJ EVENT:",project["events"],event
+    commit = obj["commits"][0]["id"]  # maybe -1 need to test
+    print "Commit id:",commit
+    print "Current queue"
+    queue[commit] = queue.get(commit,{})
+    for slave in project["slaves"]:
+      print "Registering commit %s to slave %s" % (commit,slave)
+      queue[commit][slave] = queue[commit].get(slave,0) +1
+
+    print "NEW QUEUE:",queue
     if project['events'] == '*' or event in project['events']:
         obj['event'] = event
 
         # add a new item to the test queue
+
         return "Ok sent this to queue"
     else:
         tangelo.http_status(200, "Unhandled event")
