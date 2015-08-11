@@ -1,8 +1,7 @@
 {
   "projects": {
     "UV-CDAT/uvcdat": {
-    "user": "blah",
-    "password": "blah",
+    "bot-key": "**************",
     "cmake_config": "-DCDAT_BUILD_MODE=LEAN"
     }
   }

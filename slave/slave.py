@@ -10,9 +10,27 @@ import hashlib
 import tangelo
 import requests
 
+import Queue
+import threading
+
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
+queue = Queue.Queue()
+
+def process_commit(obj):
+   commit = obj["commits"][0]["id"]  # maybe -1 need to test
+   print "processing commit",commit
+
+def worker():
+    while True:
+        item = q.get()
+        process_commit(item)
+        q.task_done()
+
+thread = threading.Thread(target=worker)
+thread.daemon = True
+thread.start()
 
 _projects_file = os.path.join(os.path.dirname(__file__), 'projects.json')
 with open(_projects_file) as f:
@@ -45,12 +63,7 @@ def forward(slave,obj,auth):
     )
     #    headers={'CONTENT-TYPE': 'application/x-www-form-urlencoded'}
 
-    if resp.ok:
-        tangelo.http_status(200, 'OK')
-        return 'OK'
-    else:
-        tangelo.http_status(400, "Bad project configuration")
-        return 'Bad project configuration'
+    return resp
 
 
 @tangelo.restful
@@ -90,22 +103,15 @@ def post(*arg, **kwarg):
         tangelo.http_status(403, "Invalid signature")
         return 'Invalid signature'
 
-    event = tangelo.request_header('X-Github-Event')
+    event = tangelo.request_header('BOT-Event')
+    if not event != "push":
+      tangelo.http_status(200, "Unhandled event")
+      return 'Unhandled event'
 
-    if project['events'] == '*' or event in project['events']:
-        obj['event'] = event
 
-        # add a new item to the test queue
-        commit = obj["commits"][0]["id"]  # maybe -1 need to test
-        print "Commit id:",commit
-        auth = None
-        if project.get('user') and project.get('password'):
-            auth = (project['user'], project['password'])
-        for slave in project["slaves"]:
-          print "Sending commit %s to slave %s" % (commit,slave)
-          forward(slave,obj,auth)
+    commit = obj["commits"][0]["id"]  # maybe -1 need to test
+    print "Commit id:",commit
+    queue.put(obj)
+    if not queue_thread_running:
 
-        return "Ok sent this to queue"
-    else:
-        tangelo.http_status(200, "Unhandled event")
-        return 'Unhandled event'
+    return "Ok sent commit %s to queue" % commit

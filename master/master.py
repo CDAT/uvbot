@@ -13,7 +13,6 @@ import requests
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
-
 _projects_file = os.path.join(os.path.dirname(__file__), 'projects.json')
 with open(_projects_file) as f:
     projects = json.load(f)['projects']
@@ -48,12 +47,7 @@ def forward(slave,obj,auth,signature):
     )
     #    headers={'CONTENT-TYPE': 'application/x-www-form-urlencoded'}
 
-    if resp.ok:
-        tangelo.http_status(200, 'OK')
-        return 'OK'
-    else:
-        tangelo.http_status(400, "Bad project configuration")
-        return 'Bad project configuration'
+    return resp
 
 
 @tangelo.restful
@@ -108,13 +102,22 @@ def post(*arg, **kwarg):
         if project.get('user') and project.get('password'):
             auth = (project['user'], project['password'])
         signature = hmac.new(secret, contents, hashlib.sha1).hexdigest()
+        nok = 0
         for slave in project["slaves"]:
-          print "Sending commit %s to slave %s" % (commit,slave)
-          forward(slave,obj,auth,signature)
+          resp = forward(slave,obj,auth,signature)
+          if resp.ok:
+            nok+=1
 
-        return "Ok sent this to queue"
+        if nok>0:
+          return "Ok sent this to %i slaves out of %i" % (nok,len(project["slaves"]))
+        else:
+          msg = "All slaves failed, last error was: %s" % resp.text 
+          tangelo.http_status(resp.status_code, msg)
+          return msg
+
     elif tangelo.request_header('BOT-Event') == "status":
       ## put here code to update status of commit on github
+      return "OK RECEIVED A BOT status update EVENT"
     else:
         tangelo.http_status(200, "Unhandled event")
         return 'Unhandled event'
