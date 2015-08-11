@@ -34,13 +34,12 @@ def get_project(name):
     return projects.get(name)
 
 
-def forward(slave,obj,auth,signature):
+def forward(slave,obj,signature):
     """Forward an event object to the configured buildbot instance."""
 
     resp = requests.post(
         slave,
-        data={"payload": obj},
-        auth=auth,
+        data=json.dumps(obj),
         headers={"BOT-Signature":"sha1:%s" % signature,
           "BOT-Event":"status",
           }
@@ -95,16 +94,15 @@ def post(*arg, **kwarg):
     event = tangelo.request_header('X-Github-Event')
 
     if project['github-events'] == '*' or event in project['github-events']:
+        print "BOTKEY:",type(project["bot-key"])
         obj['event'] = event
+        signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
         commit = obj["commits"][0]["id"]  # maybe -1 need to test
         print "Commit id:",commit
-        auth = None
-        if project.get('user') and project.get('password'):
-            auth = (project['user'], project['password'])
-        signature = hmac.new(secret, contents, hashlib.sha1).hexdigest()
         nok = 0
         for slave in project["slaves"]:
-          resp = forward(slave,obj,auth,signature)
+          print "SENDING TO:",slave,obj
+          resp = forward(slave,obj,signature)
           if resp.ok:
             nok+=1
 

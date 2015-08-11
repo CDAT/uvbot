@@ -1,6 +1,7 @@
 {
   "projects": {
     "UV-CDAT/uvcdat": {
+    "master": "http://localhost:9981",
     "bot-key": "**************",
     "cmake_config": "-DCDAT_BUILD_MODE=LEAN"
     }

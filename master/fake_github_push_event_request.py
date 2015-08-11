@@ -14,7 +14,10 @@ secret = raw_input("Enter your webhook secret")
 if secret == "":
   with open("github_secret.txt") as f:
     secret = f.read().strip()
-    print secret
+    print type(secret)
+
+print type(secret)
+print hashlib.sha1
 
 h = hmac.new(secret, contents, hashlib.sha1)
 

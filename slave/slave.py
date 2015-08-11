@@ -24,9 +24,9 @@ def process_commit(obj):
 
 def worker():
     while True:
-        item = q.get()
+        item = queue.get()
         process_commit(item)
-        q.task_done()
+        queue.task_done()
 
 thread = threading.Thread(target=worker)
 thread.daemon = True
@@ -40,6 +40,8 @@ with open(_projects_file) as f:
 def authenticate(key, body, received):
     """Authenticate an event from github."""
     computed = hmac.new(str(key), body, hashlib.sha1).hexdigest()
+    print "Computed",computed
+    print "received:",received
     # The folowing func does not exist on my home mac
     # trapping in try/except
     try:
@@ -53,15 +55,15 @@ def get_project(name):
     return projects.get(name)
 
 
-def forward(slave,obj,auth):
+def forward(dest,obj,signature):
     """Forward an event object to the configured buildbot instance."""
 
     resp = requests.post(
-        slave,
+        dest,
         data={"payload": obj},
-        auth=auth
+        headers={"BOT-Signature":"sha1:%s" % signature,
+          "BOT-Event":"status",}
     )
-    #    headers={'CONTENT-TYPE': 'application/x-www-form-urlencoded'}
 
     return resp
 
@@ -77,13 +79,17 @@ def post(*arg, **kwarg):
     """Listen for github webhooks, authenticate, and forward to buildbot."""
     # retrieve the headers from the request
     try:
-        received = tangelo.request_header('X-Hub-Signature')[5:]
+        received = tangelo.request_header('BOT-Signature')[5:]
     except Exception:
         received = ''
+    print "BOT SIGN:",received
 
     # get the request body as a dict
     # for json
-    body = tangelo.request_body().read()
+    body = tangelo.request_body().read().strip()
+    f=open("crap.json","w")
+    f.write(body)
+    f.close()
 
     try:
         obj = json.loads(body)
@@ -99,7 +105,7 @@ def post(*arg, **kwarg):
         return 'Unknown project'
 
     # make sure this is a valid request coming from github
-    if not authenticate(project.get('api-key', ''), body, received):
+    if not authenticate(project.get('bot-key', ''), body, received):
         tangelo.http_status(403, "Invalid signature")
         return 'Invalid signature'
 
@@ -112,6 +118,4 @@ def post(*arg, **kwarg):
     commit = obj["commits"][0]["id"]  # maybe -1 need to test
     print "Commit id:",commit
     queue.put(obj)
-    if not queue_thread_running:
-
     return "Ok sent commit %s to queue" % commit
