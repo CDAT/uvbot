@@ -3,7 +3,6 @@
     "UV-CDAT/uvcdat": {
     "user": "blah",
     "password": "blah",
-    "token": "TOKEN",
     "cmake_config": "-DCDAT_BUILD_MODE=LEAN"
     }
   }

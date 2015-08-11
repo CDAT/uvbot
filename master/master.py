@@ -35,13 +35,16 @@ def get_project(name):
     return projects.get(name)
 
 
-def forward(slave,obj,auth):
+def forward(slave,obj,auth,signature):
     """Forward an event object to the configured buildbot instance."""
 
     resp = requests.post(
         slave,
         data={"payload": obj},
-        auth=auth
+        auth=auth,
+        headers={"BOT-Signature":"sha1:%s" % signature,
+          "BOT-Event":"status",
+          }
     )
     #    headers={'CONTENT-TYPE': 'application/x-www-form-urlencoded'}
 
@@ -66,7 +69,10 @@ def post(*arg, **kwarg):
     try:
         received = tangelo.request_header('X-Hub-Signature')[5:]
     except Exception:
-        received = ''
+        try:
+            received = tangelo.request_header('BOT-Signature')[5:]
+        except Exception:
+            received = ''
 
     # get the request body as a dict
     # for json
@@ -86,26 +92,29 @@ def post(*arg, **kwarg):
         return 'Unknown project'
 
     # make sure this is a valid request coming from github
-    if not authenticate(project.get('api-key', ''), body, received):
+    if not authenticate(project.get('api-key', ''), body, received) \
+        and \
+        not authenticate(project.get('bot-key', ''), body, received):
         tangelo.http_status(403, "Invalid signature")
         return 'Invalid signature'
 
     event = tangelo.request_header('X-Github-Event')
 
-    if project['events'] == '*' or event in project['events']:
+    if project['github-events'] == '*' or event in project['github-events']:
         obj['event'] = event
-
-        # add a new item to the test queue
         commit = obj["commits"][0]["id"]  # maybe -1 need to test
         print "Commit id:",commit
         auth = None
         if project.get('user') and project.get('password'):
             auth = (project['user'], project['password'])
+        signature = hmac.new(secret, contents, hashlib.sha1).hexdigest()
         for slave in project["slaves"]:
           print "Sending commit %s to slave %s" % (commit,slave)
-          forward(slave,obj,auth)
+          forward(slave,obj,auth,signature)
 
         return "Ok sent this to queue"
+    elif tangelo.request_header('BOT-Event') == "status":
+      ## put here code to update status of commit on github
     else:
         tangelo.http_status(200, "Unhandled event")
         return 'Unhandled event'
