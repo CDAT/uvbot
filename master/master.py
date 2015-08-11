@@ -19,8 +19,6 @@ with open(_projects_file) as f:
     projects = json.load(f)['projects']
 
 
-queue = {}
-
 def authenticate(key, body, received):
     """Authenticate an event from github."""
     computed = hmac.new(str(key), body, hashlib.sha1).hexdigest()
@@ -37,14 +35,11 @@ def get_project(name):
     return projects.get(name)
 
 
-def forward(project, obj):
+def forward(slave,obj,auth):
     """Forward an event object to the configured buildbot instance."""
-    auth = None
-    if project.get('user') and project.get('password'):
-        auth = (project['user'], project['password'])
 
     resp = requests.post(
-        project['buildbot'].rstrip('/') + '/change_hook/github',
+        slave,
         data={"payload": obj},
         auth=auth
     )
@@ -96,19 +91,19 @@ def post(*arg, **kwarg):
         return 'Invalid signature'
 
     event = tangelo.request_header('X-Github-Event')
-    commit = obj["commits"][0]["id"]  # maybe -1 need to test
-    print "Commit id:",commit
-    print "Current queue"
-    queue[commit] = queue.get(commit,{})
-    for slave in project["slaves"]:
-      print "Registering commit %s to slave %s" % (commit,slave)
-      queue[commit][slave] = queue[commit].get(slave,0) +1
 
-    print "NEW QUEUE:",queue
     if project['events'] == '*' or event in project['events']:
         obj['event'] = event
 
         # add a new item to the test queue
+        commit = obj["commits"][0]["id"]  # maybe -1 need to test
+        print "Commit id:",commit
+        auth = None
+        if project.get('user') and project.get('password'):
+            auth = (project['user'], project['password'])
+        for slave in project["slaves"]:
+          print "Sending commit %s to slave %s" % (commit,slave)
+          forward(slave,obj,auth)
 
         return "Ok sent this to queue"
     else:
