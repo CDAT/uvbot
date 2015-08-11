@@ -23,8 +23,15 @@ with open(_projects_file) as f:
 
 def authenticate(key, body, received):
     """Authenticate an event from github."""
+    print "RECV",received
     computed = hmac.new(str(key), body, hashlib.sha1).hexdigest()
-    return hmac.compare_digest(computed, received)
+    print "COMP:",computed
+    # The folowing func does not exist on my home mac
+    # trapping in try/except
+    try:
+      return hmac.compare_digest(computed, received)
+    except:
+      return computed == received
 
 
 def get_project(name):
@@ -57,7 +64,7 @@ def forward(project, obj):
 @tangelo.restful
 def get(*arg, **kwarg):
     """Make sure the server is listening."""
-    return 'How can I help you?'
+    return 'How can I help you?\n'
 
 
 @tangelo.restful

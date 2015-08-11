@@ -1,7 +1,7 @@
 import requests
 
 
-url = "http://localhost:9981/proxy"
+url = "http://localhost:9981/master"
 
 
 with open("fake_github_push_event_request.json") as f:
@@ -14,8 +14,10 @@ secret = raw_input("Enter your webhook secret")
 if secret == "":
   with open("github_secret.txt") as f:
     secret = f.read().strip()
+    print secret
 
 h = hmac.new(secret, contents, hashlib.sha1)
+print "HMAC:",h.hexdigest()
 
 response = requests.post(url, data=contents, headers={
     "Content-type": "application/json",

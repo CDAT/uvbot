@@ -2,8 +2,8 @@
   "projects": {
     "UV-CDAT/uvcdat": {
       "api-key": "**********",
-      "buildbot": "http://aims4.llnl.gov:9982/",
-      "events": ["push"]
+      "events": ["push"],
+      "slaves" : ["http://192.168.1.66:9182/slave","http://localhost:9182/slave"]
     }
   }
 }
