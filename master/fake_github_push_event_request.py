@@ -10,7 +10,8 @@ with open("fake_github_push_event_request.json") as f:
 import hmac
 import hashlib
 
-secret = raw_input("Enter your webhook secret")
+#secret = raw_input("Enter your webhook secret")
+secret=""
 if secret == "":
   with open("github_secret.txt") as f:
     secret = f.read().strip()

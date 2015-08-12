@@ -5,7 +5,8 @@
       "api-key": "*****",
       "github-events": ["push"],
       "slaves" : ["http://localhost:9982/slave"],
-      "token": "*****"
+      "token": "*****",
+      "logs_dir": "/Users/doutriaux1/uvbot-master/logs"
     }
   }
 }

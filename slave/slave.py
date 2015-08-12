@@ -30,6 +30,8 @@ def process_commit(project,obj):
    ## We need to store the commit api url
    commit["statuses_url"]=obj["repository"]["statuses_url"]
    commit["repo_full_name"]=obj["repository"]["full_name"]
+   commit["slave_name"]=project["name"]
+
    # First step go to working directory
    work_dir = project["working_directory"]
    if not os.path.exists(work_dir):
@@ -58,14 +60,33 @@ def process_commit(project,obj):
      os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
-   #if process_command(project,commit,"cmake %s %s" % (src_dir,project["cmake_xtra"]))!=0: return
+   if process_command(project,commit,"cmake %s %s" % (src_dir,project["cmake_xtra"]))!=0: return
    # run make
-   if process_command(project,commit,"make -j %i mydummyimpossiblemake" % project["build_parallel"])!=0: return
+   if process_command(project,commit,"make -j %i" % project["build_parallel"])!=0: return
    # run ctest
    process_command(project,commit,"ctest -j %i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"]))
 
 def process_command(project,commit,command):
   print "Executing:",command
+  # Lets tell gituhb what we're doing
+  data = json.dumps({
+    "os":os.uname()[0],
+    "slave_name": commit["slave_name"],
+    "output":"running...",
+    "error":"cross your fingers...",
+    "code":None,
+    "command":command,
+    "commit":commit,
+    "repository":{"full_name":commit["repo_full_name"]},
+    }
+    )
+  signature = hmac.new(str(project["bot-key"]), data, hashlib.sha1).hexdigest()
+  resp = requests.post(project["master"],
+      data = data,
+      headers={"BOT-Signature":"sha1:%s" % signature,
+        "BOT-Event":"status",
+        }
+      )
   ## Execute command
   p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   out,err = p.communicate()
@@ -73,22 +94,24 @@ def process_command(project,commit,command):
   if p.returncode != 0:
     # Ok something went bad...
     print "Something went bad",out,err
-    data = json.dumps({
-      "output":out,
-      "error":err,
-      "code":p.returncode,
-      "command":command,
-      "commit":commit,
-      "repository":{"full_name":commit["repo_full_name"]},
-      }
+  data = json.dumps({
+    "os":os.uname()[0],
+    "slave_name": commit["slave_name"],
+    "output":out,
+    "error":err,
+    "code":p.returncode,
+    "command":command,
+    "commit":commit,
+    "repository":{"full_name":commit["repo_full_name"]},
+    }
+    )
+  signature = hmac.new(str(project["bot-key"]), data, hashlib.sha1).hexdigest()
+  resp = requests.post(project["master"],
+      data = data,
+      headers={"BOT-Signature":"sha1:%s" % signature,
+        "BOT-Event":"status",
+        }
       )
-    signature = hmac.new(str(project["bot-key"]), data, hashlib.sha1).hexdigest()
-    resp = requests.post(project["master"],
-        data = data,
-        headers={"BOT-Signature":"sha1:%s" % signature,
-          "BOT-Event":"status",
-          }
-        )
   return -p.returncode
 
 

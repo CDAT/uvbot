@@ -52,7 +52,20 @@ def forward(slave,obj,signature):
 @tangelo.restful
 def get(*arg, **kwarg):
     """Make sure the server is listening."""
-    return 'How can I help you?\n'
+    print "WE COME IN GET"
+    if len(arg)>0:
+      try:
+        project = get_project("%s/%s" % arg[1:3])
+        pth = os.path.join(*arg)
+        pth = os.path.join(project["logs_dir"],pth)
+        f=open(pth)
+        msg = f.read()
+        f.close()
+      except Exception,err:
+        msg = 'How can I help you?\n%s,%s\n%s' % (arg,kwarg,err)
+    else:
+      msg = 'How can I help you?\n'
+    return msg
 
 
 @tangelo.restful
@@ -80,7 +93,8 @@ def post(*arg, **kwarg):
 
     # obj = json.loads(kwarg['payload'])
     #open('last.json', 'w').write(json.dumps(obj, indent=2))
-    project = get_project(obj.get('repository', {}).get('full_name'))
+    project_name = obj.get('repository', {}).get('full_name')
+    project = get_project(project_name)
     if project is None:
         tangelo.http_status(400, "Unknown project")
         return 'Unknown project'
@@ -94,14 +108,10 @@ def post(*arg, **kwarg):
 
     event = tangelo.request_header('X-Github-Event')
 
-    print "EVENT:",event
-    print "TANGELO BOT",tangelo.request_header('BOT-Event')
     if project['github-events'] == '*' or event in project['github-events']:
-        print "BOTKEY:",type(project["bot-key"])
         obj['event'] = event
         signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
-        commit = obj["commits"][0]["id"]  # maybe -1 need to test
-        print "Commit id:",commit
+        commit_id = obj["commits"][0]["id"]  # maybe -1 need to test
         nok = 0
         for slave in project["slaves"]:
           print "SENDING TO:",slave
@@ -118,28 +128,52 @@ def post(*arg, **kwarg):
 
     elif tangelo.request_header('BOT-Event') == "status":
       ## put here code to update status of commit on github
-      print "OK WE GOT A BOT EVENT STATUS"
       headers = {
           "Authorization":"token "+project["token"],
           }
-      state = "failure"
-      target ="https://open.cdash.org/viewTest.php?buildid=3951103"
-      context = "test"
+      commit_id = obj["commit"]["id"]
+      if obj["code"] == 0:
+        state = "success"
+      elif obj["code"] is None:
+        state = "pending"
+      else:
+        state = "failure"
+      if obj["code"]!=0 and obj["command"].find("ctest")>-1:
+        #Ctest has its own special url where it post things
+        target ="https://open.cdash.org/viewTest.php?buildid=3951103"
+      else:
+        slave = tangelo.cherrypy.request.remote.ip
+        pth = os.path.join(project["logs_dir"],slave,project_name,commit_id)
+        print "DUMPING INFO IN:",pth
+        if not os.path.exists(pth):
+          os.makedirs(pth)
+        f=open(os.path.join(pth,obj["command"].split()[0]),"w")
+        print >>f,"<html><body>"
+        print >>f,"<h1>%s (%s) commit: %s<h1>" % (project_name,obj["slave_name"],commit_id)
+        print >>f, "<h2>COMMAND</h2>"
+        print >>f,"pre>",obj["command"],"<pre>"
+        print >>f, "<h3>OUTPUT</h3>"
+        print >>f,"pre>",obj["output"],"<pre>"
+        print >>f, "<h3>ERROR</h3>"
+        print >>f,"pre>",obj["error"],"<pre>"
+        print >>f,"</body></html>"
+        f.close()
+        host = tangelo.cherrypy.url()
+        host=host[host.find("//")+2:]
+        target = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,obj["command"].split()[0])
+
+      context = "cont-int/LLNL/%s-%s" % (obj["os"],obj["slave_name"])
       data = {
           "state":state,
           "target_url": target,
           "description": "running '%s'" % obj["command"],
           "context": context,
           }
-
       resp = requests.post(
           obj["commit"]["statuses_url"].replace("{sha}",obj["commit"]["id"]),
           data = json.dumps(data),
           headers = headers)
 
-      print "STATUS FORWARD"
-      print resp.status_code
-      print resp.text
       return "OK RECEIVED A BOT status update EVENT"
     else:
         tangelo.http_status(200, "Unhandled event")
