@@ -74,6 +74,7 @@ def post(*arg, **kwarg):
     """Listen for github webhooks, authenticate, and forward to buildbot."""
     # retrieve the headers from the request
     print "MASTER RECEIVED A POST EVENT"
+    print "TGELO CONFI",tangelo.cherrypy.request.header_list
     try:
         received = tangelo.request_header('X-Hub-Signature')[5:]
     except Exception:
@@ -143,7 +144,7 @@ def post(*arg, **kwarg):
         #Ctest has its own special url where it post things
         target ="https://open.cdash.org/viewTest.php?buildid=3951103"
       else:
-        slave = tangelo.cherrypy.request.remote.ip
+        slave = obj["slave_host"]
         pth = os.path.join(project["logs_dir"],slave,project_name,commit_id)
         print "DUMPING INFO IN:",pth
         if not os.path.exists(pth):

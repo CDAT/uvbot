@@ -31,6 +31,7 @@ def process_commit(project,obj):
    commit["statuses_url"]=obj["repository"]["statuses_url"]
    commit["repo_full_name"]=obj["repository"]["full_name"]
    commit["slave_name"]=project["name"]
+   commit["slave_host"]=obj["slave_host"]
 
    cmd = None
    # First step go to working directory
@@ -86,6 +87,7 @@ def process_command(project,commit,command,previous_command):
   data = json.dumps({
     "os":os.uname()[0],
     "slave_name": commit["slave_name"],
+    "slave_host": commit["slave_host"],
     "output":"running...",
     "error":"cross your fingers...",
     "code":None,
@@ -112,6 +114,7 @@ def process_command(project,commit,command,previous_command):
   data = json.dumps({
     "os":os.uname()[0],
     "slave_name": commit["slave_name"],
+    "slave_host": commit["slave_host"],
     "output":out,
     "error":err,
     "code":p.returncode,
@@ -193,7 +196,7 @@ def post(*arg, **kwarg):
         received = tangelo.request_header('BOT-Signature')[5:]
     except Exception:
         received = ''
-    print "BOT SIGN:",received
+    print "BOT SIGN:",received,tangelo.request_header("Host")
 
     # get the request body as a dict
     # for json
@@ -228,5 +231,6 @@ def post(*arg, **kwarg):
 
     commit = obj["commits"][0]["id"]  # maybe -1 need to test
     print "Commit id:",commit
+    obj["slave_host"]=tangelo.request_header("Host")
     queue.put([project,obj])
     return "Ok sent commit %s to queue" % commit
