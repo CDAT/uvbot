@@ -7,7 +7,7 @@ requires three components possibly on three seperate hosts:
 
 1. A master server exposed to the internet that proxies github notifications
    and farm out to slaves
-2. One or more build slaves that build and test the software and report
+2. One or more build slaves that queue, build and test the software and report
    statuses to both CDash and the Github status API (via the master)
 
 Ports used in documentation bellow
