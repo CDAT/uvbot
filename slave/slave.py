@@ -32,6 +32,7 @@ def process_commit(project,obj):
    commit["repo_full_name"]=obj["repository"]["full_name"]
    commit["slave_name"]=project["name"]
 
+   cmd = None
    # First step go to working directory
    work_dir = project["working_directory"]
    if not os.path.exists(work_dir):
@@ -42,14 +43,21 @@ def process_commit(project,obj):
    src_dir = git_repo.split("/")[-1]
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
-     if process_command(project,commit,"git clone %s" % git_repo)!=0:
+     cmd = "git clone %s" % git_repo
+     if process_command(project,commit,cmd,None)!=0:
        return
    os.chdir(src_dir)
    # Update repo
-   if process_command(project,commit,"git checkout master")!=0: return
-   if process_command(project,commit,"git pull")!=0: return
+   previous = cmd
+   cmd = "git checkout master"
+   if process_command(project,commit,cmd,previous)!=0: return
+   previous = cmd
+   cmd = "git pull"
+   if process_command(project,commit,cmd,previous)!=0: return
    # Checkout commit to be tested
-   if process_command(project,commit,"git checkout %s" % commit["id"])!=0: return
+   previous = cmd
+   cmd = "git checkout %s" % commit["id"]
+   if process_command(project,commit,cmd,previous)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")
@@ -60,13 +68,19 @@ def process_commit(project,obj):
      os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
-   if process_command(project,commit,"cmake %s %s" % (src_dir,project["cmake_xtra"]))!=0: return
+   previous = cmd
+   cmd = "cmake %s %s" % (src_dir,project["cmake_xtra"])
+   if process_command(project,commit,cmd,previous)!=0: return
    # run make
-   if process_command(project,commit,"make -j %i" % project["build_parallel"])!=0: return
+   previous = cmd
+   cmd = "make -j%i" % project["build_parallel"]
+   if process_command(project,commit,cmd,previous)!=0: return
    # run ctest
-   process_command(project,commit,"ctest -j %i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"]))
+   previous = cmd
+   cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
+   process_command(project,commit,cmd,previous)
 
-def process_command(project,commit,command):
+def process_command(project,commit,command,previous_command):
   print "Executing:",command
   # Lets tell gituhb what we're doing
   data = json.dumps({
@@ -76,6 +90,7 @@ def process_command(project,commit,command):
     "error":"cross your fingers...",
     "code":None,
     "command":command,
+    "previous":previous_command,
     "commit":commit,
     "repository":{"full_name":commit["repo_full_name"]},
     }
@@ -101,6 +116,7 @@ def process_command(project,commit,command):
     "error":err,
     "code":p.returncode,
     "command":command,
+    "previous":previous_command,
     "commit":commit,
     "repository":{"full_name":commit["repo_full_name"]},
     }

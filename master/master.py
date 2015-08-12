@@ -65,6 +65,7 @@ def get(*arg, **kwarg):
         msg = 'How can I help you?\n%s,%s\n%s' % (arg,kwarg,err)
     else:
       msg = 'How can I help you?\n'
+    tangelo.content_type("text/html")
     return msg
 
 
@@ -138,7 +139,7 @@ def post(*arg, **kwarg):
         state = "pending"
       else:
         state = "failure"
-      if obj["code"]!=0 and obj["command"].find("ctest")>-1:
+      if obj["code"]!=0 and obj["command"].find("ccccccctest")>-1:
         #Ctest has its own special url where it post things
         target ="https://open.cdash.org/viewTest.php?buildid=3951103"
       else:
@@ -147,20 +148,24 @@ def post(*arg, **kwarg):
         print "DUMPING INFO IN:",pth
         if not os.path.exists(pth):
           os.makedirs(pth)
-        f=open(os.path.join(pth,obj["command"].split()[0]),"w")
+        f=open(os.path.join(pth,cmd2str(obj["command"])),"w")
         print >>f,"<html><body>"
-        print >>f,"<h1>%s (%s) commit: %s<h1>" % (project_name,obj["slave_name"],commit_id)
-        print >>f, "<h2>COMMAND</h2>"
-        print >>f,"pre>",obj["command"],"<pre>"
-        print >>f, "<h3>OUTPUT</h3>"
-        print >>f,"pre>",obj["output"],"<pre>"
-        print >>f, "<h3>ERROR</h3>"
-        print >>f,"pre>",obj["error"],"<pre>"
-        print >>f,"</body></html>"
-        f.close()
+        print >>f,"<h1>%s (%s)</h1><br><h2>commit: %s<h2>" % (project_name,obj["slave_name"],commit_id)
         host = tangelo.cherrypy.url()
         host=host[host.find("//")+2:]
-        target = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,obj["command"].split()[0])
+        if obj["previous"] is not None:
+          ptarget = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,cmd2str(obj["previous"]))
+          print >>f, "<h2>PREVIOUS COMMAND</h2>"
+          print >>f,"<a href='%s'>" % ptarget,obj["previous"],"</a>"
+        print >>f, "<h2>COMMAND</h2>"
+        print >>f,"<pre>",obj["command"],"</pre>"
+        print >>f, "<h3>OUTPUT</h3>"
+        print >>f,"<pre>",obj["output"],"</pre>"
+        print >>f, "<h3>ERROR</h3>"
+        print >>f,"<pre>",obj["error"],"</pre>"
+        print >>f,"</body></html>"
+        f.close()
+        target = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,cmd2str(obj["command"]))
 
       context = "cont-int/LLNL/%s-%s" % (obj["os"],obj["slave_name"])
       data = {
@@ -178,3 +183,7 @@ def post(*arg, **kwarg):
     else:
         tangelo.http_status(200, "Unhandled event")
         return 'Unhandled event'
+
+
+def cmd2str(command):
+  return "__".join(command.split()[:3]).replace("/","_")
