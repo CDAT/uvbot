@@ -59,6 +59,7 @@ def get(*arg, **kwarg):
 def post(*arg, **kwarg):
     """Listen for github webhooks, authenticate, and forward to buildbot."""
     # retrieve the headers from the request
+    print "MASTER RECEIVED A POST EVENT"
     try:
         received = tangelo.request_header('X-Hub-Signature')[5:]
     except Exception:
@@ -93,6 +94,8 @@ def post(*arg, **kwarg):
 
     event = tangelo.request_header('X-Github-Event')
 
+    print "EVENT:",event
+    print "TANGELO BOT",tangelo.request_header('BOT-Event')
     if project['github-events'] == '*' or event in project['github-events']:
         print "BOTKEY:",type(project["bot-key"])
         obj['event'] = event
@@ -101,7 +104,7 @@ def post(*arg, **kwarg):
         print "Commit id:",commit
         nok = 0
         for slave in project["slaves"]:
-          print "SENDING TO:",slave,obj
+          print "SENDING TO:",slave
           resp = forward(slave,obj,signature)
           if resp.ok:
             nok+=1
@@ -115,6 +118,28 @@ def post(*arg, **kwarg):
 
     elif tangelo.request_header('BOT-Event') == "status":
       ## put here code to update status of commit on github
+      print "OK WE GOT A BOT EVENT STATUS"
+      headers = {
+          "Authorization":"token "+project["token"],
+          }
+      state = "failure"
+      target ="https://open.cdash.org/viewTest.php?buildid=3951103"
+      context = "test"
+      data = {
+          "state":state,
+          "target_url": target,
+          "description": "running '%s'" % obj["command"],
+          "context": context,
+          }
+
+      resp = requests.post(
+          obj["commit"]["statuses_url"].replace("{sha}",obj["commit"]["id"]),
+          data = json.dumps(data),
+          headers = headers)
+
+      print "STATUS FORWARD"
+      print resp.status_code
+      print resp.text
       return "OK RECEIVED A BOT status update EVENT"
     else:
         tangelo.http_status(200, "Unhandled event")

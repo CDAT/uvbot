@@ -12,20 +12,92 @@ import requests
 
 import Queue
 import threading
+import subprocess
+import shlex
+import time
+import shutil
 
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
 queue = Queue.Queue()
 
-def process_commit(obj):
-   commit = obj["commits"][0]["id"]  # maybe -1 need to test
+
+def process_commit(project,obj):
+   commit = obj["commits"][0]  # maybe -1 need to test
    print "processing commit",commit
+
+   ## We need to store the commit api url
+   commit["statuses_url"]=obj["repository"]["statuses_url"]
+   commit["repo_full_name"]=obj["repository"]["full_name"]
+   # First step go to working directory
+   work_dir = project["working_directory"]
+   if not os.path.exists(work_dir):
+     os.makedirs(work_dir)
+   os.chdir(work_dir)
+   # Second step clone repo if not done already
+   git_repo = obj["repository"]["url"].replace("https","git")
+   src_dir = git_repo.split("/")[-1]
+   src_dir = os.path.join(work_dir,src_dir)
+   if not os.path.exists(src_dir):
+     if process_command(project,commit,"git clone %s" % git_repo)!=0:
+       return
+   os.chdir(src_dir)
+   # Update repo
+   if process_command(project,commit,"git checkout master")!=0: return
+   if process_command(project,commit,"git pull")!=0: return
+   # Checkout commit to be tested
+   if process_command(project,commit,"git checkout %s" % commit["id"])!=0: return
+   # Create and go to build dir
+   os.chdir(work_dir)
+   build_dir = os.path.join(work_dir,"build")
+   if os.path.exists(build_dir):
+     #shutil.rmtree(build_dir)
+     pass
+   else:
+     os.makedirs(build_dir)
+   os.chdir(build_dir)
+   # run cmake
+   #if process_command(project,commit,"cmake %s %s" % (src_dir,project["cmake_xtra"]))!=0: return
+   # run make
+   if process_command(project,commit,"make -j %i mydummyimpossiblemake" % project["build_parallel"])!=0: return
+   # run ctest
+   process_command(project,commit,"ctest -j %i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"]))
+
+def process_command(project,commit,command):
+  print "Executing:",command
+  ## Execute command
+  p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  out,err = p.communicate()
+  print out,err
+  if p.returncode != 0:
+    # Ok something went bad...
+    print "Something went bad",out,err
+    data = json.dumps({
+      "output":out,
+      "error":err,
+      "code":p.returncode,
+      "command":command,
+      "commit":commit,
+      "repository":{"full_name":commit["repo_full_name"]},
+      }
+      )
+    signature = hmac.new(str(project["bot-key"]), data, hashlib.sha1).hexdigest()
+    resp = requests.post(project["master"],
+        data = data,
+        headers={"BOT-Signature":"sha1:%s" % signature,
+          "BOT-Event":"status",
+          }
+        )
+  return -p.returncode
+
+
+
 
 def worker():
     while True:
-        item = queue.get()
-        process_commit(item)
+        project, obj = queue.get()
+        process_commit(project,obj)
         queue.task_done()
 
 thread = threading.Thread(target=worker)
@@ -117,5 +189,5 @@ def post(*arg, **kwarg):
 
     commit = obj["commits"][0]["id"]  # maybe -1 need to test
     print "Commit id:",commit
-    queue.put(obj)
+    queue.put([project,obj])
     return "Ok sent commit %s to queue" % commit
