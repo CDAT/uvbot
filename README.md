@@ -13,9 +13,8 @@ requires three components possibly on three seperate hosts:
 Ports used in documentation bellow
 ----------------------------------
 
-9981: master port
-
-9982: slave port
+* 9981: master port
+* 9982: slave port
 
 
 Github repository setup
@@ -60,11 +59,11 @@ contains the following information:
 ```
 
 Where: 
-`bot-key` is a secret key that you will need to share with your slaves
-`api-key` is the key you setup on github in the section above
-`slaves` is a list of the urls of your slaves
-`token` is your git token setup in the github section above
-`logs_dir` a local directory where the master will stored build steps results from slaves
+* `bot-key` is a secret key that you will need to share with your slaves
+* `api-key` is the key you setup on github in the section above
+* `slaves` is a list of the urls of your slaves
+* `token` is your git token setup in the github section above
+* `logs_dir` a local directory where the master will stored build steps results from slaves
 
 When that is done, install the requirements listed in [master/requirements.txt](master/requirements.txt)
 and run
@@ -104,15 +103,15 @@ contains the following information:
 ```
 
 Where: 
-`name` is a short string describing the slave (to be used on github continuous
+* `name` is a short string describing the slave (to be used on github continuous
 integration)
-`master` the url serving master
-`bot-key` is a secret key that you will need to obtain from the master admin
-`cmake_xtra` arguments you wish to pass to cmake
-`build_parallel` number of processors to use for build
-`ctest_xtra` extra args to pass to ctest
-`test_parallel` number of processors to use for ctest
-`working_directory` top directory for cloning and building
+* `master` the url serving master
+* `bot-key` is a secret key that you will need to obtain from the master admin
+* `cmake_xtra` arguments you wish to pass to cmake
+* `build_parallel` number of processors to use for build
+* `ctest_xtra` extra args to pass to ctest
+* `test_parallel` number of processors to use for ctest
+* `working_directory` top directory for cloning and building
 
 When that is done, install the requirements listed in [slave/requirements.txt](slave/requirements.txt)
 and run
@@ -124,8 +123,3 @@ to start the service at `http://myslaveserver.com:9981/slave`.  See `tangelo -h`
 $ curl http://myslaveserver.com:9982
 How can I help you?
 ```
-
-Buildbot slave setup
----------------------
-
-The slave setup is very similar to the master one.
