@@ -1,11 +1,11 @@
 {
   "projects": {
     "UV-CDAT/uvcdat": {
-      "bot-key": "blah",
-      "api-key": "**********",
+      "bot-key": "*****",
+      "api-key": "*****",
       "github-events": ["push"],
-      "slaves" : ["http://192.168.1.66:9182/slave","http://localhost:9182/slave"],
-      "token": "********"
+      "slaves" : ["http://localhost:9982/slave"],
+      "token": "*****"
     }
   }
 }
