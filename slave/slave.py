@@ -35,7 +35,7 @@ def process_commit(project,obj):
 
    cmd = None
    # First step go to working directory
-   work_dir = project["working_directory"]
+   work_dir = os.path.abspath(project["working_directory"])
    if not os.path.exists(work_dir):
      os.makedirs(work_dir)
    os.chdir(work_dir)
@@ -63,10 +63,10 @@ def process_commit(project,obj):
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")
    if os.path.exists(build_dir):
-     #shutil.rmtree(build_dir)
-     pass
-   else:
-     os.makedirs(build_dir)
+     previous = cmd
+     cmd = "rm -rf  %s" % (build_dir)
+     if process_command(project,commit,cmd,previous)!=0: return
+   os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
    previous = cmd
