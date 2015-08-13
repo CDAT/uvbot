@@ -180,6 +180,7 @@ def post(*arg, **kwarg):
       resp = requests.post(
           obj["commit"]["statuses_url"].replace("{sha}",obj["commit"]["id"]),
           data = json.dumps(data),
+          verify = False,
           headers = headers)
 
       return "OK RECEIVED A BOT status update EVENT"
