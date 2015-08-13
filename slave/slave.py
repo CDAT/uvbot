@@ -82,7 +82,7 @@ def process_commit(project,obj):
    process_command(project,commit,cmd,previous)
 
 def process_command(project,commit,command,previous_command):
-  print "Executing:",command
+  print time.asctime(),"Executing:",command
   # Lets tell gituhb what we're doing
   data = json.dumps({
     "os":os.uname()[0],

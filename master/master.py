@@ -10,6 +10,8 @@ import hashlib
 import tangelo
 import requests
 
+import time
+
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
@@ -172,7 +174,7 @@ def post(*arg, **kwarg):
       data = {
           "state":state,
           "target_url": target,
-          "description": "running '%s'" % obj["command"],
+          "description": "running '%s' (%s)" % (obj["command"],time.asctime()),
           "context": context,
           }
       resp = requests.post(
