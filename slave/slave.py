@@ -139,8 +139,10 @@ def process_command(project,commit,command,previous_command):
 def worker():
     while True:
         project, obj = queue.get()
+        print "STARTING A NEW BUILD ON THIS THREAD"
         process_commit(project,obj)
         queue.task_done()
+        print "DONE, WAITING FOR A BUILD ON THIS THREAD"
 
 thread = threading.Thread(target=worker)
 thread.daemon = True
