@@ -115,7 +115,7 @@ def post(*arg, **kwarg):
     if project['github-events'] == '*' or event in project['github-events']:
         obj['event'] = event
         signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
-        commit_id = obj["commits"][0]["id"]  # maybe -1 need to test
+        commit_id = obj["head_commit"]["id"]
         nok = 0
         for slave in project["slaves"]:
           print "SENDING TO:",slave

@@ -24,7 +24,7 @@ queue = Queue.Queue()
 
 
 def process_commit(project,obj):
-   commit = obj["commits"][0]  # maybe -1 need to test
+   commit = obj["head_commit"]
    print "processing commit",commit
 
    ## We need to store the commit api url
@@ -231,7 +231,7 @@ def post(*arg, **kwarg):
       return 'Unhandled event'
 
 
-    commit = obj["commits"][0]["id"]  # maybe -1 need to test
+    commit = obj["head_commit"]["id"]
     print "Commit id:",commit
     obj["slave_host"]=tangelo.request_header("Host")
     queue.put([project,obj])
