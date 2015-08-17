@@ -115,7 +115,11 @@ def post(*arg, **kwarg):
     if project['github-events'] == '*' or event in project['github-events']:
         obj['event'] = event
         signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
-        commit_id = obj["head_commit"]["id"]
+        commit = obj["head_commit"]
+        commit_id = commit["id"]
+        if commit["message"].find("##bot##skip")>-1:
+            # User requested to not send this commit to bots
+            return "Skipped testing commit '%s' at committer request (found string '##bot##skip')"
         nok = 0
         for slave in project["slaves"]:
           print "SENDING TO:",slave
