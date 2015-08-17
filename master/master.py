@@ -117,9 +117,9 @@ def post(*arg, **kwarg):
         signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
         commit = obj["head_commit"]
         commit_id = commit["id"]
-        if commit["message"].find("##bot##skip")>-1:
+        if commit["message"].find("##bot##skip-commit")>-1:
             # User requested to not send this commit to bots
-            return "Skipped testing commit '%s' at committer request (found string '##bot##skip')"
+            return "Skipped testing commit '%s' at committer request (found string '##bot##skip-commit')"
         nok = 0
         for slave in project["slaves"]:
           print "SENDING TO:",slave
