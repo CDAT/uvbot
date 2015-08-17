@@ -40,7 +40,7 @@ def process_commit(project,obj):
      os.makedirs(work_dir)
    os.chdir(work_dir)
    # Second step clone repo if not done already
-   git_repo = obj["repository"]["url"].replace("https","git")
+   git_repo = obj["repository"]["url"]#.replace("https","git")
    src_dir = git_repo.split("/")[-1]
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
