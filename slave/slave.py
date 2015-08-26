@@ -71,6 +71,11 @@ def process_commit(project,obj):
    # run cmake
    previous = cmd
    cmd = "cmake %s %s" % (src_dir,project["cmake_xtra"])
+   if commit["message"].find("##bot##cmake_xtra")>-1:
+     xtra = commit["message"]
+     xtra=xtra[xtra.find("##bot##cmake_xtra")+17:]
+     xtra=xtra[:xtra.find("\n")]
+     cmd+=" "+xtra
    if process_command(project,commit,cmd,previous)!=0: return
    # run make
    previous = cmd

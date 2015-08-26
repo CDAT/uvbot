@@ -123,3 +123,20 @@ to start the service at `http://myslaveserver.com:9981/slave`.  See `tangelo -h`
 $ curl http://myslaveserver.com:9982
 How can I help you?
 ```
+
+BOT Specific Commit Syntax
+--------------------------
+
+You can send special instruction to handle your build to the bots by using the
+following syntax
+
+All bot commands are to be preceded in the commit with ##bot##
+
+Commands
+
+* `skip-commit` : Tells the bot master to skip this commit all together, no
+  build will be started
+* `cmake_xtra` : Rest of this commit line will be sent to cmake. This is
+  useful for builds that require an option to be turned on
+
+
