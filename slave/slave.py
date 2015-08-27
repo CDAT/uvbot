@@ -70,7 +70,8 @@ def process_commit(project,obj):
    os.chdir(build_dir)
    # run cmake
    previous = cmd
-   cmd = "cmake %s %s" % (src_dir,project["cmake_xtra"])
+   build_name = "%s-%s" % (commit["slave_host"],commit["id"])
+   cmd = "cmake %s %s -DBUILDNAME=%s" % (src_dir,project["cmake_xtra"],build_name)
    if commit["message"].find("##bot##cmake_xtra")>-1:
      xtra = commit["message"]
      xtra=xtra[xtra.find("##bot##cmake_xtra")+17:]
@@ -144,10 +145,10 @@ def process_command(project,commit,command,previous_command):
 def worker():
     while True:
         project, obj = queue.get()
-        print "STARTING A NEW BUILD ON THIS THREAD"
+        print time.asctime(),"STARTING A NEW BUILD ON THIS THREAD"
         process_commit(project,obj)
         queue.task_done()
-        print "DONE, WAITING FOR A BUILD ON THIS THREAD"
+        print time.asctime(),"DONE, WAITING FOR A BUILD ON THIS THREAD"
 
 thread = threading.Thread(target=worker)
 thread.daemon = True
