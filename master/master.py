@@ -166,7 +166,7 @@ def post(*arg, **kwarg):
       if obj["command"].find("ctest")>-1:
         print >>f, "<h3>CTEST PAGE</h3>"
         build_name = "%s-%s" % (slave,commit_id)
-        ptarget = "https://open.cdash.org/index.php?compare1=65&filtercount=2&field1=buildname%2Fstring&project=UV-CDAT&field2=buildstarttime%2Fdate&value1=%s" % build_name
+        ptarget = "https://open.cdash.org/index.php?compare1=65&filtercount=2&field1=buildname%%2Fstring&project=UV-CDAT&field2=buildstarttime%%2Fdate&value1=%s" % build_name
         print >>f,"<A HREF='%s'>Click here</A>" % ptarget
       print >>f, "<h3>OUTPUT</h3>"
       print >>f,"<pre>",obj["output"],"</pre>"
