@@ -146,38 +146,35 @@ def post(*arg, **kwarg):
         state = "pending"
       else:
         state = "failure"
-      if obj["code"]!=0 and obj["command"].find("ccccccctest")>-1:
-        #Ctest has its own special url where it post things
-        target ="https://open.cdash.org/viewTest.php?buildid=3951103"
-      else:
-        slave = obj["slave_host"]
-        pth = os.path.join(project["logs_dir"],slave,project_name,commit_id)
-        print "DUMPING INFO IN:",pth
-        if not os.path.exists(pth):
-          os.makedirs(pth)
-        f=open(os.path.join(pth,cmd2str(obj["command"])),"w")
-        print >>f,"<html><body>"
-        print >>f,"<h1>%s (%s)</h1><br><h2>commit: %s<h2>" % (project_name,obj["slave_name"],commit_id)
-        host = tangelo.cherrypy.url()
-        host=host[host.find("//")+2:]
-        if obj["previous"] is not None:
-          ptarget = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,cmd2str(obj["previous"]))
-          print >>f, "<h2>PREVIOUS COMMAND</h2>"
-          print >>f,"<a href='%s'>" % ptarget,obj["previous"],"</a>"
-        print >>f, "<h2>COMMAND</h2>"
-        print >>f,"<pre>",obj["command"],"</pre>"
-        if obj["command"].find("ctest")>-1:
-          print >>f, "<h3>CTEST PAGE</h3>"
-          build_name = "%s-%s" % (slave,commit_id)
-          ptarget = "https://open.cdash.org/index.php?compare1=65&filtercount=2&field1=buildname%2Fstring&project=UV-CDAT&field2=buildstarttime%2Fdate&value1=%s" % build_name
-          print >>f,"<A HREF='%s'>Click here</A>" % ptarget
-        print >>f, "<h3>OUTPUT</h3>"
-        print >>f,"<pre>",obj["output"],"</pre>"
-        print >>f, "<h3>ERROR</h3>"
-        print >>f,"<pre>",obj["error"],"</pre>"
-        print >>f,"</body></html>"
-        f.close()
-        target = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,cmd2str(obj["command"]))
+
+      slave = obj["slave_host"]
+      pth = os.path.join(project["logs_dir"],slave,project_name,commit_id)
+      print "DUMPING INFO IN:",pth
+      if not os.path.exists(pth):
+        os.makedirs(pth)
+      f=open(os.path.join(pth,cmd2str(obj["command"])),"w")
+      print >>f,"<html><body>"
+      print >>f,"<h1>%s (%s)</h1><br><h2>commit: %s<h2>" % (project_name,obj["slave_name"],commit_id)
+      host = tangelo.cherrypy.url()
+      host=host[host.find("//")+2:]
+      if obj["previous"] is not None:
+        ptarget = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,cmd2str(obj["previous"]))
+        print >>f, "<h2>PREVIOUS COMMAND</h2>"
+        print >>f,"<a href='%s'>" % ptarget,obj["previous"],"</a>"
+      print >>f, "<h2>COMMAND</h2>"
+      print >>f,"<pre>",obj["command"],"</pre>"
+      if obj["command"].find("ctest")>-1:
+        print >>f, "<h3>CTEST PAGE</h3>"
+        build_name = "%s-%s" % (slave,commit_id)
+        ptarget = "https://open.cdash.org/index.php?compare1=65&filtercount=2&field1=buildname%2Fstring&project=UV-CDAT&field2=buildstarttime%2Fdate&value1=%s" % build_name
+        print >>f,"<A HREF='%s'>Click here</A>" % ptarget
+      print >>f, "<h3>OUTPUT</h3>"
+      print >>f,"<pre>",obj["output"],"</pre>"
+      print >>f, "<h3>ERROR</h3>"
+      print >>f,"<pre>",obj["error"],"</pre>"
+      print >>f,"</body></html>"
+      f.close()
+      target = "http://%s/%s/%s/%s/%s" % (host,slave,project_name,commit_id,cmd2str(obj["command"]))
 
       context = "cont-int/LLNL/%s-%s" % (obj["os"],obj["slave_name"])
       data = {
