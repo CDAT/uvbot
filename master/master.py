@@ -116,6 +116,9 @@ def post(*arg, **kwarg):
         obj['event'] = event
         signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
         commit = obj["head_commit"]
+        if commit is None:
+          ## no head_Commit simply skip
+          return "Null Head Commit Found, Skipping"
         commit_id = commit["id"]
         if commit["message"].find("##bot##skip-commit")>-1:
             # User requested to not send this commit to bots
