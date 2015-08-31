@@ -120,11 +120,27 @@ def post(*arg, **kwarg):
           ## no head_Commit simply skip
           return "Null Head Commit Found, Skipping"
         commit_id = commit["id"]
-        if commit["message"].find("##bot##skip-commit")>-1:
+        commit_msg = commit["message"]
+        if commit_msg.find("##bot##skip-commit")>-1:
             # User requested to not send this commit to bots
             return "Skipped testing commit '%s' at committer request (found string '##bot##skip-commit')"
         nok = 0
         for slave in project["slaves"]:
+          islaves = commit_msg.find("##bot##skip-slaves")
+          if islaves>-1:
+            # ok some slaves need skipping
+            msg = commit_msg[islaves+18:]
+            iend = msg.find("\n")
+            msg = msg[:iend].strip().split()
+            iskip = False
+            for m in msg:
+              if slave.find(m)>-1:
+                iskip = True
+                break
+            if iskip:
+              print "Commit asked to skip:",slave
+              nok+=1
+              continue
           print "SENDING TO:",slave
           resp = forward(slave,obj,signature)
           if resp.ok:
@@ -133,7 +149,7 @@ def post(*arg, **kwarg):
         if nok>0:
           return "Ok sent this to %i slaves out of %i" % (nok,len(project["slaves"]))
         else:
-          msg = "All slaves failed, last error was: %s" % resp.text 
+          msg = "All slaves failed to respond, last error was: %s" % resp.text 
           tangelo.http_status(resp.status_code, msg)
           return msg
 

@@ -138,5 +138,7 @@ Commands
   build will be started
 * `cmake_xtra` : Rest of this commit line will be sent to cmake. This is
   useful for builds that require an option to be turned on
+* `skip-slaves` : Tells the bot master to skip all slaves whose name contains
+  any of string remaining on this line
 
 
