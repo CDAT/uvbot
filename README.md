@@ -5,20 +5,16 @@ This repository contains all the code necessary to create a new CI
 service that works with UV-CDAT's github repository.  The setup
 requires three components possibly on three seperate hosts:
 
-1. An http server exposed to the internet that proxies github notifications
-   to the buildbot master.
-2. A buildbot master that maintains the build queue and manages the slaves.
-3. One or more build slaves that build and test the software and report
-   statuses to both CDash and the Github status API.
+1. A master server exposed to the internet that proxies github notifications
+   and farm out to slaves
+2. One or more build slaves that queue, build and test the software and report
+   statuses to both CDash and the Github status API (via the master)
 
 Ports used in documentation bellow
 ----------------------------------
 
-8080: github/tangelo communication
-
-8010: builbot-master web interface
-
-9989: builbot-master/buildbot-slave communication
+* 9981: master port
+* 9982: slave port
 
 
 Github repository setup
@@ -27,7 +23,7 @@ Github repository setup
 To register a new service with Github, you must have admin access to the
 UV-CDAT repository.  Go to the project settings page, under "Webhooks & Services"
 and choose the option "Add webhook".  Point the "Payload URL" to your github proxy
-service (i.e. `http://yourserver.com:8080/proxy`),
+service (i.e. `http://yourserver.com:9981/master`),
 choose "Content type" `application/json` and you are ready to receive the events.
 For security, you should create a secret key to validate requests coming from Github.
 
@@ -39,11 +35,11 @@ Save the token string for later because you won't be able to access it after
 you leave this page.
 
 
-Github proxy setup
-------------------
+Master setup
+------------
 
 This repository contains a webservice implemented as a tangelo plugin.  The
-service is implemented in [github-proxy/proxy.py](github-proxy/proxy.py).  You
+service is implemented in [master/master.py](master/master.py).  You
 will need to create config file in that directory named `projects.json` that
 contains the following information:
 
@@ -51,106 +47,98 @@ contains the following information:
 {
   "projects": {
     "UV-CDAT/uvcdat": {
-      "api-key": "secret-from-your-webhook-config",
-      "buildbot": "http://your-buildbot-master:8010/",
-      "user": "some-buildbot-user",
-      "password": "some-buildbot-password",
-      "events": ["push"]
+      "bot-key": "*****",
+      "api-key": "*****",
+      "github-events": ["push"],
+      "slaves" : ["http://myslaveserver:9982/slave"],
+      "token": "*****",
+      "logs_dir": "/Users/doutriaux1/uvbot-master/logs"
     }
   }
 }
 ```
 
-Where some-buildbot-user and some-buildbot-server are defined bellow in the htpasswd section
+Where: 
+* `bot-key` is a secret key that you will need to share with your slaves
+* `api-key` is the key you setup on github in the section above
+* `slaves` is a list of the urls of your slaves
+* `token` is your git token setup in the github section above
+* `logs_dir` a local directory where the master will stored build steps results from slaves
 
-When that is done, install the requirements listed in [github-proxy/requirements.txt](github-proxy/requirements.txt)
+When that is done, install the requirements listed in [master/requirements.txt](master/requirements.txt)
 and run
 ```
-tangelo -r /path/to/github-proxy --hostname myserver.com --port 8080
+tangelo -r /path/to/slave --hostname myserver.com --port 9981
 ```
-to start the service at `http://myserver.com:8080/proxy`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
+to start the service at `http://myserver.com:9981/master`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
 ```
-$ curl http://my-server.com:8080/proxy
+$ curl http://myserver.com:9981
 How can I help you?
 ```
 
-Buildbot master setup
+Buildbot slave setup
 ---------------------
 
-There are general instructions for setting up a new buildbot instance in
-[buildbot-server/README.md](buildbot-server/README.md).  Some of the contents
-of those instructions are specific to setting up a build for integration
-with Kitware's gitlab server rather than github.  Briefly, the setup procedure
-is as follows:
+The slave setup is very similar to the master one.
+A webservice implemented as a tangelo plugin.  The
+service is implemented in [slave/slave.py](slave/slave.py).  You
+will need to create config file in that directory named `projects.json` that
+contains the following information:
 
-- Install the python [requirements](buildbot-server/requirements.txt)
-- Generate a password (some-buildbot-password) for the buildbot web interface
-```
-htpasswd -c webstatuspasswords some-buildbot-user
-```
-- Create a secrets file in `/path/to/buildbot-server/secrets.json`
-```javascript
-{
-    "buildbot_root": "/path/to/buildbot-server",
-    "web_status_url": "http://this-servers-hostname",
-    "web_status_port": 8010, // or some other port to serve the buildbot web interface
-    "github_status_token": "authentication token for github with permission to write statuses"
-}
-```
-- Initialize the buildbot sqlite database
-```
-buildbot create-master /path/to/buildbot-server
-```
-- Define build slaves as described below
-- Start the build master
-```
-buildbot start /path/to/buildbot-server
-```
--  Initialize the slave computer by installing `buildbot-slave==0.8.12` and running
-```
-buildslave create-slave /path/to/testing/directory buildbot-server-host buildslave-name password
-```
-The buildslave will contact the buildbot master and initialize itself in the directory
-you specified.
--  Start the build slave
-```
-buildslave start /path/to/testing/directory
-```
--  Push a commit to UV-CDAT, you should see it show up in the changes section of the
-buildbot web interface and a new build should begin with in a minute or two.
--  Fix the problems you come across that aren't addressed in this readme and
-update the instructions so other people don't have the same problems. ;)
-
-Buildbot slave setup
---------------------
-
-On the slave machine, first make sure you can build uvcdat manually, that
-will save you a lot of time down the road.  Then you need to define a new
-machine definition in [buildbot-server/machines](buildbot-server/machines)
-on your buildbot master. (See [buildbot-server/machines/garant](buildbot-server/machines/garant)
-for an example).  Create a secrets file containing a user name and password
-for the buildbot slave in `buildbot-server/machines/secrets.json` that looks
-like this:
 ```json
 {
-   "my-machine-name": {
-      "password": "my-super-secure-password"
-   },
-   "my-other-machine-name": {
-      "password": "correct horse battery staple"
-   }
+  "projects": {
+    "UV-CDAT/uvcdat": {
+      "name": "SLAVE DESCRIPTION",
+      "master": "http://myserver:9981/master",
+      "bot-key": "****",
+      "cmake_xtra": "-DCDAT_BUILD_MODE=LEAN",
+      "build_parallel": 4,
+      "ctest_xtra": "",
+      "test_parallel": 4,
+      "working_directory": "/Users/doutriaux1/uvcbot"
+    }
+  }
 }
 ```
-Next, you need modify [`buildbot-server/machines/__init__.py`](buildbot-server/machines/__init__.py)
-to import your `machine` modules and add them to the `MACHINES` list.  Next you will
-need to install the `buildbot-slave==0.8.12` python package on the slave.
 
-Advanced configuration
-----------------------
+Where: 
+* `name` is a short string describing the slave (to be used on github continuous
+integration)
+* `master` the url serving master
+* `bot-key` is a secret key that you will need to obtain from the master admin
+* `cmake_xtra` arguments you wish to pass to cmake
+* `build_parallel` number of processors to use for build
+* `ctest_xtra` extra args to pass to ctest
+* `test_parallel` number of processors to use for ctest
+* `working_directory` top directory for cloning and building
 
-The build and test settings are specified in [buildbot-server/projects/uvcdat](buildbot-server/projects/uvcdat),
-different machines can be set up to build different configurations.  The configuration definitions
-will need to be added to the uvcdat project module.  This is relatively straightforward because
-the buildbot configuration is designed to work with cmake.  See
-[buildbot-server/projects/adding_a_project.md](buildbot-server/projects/adding_a_project.md) for
-more information.
+When that is done, install the requirements listed in [slave/requirements.txt](slave/requirements.txt)
+and run
+```
+tangelo -r /path/to/slave --hostname myslaveserver.com --port 9982
+```
+to start the service at `http://myslaveserver.com:9981/slave`.  See `tangelo -h` for more options.  When the service is running, you can test the connection by a get request
+```
+$ curl http://myslaveserver.com:9982
+How can I help you?
+```
+
+BOT Specific Commit Syntax
+--------------------------
+
+You can send special instruction to handle your build to the bots by using the
+following syntax
+
+All bot commands are to be preceded in the commit with ##bot##
+
+Commands
+
+* `skip-commit` : Tells the bot master to skip this commit all together, no
+  build will be started
+* `cmake_xtra` : Rest of this commit line will be sent to cmake. This is
+  useful for builds that require an option to be turned on
+* `skip-slaves` : Tells the bot master to skip all slaves whose name contains
+  any of string remaining on this line
+
+

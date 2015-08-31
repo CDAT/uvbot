@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "UV-CDAT/uvcdat": {
+      "bot-key": "*****",
+      "api-key": "*****",
+      "github-events": ["push"],
+      "slaves" : ["http://localhost:9982/slave"],
+      "token": "*****",
+      "logs_dir": "/Users/doutriaux1/uvbot-master/logs"
+    }
+  }
+}

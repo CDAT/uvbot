@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "UV-CDAT/uvcdat": {
+      "master": "http://localhost:9981/master",
+      "bot-key": "****",
+      "cmake_xtra": "-DCDAT_BUILD_MODE=LEAN",
+      "build_parallel": 4,
+      "ctest_xtra": "",
+      "test_parallel": 4,
+      "working_directory": "/Users/doutriaux1/uvcbot"
+    }
+  }
+}
