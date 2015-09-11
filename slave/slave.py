@@ -241,4 +241,14 @@ def post(*arg, **kwarg):
     print "Commit id:",commit
     obj["slave_host"]=tangelo.request_header("Host")
     queue.put([project,obj])
+    for i in range(queue.qsize()):
+        proj,tmpobj = queue.get()
+        queue.task_done()
+        if proj==project and tmpobj["ref"]==obj["ref"] and tmpobj["head_commit"]["id"]!=obj["head_commit"]["id"]:
+            # same proj same branch different commit so the one we are trying to add is more recent
+            # no need to test the old one
+            print "Deleting old commit (%s) for branch (%s) from queue" % (tmpobj["head_commit"]["id"], tmpobj["ref"])
+        else:
+            # ok nothing to do with new elt, putting back in queue
+            queue.put(proj,tmpobj)
     return "Ok sent commit %s to queue" % commit
