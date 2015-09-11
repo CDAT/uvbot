@@ -48,6 +48,10 @@ def process_commit(project,obj):
      if process_command(project,commit,cmd,None)!=0:
        return
    os.chdir(src_dir)
+   # Resets possible changes from previous commit
+   previous = cmd
+   cmd = "git reset --hard"
+   if process_command(project,commit,cmd,previous)!=0: return
    # Update repo
    previous = cmd
    cmd = "git checkout master"
@@ -58,6 +62,9 @@ def process_commit(project,obj):
    # Checkout commit to be tested
    previous = cmd
    cmd = "git checkout %s" % commit["id"]
+   if process_command(project,commit,cmd,previous)!=0: return
+   previous = cmd
+   cmd = "git merge --no-ff master --no-commit" % commit["id"]
    if process_command(project,commit,cmd,previous)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
