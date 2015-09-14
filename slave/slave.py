@@ -250,6 +250,7 @@ def post(*arg, **kwarg):
     print "Commit id:",commit
     obj["slave_host"]=tangelo.request_header("Host")
     queue.put([project,obj])
+    print "Queue size:",queue.size()
     for i in range(queue.qsize()):
         proj,tmpobj = queue.get()
         queue.task_done()
@@ -260,4 +261,7 @@ def post(*arg, **kwarg):
         else:
             # ok nothing to do with new elt, putting back in queue
             queue.put(proj,tmpobj)
+            print "put back in queue"
+        print "Queue size in loop:",queue.size()
+    print "Queue size after loop:",queue.size()
     return "Ok sent commit %s to queue" % commit
