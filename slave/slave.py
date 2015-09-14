@@ -273,13 +273,13 @@ def post(*arg, **kwarg):
             print "put back in queue"
         print "Queue size in loop:",queue.qsize()
     print "Queue size after loop:",queue.qsize()
-   commit = obj["head_commit"]
-   print "processing commit",commit
+    commit = obj["head_commit"]
+    print "processing commit",commit
 
-   ## We need to store the commit api url
-   commit["statuses_url"]=obj["repository"]["statuses_url"]
-   commit["repo_full_name"]=obj["repository"]["full_name"]
-   commit["slave_name"]=project["name"]
-   commit["slave_host"]=obj["slave_host"]
-   process_command(project,commit,None,None)
+    ## We need to store the commit api url
+    commit["statuses_url"]=obj["repository"]["statuses_url"]
+    commit["repo_full_name"]=obj["repository"]["full_name"]
+    commit["slave_name"]=project["name"]
+    commit["slave_host"]=obj["slave_host"]
+    process_command(project,commit,None,None)
     return "Ok sent commit %s to queue" % commit
