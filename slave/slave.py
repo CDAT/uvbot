@@ -57,17 +57,21 @@ def process_commit(project,obj):
    # Update repo
    previous = cmd
    cmd = "git checkout master"
+   os.chdir(src_dir)
    if process_command(project,commit,cmd,previous)!=0: return
    previous = cmd
    cmd = "git pull"
+   os.chdir(src_dir)
    if process_command(project,commit,cmd,previous)!=0: return
    # Checkout commit to be tested
    previous = cmd
+   os.chdir(src_dir)
    cmd = "git checkout %s" % commit["id"]
    if process_command(project,commit,cmd,previous)!=0: return
    # Merge master in
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
+     os.chdir(src_dir)
      cmd = "git merge --no-ff master --no-commit"
      if process_command(project,commit,cmd,previous)!=0: return
    # Create and go to build dir
@@ -92,17 +96,19 @@ def process_commit(project,obj):
    # run make
    previous = cmd
    cmd = "make -j%i" % project["build_parallel"]
+   os.chdir(build_dir)
    if process_command(project,commit,cmd,previous)!=0: return
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
+   os.chdir(build_dir)
    process_command(project,commit,cmd,previous)
 
 def process_command(project,commit,command,previous_command):
   print time.asctime(),"Executing:",command
   if command is None:
     execute = False
-    command = "Request put in Queue, queue size is: %i" % queue.qsize()
+    command = "In Queue: %i" % queue.qsize()
   else:
     execute = True
   # Lets tell gituhb what we're doing
@@ -129,6 +135,7 @@ def process_command(project,commit,command,previous_command):
   if not execute:
     return 0
   ## Execute command
+  print "IN PROCESS COMMAND:",os.getcwd()
   p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   out,err = p.communicate()
   print out,err
