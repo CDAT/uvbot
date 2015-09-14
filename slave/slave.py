@@ -297,7 +297,7 @@ def post(*arg, **kwarg):
     ## We need to store the commit api url
     commit["statuses_url"]=obj["repository"]["statuses_url"]
     commit["repo_full_name"]=obj["repository"]["full_name"]
-    commit["original_ref"=obj["ref"]
+    commit["original_ref"]=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
     process_command(project,commit,None,None)
