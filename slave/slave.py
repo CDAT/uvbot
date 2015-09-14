@@ -98,13 +98,20 @@ def process_commit(project,obj):
    cmd = "make -j%i" % project["build_parallel"]
    os.chdir(build_dir)
    if process_command(project,commit,cmd,previous)!=0: return
+   # because of merge master we are in detached head mode
+   # the uvcdat-testdata cannot figure out anymore where it came from
+   # we need to try to fix this manually
+   previous = cmd
+   cmd = "git checkout %s" % commit["original_ref"].split("refs/heads/")[-1]
+   os.chdir(os.path.join(build_dir,"uvcdat-testdata"))
+   process_command(project,commit,cmd,previous,never_fails=True)
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
    os.chdir(build_dir)
    process_command(project,commit,cmd,previous)
 
-def process_command(project,commit,command,previous_command):
+def process_command(project,commit,command,previous_command,never_fails=False):
   print time.asctime(),"Executing:",command
   if command is None:
     execute = False
@@ -139,6 +146,8 @@ def process_command(project,commit,command,previous_command):
   p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   out,err = p.communicate()
   print out,err
+  if never_fails:
+    p.return_code=0
   if p.returncode != 0:
     # Ok something went bad...
     print "Something went bad",out,err
@@ -288,6 +297,7 @@ def post(*arg, **kwarg):
     ## We need to store the commit api url
     commit["statuses_url"]=obj["repository"]["statuses_url"]
     commit["repo_full_name"]=obj["repository"]["full_name"]
+    commit["original_ref"=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
     process_command(project,commit,None,None)
