@@ -50,7 +50,7 @@ def process_commit(project,obj):
    os.chdir(src_dir)
    # Resets possible changes from previous commit
    previous = cmd
-   cmd = "git reset --hard"
+   cmd = "git reset --hard origin/master"
    if process_command(project,commit,cmd,previous)!=0: return
    # Update repo
    previous = cmd
@@ -66,7 +66,7 @@ def process_commit(project,obj):
    # Merge master in
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
-     cmd = "git merge --no-ff master --no-commit" % commit["id"]
+     cmd = "git merge --no-ff master --no-commit"
      if process_command(project,commit,cmd,previous)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
@@ -153,7 +153,9 @@ def process_command(project,commit,command,previous_command):
 
 def worker():
     while True:
-        project, obj = queue.get()
+        print "THREAD QSIZE:",queue.qsize()
+        tmp = queue.get()
+        project,obj = tmp
         print time.asctime(),"STARTING A NEW BUILD ON THIS THREAD"
         process_commit(project,obj)
         queue.task_done()
@@ -250,7 +252,7 @@ def post(*arg, **kwarg):
     print "Commit id:",commit
     obj["slave_host"]=tangelo.request_header("Host")
     queue.put([project,obj])
-    print "Queue size:",queue.size()
+    print "Queue size:",queue.qsize()
     for i in range(queue.qsize()):
         proj,tmpobj = queue.get()
         queue.task_done()
@@ -260,8 +262,8 @@ def post(*arg, **kwarg):
             print "Deleting old commit (%s) for branch (%s) from queue" % (tmpobj["head_commit"]["id"], tmpobj["ref"])
         else:
             # ok nothing to do with new elt, putting back in queue
-            queue.put(proj,tmpobj)
+            queue.put([proj,tmpobj])
             print "put back in queue"
-        print "Queue size in loop:",queue.size()
-    print "Queue size after loop:",queue.size()
+        print "Queue size in loop:",queue.qsize()
+    print "Queue size after loop:",queue.qsize()
     return "Ok sent commit %s to queue" % commit
