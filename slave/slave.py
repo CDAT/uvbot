@@ -38,6 +38,7 @@ def process_commit(project,obj):
    work_dir = os.path.abspath(project["working_directory"])
    if not os.path.exists(work_dir):
      os.makedirs(work_dir)
+   print "CHANGING DIR TO:",work_dir
    os.chdir(work_dir)
    # Second step clone repo if not done already
    git_repo = obj["repository"]["url"]#.replace("https","git")
@@ -47,6 +48,7 @@ def process_commit(project,obj):
      cmd = "git clone %s" % git_repo
      if process_command(project,commit,cmd,None)!=0:
        return
+   print "CHANGING DIR TO:",src_dir
    os.chdir(src_dir)
    # Resets possible changes from previous commit
    previous = cmd
