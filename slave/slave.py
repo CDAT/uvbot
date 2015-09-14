@@ -63,9 +63,11 @@ def process_commit(project,obj):
    previous = cmd
    cmd = "git checkout %s" % commit["id"]
    if process_command(project,commit,cmd,previous)!=0: return
-   previous = cmd
-   cmd = "git merge --no-ff master --no-commit" % commit["id"]
-   if process_command(project,commit,cmd,previous)!=0: return
+   # Merge master in
+   if commit["message"].find("##bot##no-merge-master")==-1:
+     previous = cmd
+     cmd = "git merge --no-ff master --no-commit" % commit["id"]
+     if process_command(project,commit,cmd,previous)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")

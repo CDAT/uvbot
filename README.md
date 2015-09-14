@@ -140,5 +140,5 @@ Commands
   useful for builds that require an option to be turned on
 * `skip-slaves` : Tells the bot master to skip all slaves whose name contains
   any of string remaining on this line
-
+* `no-merge-master` : Do not try to merge master into the branch
 
