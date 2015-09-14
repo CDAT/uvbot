@@ -98,6 +98,11 @@ def process_commit(project,obj):
 
 def process_command(project,commit,command,previous_command):
   print time.asctime(),"Executing:",command
+  if command is None:
+    execute = False
+    command = "Request put in Queue, queue size is: %i" % queue.qsize()
+  else:
+    execute = True
   # Lets tell gituhb what we're doing
   data = json.dumps({
     "os":os.uname()[0],
@@ -119,6 +124,8 @@ def process_command(project,commit,command,previous_command):
         "BOT-Event":"status",
         }
       )
+  if not execute:
+    return 0
   ## Execute command
   p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   out,err = p.communicate()
@@ -266,4 +273,13 @@ def post(*arg, **kwarg):
             print "put back in queue"
         print "Queue size in loop:",queue.qsize()
     print "Queue size after loop:",queue.qsize()
+   commit = obj["head_commit"]
+   print "processing commit",commit
+
+   ## We need to store the commit api url
+   commit["statuses_url"]=obj["repository"]["statuses_url"]
+   commit["repo_full_name"]=obj["repository"]["full_name"]
+   commit["slave_name"]=project["name"]
+   commit["slave_host"]=obj["slave_host"]
+   process_command(project,commit,None,None)
     return "Ok sent commit %s to queue" % commit
