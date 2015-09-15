@@ -46,41 +46,41 @@ def process_commit(project,obj):
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
      cmd = "git clone %s" % git_repo
-     if process_command(project,commit,cmd,None)!=0:
+     if process_command(project,commit,cmd,None,src_dir)!=0:
        return
    print "CHANGING DIR TO:",src_dir
    os.chdir(src_dir)
    # Resets possible changes from previous commit
    previous = cmd
    cmd = "git reset --hard origin/master"
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Update repo
    previous = cmd
    cmd = "git checkout master"
    os.chdir(src_dir)
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    previous = cmd
    cmd = "git pull"
    os.chdir(src_dir)
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Checkout commit to be tested
    previous = cmd
    os.chdir(src_dir)
    cmd = "git checkout %s" % commit["id"]
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Merge master in
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
      os.chdir(src_dir)
      cmd = "git merge --no-ff master --no-commit"
-     if process_command(project,commit,cmd,previous)!=0: return
+     if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")
    if os.path.exists(build_dir):
      previous = cmd
      cmd = "rm -rf  %s" % (build_dir)
-     if process_command(project,commit,cmd,previous)!=0: return
+     if process_command(project,commit,cmd,previous,work_dir)!=0: return
    os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
@@ -92,26 +92,27 @@ def process_commit(project,obj):
      xtra=xtra[xtra.find("##bot##cmake_xtra")+17:]
      xtra=xtra[:xtra.find("\n")]
      cmd+=" "+xtra
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,build_dir)!=0: return
    # run make
    previous = cmd
    cmd = "make -j%i" % project["build_parallel"]
    os.chdir(build_dir)
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,build_dir)!=0: return
    # because of merge master we are in detached head mode
    # the uvcdat-testdata cannot figure out anymore where it came from
    # we need to try to fix this manually
    previous = cmd
    cmd = "git checkout %s" % commit["original_ref"].split("refs/heads/")[-1]
-   os.chdir(os.path.join(build_dir,"uvcdat-testdata"))
-   process_command(project,commit,cmd,previous,never_fails=True)
+   testdata_dir = os.path.join(build_dir,"uvcdat-testdata")
+   os.chdir(testdata_dir)
+   process_command(project,commit,cmd,previous,testdata_dir,never_fails=True)
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
    os.chdir(build_dir)
-   process_command(project,commit,cmd,previous)
+   process_command(project,commit,cmd,previous,build_dir)
 
-def process_command(project,commit,command,previous_command,never_fails=False):
+def process_command(project,commit,command,previous_command,cwd,never_fails=False):
   print time.asctime(),"Executing:",command
   if command is None:
     execute = False
@@ -143,7 +144,7 @@ def process_command(project,commit,command,previous_command,never_fails=False):
     return 0
   ## Execute command
   print "IN PROCESS COMMAND:",os.getcwd()
-  p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
   out,err = p.communicate()
   print out,err
   if never_fails:
