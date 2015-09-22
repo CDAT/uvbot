@@ -46,7 +46,7 @@ def process_commit(project,obj):
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
      cmd = "git clone %s" % git_repo
-     if process_command(project,commit,cmd,None,src_dir)!=0:
+     if process_command(project,commit,cmd,None,work_dir)!=0:
        return
    print "CHANGING DIR TO:",src_dir
    os.chdir(src_dir)
