@@ -58,6 +58,10 @@ def process_commit(project,obj):
    previous = cmd
    cmd = "git reset --hard origin/master"
    if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   # Resets possible changes from previous commit
+   previous = cmd
+   cmd = "git checkout -- ."
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Update repo
    previous = cmd
    cmd = "git checkout master"
