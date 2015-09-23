@@ -54,7 +54,6 @@ def forward(slave,obj,signature):
 @tangelo.restful
 def get(*arg, **kwarg):
     """Make sure the server is listening."""
-    print "WE COME IN GET"
     if len(arg)>0:
       try:
         project = get_project("%s/%s" % arg[1:3])
@@ -76,7 +75,7 @@ def post(*arg, **kwarg):
     """Listen for github webhooks, authenticate, and forward to buildbot."""
     # retrieve the headers from the request
     print "MASTER RECEIVED A POST EVENT"
-    print "TGELO CONFI",tangelo.cherrypy.request.header_list
+    # print "TGELO CONFI",tangelo.cherrypy.request.header_list
     try:
         received = tangelo.request_header('X-Hub-Signature')[5:]
     except Exception:
@@ -125,7 +124,7 @@ def post(*arg, **kwarg):
             # User requested to not send this commit to bots
             return "Skipped testing commit '%s' at committer request (found string '##bot##skip-commit')"
         nok = 0
-        for slave in project["slaves"]:
+        for islave, slave in enumerate(project["slaves"]):
           islaves = commit_msg.find("##bot##skip-slaves")
           if islaves>-1:
             # ok some slaves need skipping
@@ -138,12 +137,16 @@ def post(*arg, **kwarg):
                 iskip = True
                 break
             if iskip:
-              print "Commit asked to skip:",slave
+              print "\033[%im" % (91+islave),"Commit asked to skip:",slave,"\033[0m"
               nok+=1
               continue
-          print "SENDING TO:",slave
-          resp = forward(slave,obj,signature)
-          if resp.ok:
+          print "\033[%im" % (91+islave),"SENDING TO:",slave,"\033[0m"
+          try:
+            resp = forward(slave,obj,signature)
+            if resp.ok:
+              nok+=1
+          except:
+            print "\033[%im" % (91+islave),"could not connect","\033[0m"
             nok+=1
 
         if nok>0:
@@ -167,8 +170,13 @@ def post(*arg, **kwarg):
         state = "failure"
 
       slave = obj["slave_host"]
+      try:
+        islave = project["slaves"].find("http://"+slave)
+      except:
+        islave = -91  # Turn off styling
       pth = os.path.join(project["logs_dir"],slave,project_name,commit_id)
-      print "DUMPING INFO IN:",pth
+      print "\033[%im" % (91+islave),"DUMPING INFO IN:",pth,"\033[0m"
+      print "\033[%im" % (91+islave),"could not connect","\033[0m"
       if not os.path.exists(pth):
         os.makedirs(pth)
       f=open(os.path.join(pth,cmd2str(obj["command"])),"w")
@@ -208,7 +216,7 @@ def post(*arg, **kwarg):
           verify = False,
           headers = headers)
 
-      return "OK RECEIVED A BOT status update EVENT"
+      return "Received and treated a BOT STATUS update event"
     else:
         tangelo.http_status(200, "Unhandled event")
         return 'Unhandled event'

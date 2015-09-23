@@ -38,6 +38,7 @@ def process_commit(project,obj):
    work_dir = os.path.abspath(project["working_directory"])
    if not os.path.exists(work_dir):
      os.makedirs(work_dir)
+   print "CHANGING DIR TO:",work_dir
    os.chdir(work_dir)
    # Second step clone repo if not done already
    git_repo = obj["repository"]["url"]#.replace("https","git")
@@ -45,36 +46,45 @@ def process_commit(project,obj):
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
      cmd = "git clone %s" % git_repo
-     if process_command(project,commit,cmd,None)!=0:
+     if process_command(project,commit,cmd,None,work_dir)!=0:
        return
+   print "CHANGING DIR TO:",src_dir
    os.chdir(src_dir)
    # Resets possible changes from previous commit
    previous = cmd
-   cmd = "git reset --hard"
-   if process_command(project,commit,cmd,previous)!=0: return
+   cmd = "git reset --hard origin/master"
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   # Resets possible changes from previous commit
+   previous = cmd
+   cmd = "git checkout -- ."
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Update repo
    previous = cmd
    cmd = "git checkout master"
-   if process_command(project,commit,cmd,previous)!=0: return
+   os.chdir(src_dir)
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    previous = cmd
    cmd = "git pull"
-   if process_command(project,commit,cmd,previous)!=0: return
+   os.chdir(src_dir)
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Checkout commit to be tested
    previous = cmd
+   os.chdir(src_dir)
    cmd = "git checkout %s" % commit["id"]
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Merge master in
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
-     cmd = "git merge --no-ff master --no-commit" % commit["id"]
-     if process_command(project,commit,cmd,previous)!=0: return
+     os.chdir(src_dir)
+     cmd = "git merge --no-ff master --no-commit"
+     if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")
    if os.path.exists(build_dir):
      previous = cmd
      cmd = "rm -rf  %s" % (build_dir)
-     if process_command(project,commit,cmd,previous)!=0: return
+     if process_command(project,commit,cmd,previous,work_dir)!=0: return
    os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
@@ -86,18 +96,33 @@ def process_commit(project,obj):
      xtra=xtra[xtra.find("##bot##cmake_xtra")+17:]
      xtra=xtra.split("\n")[0]
      cmd+=" "+xtra
-   if process_command(project,commit,cmd,previous)!=0: return
+   if process_command(project,commit,cmd,previous,build_dir)!=0: return
    # run make
    previous = cmd
    cmd = "make -j%i" % project["build_parallel"]
-   if process_command(project,commit,cmd,previous)!=0: return
+   os.chdir(build_dir)
+   if process_command(project,commit,cmd,previous,build_dir)!=0: return
+   # because of merge master we are in detached head mode
+   # the uvcdat-testdata cannot figure out anymore where it came from
+   # we need to try to fix this manually
+   previous = cmd
+   cmd = "git checkout %s" % commit["original_ref"].split("refs/heads/")[-1]
+   testdata_dir = os.path.join(build_dir,"uvcdat-testdata")
+   os.chdir(testdata_dir)
+   process_command(project,commit,cmd,previous,testdata_dir,never_fails=True)
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
-   process_command(project,commit,cmd,previous)
+   os.chdir(build_dir)
+   process_command(project,commit,cmd,previous,build_dir)
 
-def process_command(project,commit,command,previous_command):
+def process_command(project,commit,command,previous_command,cwd,never_fails=False):
   print time.asctime(),"Executing:",command
+  if command is None:
+    execute = False
+    command = "In Queue: %i" % queue.qsize()
+  else:
+    execute = True
   # Lets tell gituhb what we're doing
   data = json.dumps({
     "os":os.uname()[0],
@@ -119,10 +144,15 @@ def process_command(project,commit,command,previous_command):
         "BOT-Event":"status",
         }
       )
+  if not execute:
+    return 0
   ## Execute command
-  p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  print "IN PROCESS COMMAND:",os.getcwd()
+  p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
   out,err = p.communicate()
   print out,err
+  if never_fails:
+    p.return_code=0
   if p.returncode != 0:
     # Ok something went bad...
     print "Something went bad",out,err
@@ -153,7 +183,9 @@ def process_command(project,commit,command,previous_command):
 
 def worker():
     while True:
-        project, obj = queue.get()
+        print "THREAD QSIZE:",queue.qsize()
+        tmp = queue.get()
+        project,obj = tmp
         print time.asctime(),"STARTING A NEW BUILD ON THIS THREAD"
         process_commit(project,obj)
         queue.task_done()
@@ -250,6 +282,7 @@ def post(*arg, **kwarg):
     print "Commit id:",commit
     obj["slave_host"]=tangelo.request_header("Host")
     queue.put([project,obj])
+    print "Queue size:",queue.qsize()
     for i in range(queue.qsize()):
         proj,tmpobj = queue.get()
         queue.task_done()
@@ -259,5 +292,18 @@ def post(*arg, **kwarg):
             print "Deleting old commit (%s) for branch (%s) from queue" % (tmpobj["head_commit"]["id"], tmpobj["ref"])
         else:
             # ok nothing to do with new elt, putting back in queue
-            queue.put(proj,tmpobj)
+            queue.put([proj,tmpobj])
+            print "put back in queue"
+        print "Queue size in loop:",queue.qsize()
+    print "Queue size after loop:",queue.qsize()
+    commit = obj["head_commit"]
+    print "processing commit",commit
+
+    ## We need to store the commit api url
+    commit["statuses_url"]=obj["repository"]["statuses_url"]
+    commit["repo_full_name"]=obj["repository"]["full_name"]
+    commit["original_ref"]=obj["ref"]
+    commit["slave_name"]=project["name"]
+    commit["slave_host"]=obj["slave_host"]
+    process_command(project,commit,None,None,None)
     return "Ok sent commit %s to queue" % commit
