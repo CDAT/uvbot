@@ -110,6 +110,12 @@ def process_commit(project,obj):
    testdata_dir = os.path.join(build_dir,"uvcdat-testdata")
    os.chdir(testdata_dir)
    process_command(project,commit,cmd,previous,testdata_dir,never_fails=True)
+   # Merge master in
+   if commit["message"].find("##bot##no-merge-master")==-1:
+     previous = cmd
+     os.chdir(testdata_dir)
+     cmd = "git merge --no-ff master --no-commit"
+     if process_command(project,commit,cmd,previous,testdata_dir)!=0: return
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
