@@ -114,7 +114,8 @@ def process_commit(project,obj):
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
      os.chdir(testdata_dir)
-     cmd = "git merge --no-ff master --no-commit"
+     # for pixture we want ff or it thinks conflicts everywhwrre
+     cmd = "git merge master --no-commit"
      if process_command(project,commit,cmd,previous,testdata_dir)!=0: return
    # run ctest
    previous = cmd
