@@ -115,11 +115,27 @@ def post(*arg, **kwarg):
         obj['event'] = event
         signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
         commit = obj["head_commit"]
+        is_commit = True
         if commit is None:
-          ## no head_Commit simply skip
-          return "Null Head Commit Found, Skipping"
-        commit_id = commit["id"]
-        commit_msg = commit["message"]
+          ## no head_Commit trying to see if it's a pull request
+          commit = obj["pull_request"]
+          is_commit = False
+          if commit is None:
+            # Never a commit or pull request
+            return "Null Head Commit Found, not a PR either skipping"
+        if is_commit:
+          commit_id = commit["id"]
+          commit_msg = commit["message"]
+        else:
+          ## It 's a PR faking the head_commit/id bits for slaves
+          commit_url = commit["head"]["commits_url"]
+          resp = requests.get(commits_url)
+          commit = resp.json()[-1]["commit"]
+          commit_msg=commit["message"]
+          commit["id"]=commit_id
+          commit["status_url"]=obj["statuses_urls"]
+          obj["head_commit"]=commit
+
         if commit_msg.find("##bot##skip-commit")>-1:
             # User requested to not send this commit to bots
             return "Skipped testing commit '%s' at committer request (found string '##bot##skip-commit')"
@@ -155,7 +171,6 @@ def post(*arg, **kwarg):
           msg = "All slaves failed to respond, last error was: %s" % resp.text 
           tangelo.http_status(resp.status_code, msg)
           return msg
-
     elif tangelo.request_header('BOT-Event') == "status":
       ## put here code to update status of commit on github
       headers = {
