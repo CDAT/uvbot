@@ -46,14 +46,10 @@ def process_commit(project,obj):
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
      cmd = "git clone %s" % git_repo
-     if process_command(project,commit,cmd,None,src_dir)!=0:
+     if process_command(project,commit,cmd,None,work_dir)!=0:
        return
    print "CHANGING DIR TO:",src_dir
    os.chdir(src_dir)
-   # Resets possible changes from previous commit
-   previous = cmd
-   cmd = "git checkout -- ."
-   if process_command(project,commit,cmd,previous,src_dir)!=0: return
    # Resets possible changes from previous commit
    previous = cmd
    cmd = "git reset --hard origin/master"
@@ -98,7 +94,7 @@ def process_commit(project,obj):
    if commit["message"].find("##bot##cmake_xtra")>-1:
      xtra = commit["message"]
      xtra=xtra[xtra.find("##bot##cmake_xtra")+17:]
-     xtra=xtra[:xtra.find("\n")]
+     xtra=xtra.split("\n")[0]
      cmd+=" "+xtra
    if process_command(project,commit,cmd,previous,build_dir)!=0: return
    # run make
@@ -114,6 +110,13 @@ def process_commit(project,obj):
    testdata_dir = os.path.join(build_dir,"uvcdat-testdata")
    os.chdir(testdata_dir)
    process_command(project,commit,cmd,previous,testdata_dir,never_fails=True)
+   # Merge master in
+   if commit["message"].find("##bot##no-merge-master")==-1:
+     previous = cmd
+     os.chdir(testdata_dir)
+     # for pixture we want ff or it thinks conflicts everywhwrre
+     cmd = "git merge master --no-commit"
+     if process_command(project,commit,cmd,previous,testdata_dir)!=0: return
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
