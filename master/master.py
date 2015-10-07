@@ -198,7 +198,8 @@ def post(*arg, **kwarg):
       pth = os.path.join(project["logs_dir"],slave,project_name,commit_id)
       print "\033[%im" % (91+islave),"DUMPING INFO IN:",pth,"\033[0m"
       print "\033[%im" % (91+islave),"could not connect","\033[0m"
-      if not os.path.exists(pth):
+      if not os.path.exists(str(pth)):
+        print "Creating:",pth
         os.makedirs(pth)
       f=open(os.path.join(pth,cmd2str(obj["command"])),"w")
       print >>f,"<html><body>"
