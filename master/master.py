@@ -110,31 +110,36 @@ def post(*arg, **kwarg):
         return 'Invalid signature'
 
     event = tangelo.request_header('X-Github-Event')
+    print "EVENT:",event
 
     if project['github-events'] == '*' or event in project['github-events']:
         obj['event'] = event
-        signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
-        commit = obj["head_commit"]
-        is_commit = True
-        if commit is None:
-          ## no head_Commit trying to see if it's a pull request
+        try:
+          commit = obj["head_commit"]
+          is_commit = True
+        except:
           commit = obj["pull_request"]
           is_commit = False
-          if commit is None:
-            # Never a commit or pull request
-            return "Null Head Commit Found, not a PR either skipping"
+        if commit is None:
+          ## no head_Commit trying to see if it's a pull request
+          return "Null Head Commit Found, not a PR either skipping"
         if is_commit:
           commit_id = commit["id"]
           commit_msg = commit["message"]
         else:
           ## It 's a PR faking the head_commit/id bits for slaves
-          commit_url = commit["head"]["commits_url"]
-          resp = requests.get(commits_url)
+          commits_url = commit["commits_url"]
+          commit_id = commit["head"]["sha"]
+          commit_statuses_url=commit["statuses_url"]
+          commit_ref = commit["head"]["ref"]
+          resp = requests.get(commits_url,verify=False)
           commit = resp.json()[-1]["commit"]
           commit_msg=commit["message"]
           commit["id"]=commit_id
-          commit["status_url"]=obj["statuses_urls"]
+          obj["ref"]=commit_ref
+          commit["statuses_url"]=commit_statuses_url
           obj["head_commit"]=commit
+        signature = hmac.new(str(project["bot-key"]), json.dumps(obj), hashlib.sha1).hexdigest()
 
         if commit_msg.find("##bot##skip-commit")>-1:
             # User requested to not send this commit to bots
@@ -169,6 +174,7 @@ def post(*arg, **kwarg):
           return "Ok sent this to %i slaves out of %i" % (nok,len(project["slaves"]))
         else:
           msg = "All slaves failed to respond, last error was: %s" % resp.text 
+          print msg
           tangelo.http_status(resp.status_code, msg)
           return msg
     elif tangelo.request_header('BOT-Event') == "status":
