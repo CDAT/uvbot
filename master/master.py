@@ -120,6 +120,12 @@ def post(*arg, **kwarg):
         except:
           commit = obj["pull_request"]
           is_commit = False
+          try:
+            act = obj["action"]
+            if act == "closed":  # closed PR no need to run anything
+              return "Closed PR, skipping"
+          except:
+            pass
         if commit is None:
           ## no head_Commit trying to see if it's a pull request
           return "Null Head Commit Found, not a PR either skipping"
