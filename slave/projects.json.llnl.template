@@ -7,7 +7,8 @@
       "build_parallel": 4,
       "ctest_xtra": "",
       "test_parallel": 4,
-      "working_directory": "/Users/doutriaux1/uvcbot"
+      "working_directory": "/Users/doutriaux1/uvcbot",
+      "timeout": 14400
     }
   }
 }

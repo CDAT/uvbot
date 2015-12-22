@@ -10,8 +10,7 @@ import hashlib
 import tangelo
 import requests
 
-import Queue
-import threading
+import multiprocessing
 import subprocess
 import shlex
 import time
@@ -20,7 +19,7 @@ import shutil
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
-queue = Queue.Queue()
+queue = multiprocessing.Queue.Queue()
 
 
 def process_commit(project,obj):
@@ -46,45 +45,45 @@ def process_commit(project,obj):
    src_dir = os.path.join(work_dir,src_dir)
    if not os.path.exists(src_dir):
      cmd = "git clone %s" % git_repo
-     if process_command(project,commit,cmd,None,work_dir)!=0:
+     if threaded_command(project,commit,cmd,None,work_dir)!=0:
        return
    print "CHANGING DIR TO:",src_dir
    os.chdir(src_dir)
    # Resets possible changes from previous commit
    previous = cmd
    cmd = "git reset --hard origin/master"
-   if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,src_dir)!=0: return
    # Resets possible changes from previous commit
    previous = cmd
    cmd = "git checkout -- ."
-   if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,src_dir)!=0: return
    # Update repo
    previous = cmd
    cmd = "git checkout master"
    os.chdir(src_dir)
-   if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,src_dir)!=0: return
    previous = cmd
    cmd = "git pull"
    os.chdir(src_dir)
-   if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,src_dir)!=0: return
    # Checkout commit to be tested
    previous = cmd
    os.chdir(src_dir)
    cmd = "git checkout %s" % commit["id"]
-   if process_command(project,commit,cmd,previous,src_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,src_dir)!=0: return
    # Merge master in
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
      os.chdir(src_dir)
      cmd = "git merge --no-ff master --no-commit"
-     if process_command(project,commit,cmd,previous,src_dir)!=0: return
+     if threaded_command(project,commit,cmd,previous,src_dir)!=0: return
    # Create and go to build dir
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")
    if os.path.exists(build_dir):
      previous = cmd
      cmd = "rm -rf  %s" % (build_dir)
-     if process_command(project,commit,cmd,previous,work_dir)!=0: return
+     if threaded_command(project,commit,cmd,previous,work_dir)!=0: return
    os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
@@ -96,12 +95,12 @@ def process_commit(project,obj):
      xtra=xtra[xtra.find("##bot##cmake_xtra")+17:]
      xtra=xtra.split("\n")[0]
      cmd+=" "+xtra
-   if process_command(project,commit,cmd,previous,build_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,build_dir)!=0: return
    # run make
    previous = cmd
    cmd = "make -j%i" % project["build_parallel"]
    os.chdir(build_dir)
-   if process_command(project,commit,cmd,previous,build_dir)!=0: return
+   if threaded_command(project,commit,cmd,previous,build_dir)!=0: return
    # because of merge master we are in detached head mode
    # the uvcdat-testdata cannot figure out anymore where it came from
    # we need to try to fix this manually
@@ -109,7 +108,7 @@ def process_commit(project,obj):
    cmd = "git checkout %s" % commit["original_ref"].split("refs/heads/")[-1]
    testdata_dir = os.path.join(build_dir,"uvcdat-testdata")
    os.chdir(testdata_dir)
-   process_command(project,commit,cmd,previous,testdata_dir,never_fails=True)
+   threaded_command(project,commit,cmd,previous,testdata_dir,never_fails=True)
    # Merge master in
    if commit["message"].find("##bot##no-merge-master")==-1:
      previous = cmd
@@ -117,16 +116,27 @@ def process_commit(project,obj):
      # CMake does not checkout the whole history, this can lead to conflict
      # with merge command bellow
      cmd = "git fetch --depth=10"
-     if process_command(project,commit,cmd,previous,testdata_dir)!=0: return
+     if threaded_command(project,commit,cmd,previous,testdata_dir)!=0: return
      previous = cmd
      # for pictures we want ff or it thinks conflicts everywhwrre
      cmd = "git merge master --no-commit"
-     if process_command(project,commit,cmd,previous,testdata_dir)!=0: return
+     if threaded_command(project,commit,cmd,previous,testdata_dir)!=0: return
    # run ctest
    previous = cmd
    cmd = "ctest -j%i %s -D Experimental" % (project["test_parallel"],project["ctest_xtra"])
    os.chdir(build_dir)
-   process_command(project,commit,cmd,previous,build_dir)
+   threaded_command(project,commit,cmd,previous,build_dir)
+
+def threaded_command(project,commit,command,previous_command,cwd,never_fails=False):
+    P = mutliprocessing.Pool(processes=1)
+    out = P.apply_async(process_command,
+            (project,commit,command,previous_command,cwd,never_fails))
+    try:
+        ret = comm.get(timeout=project.get("timeout",14400))
+    except:
+        talk_to_master(project,commit,"running...","Timed out",-1,command,previous_command)
+        ret = -1
+    return ret
 
 def process_command(project,commit,command,previous_command,cwd,never_fails=False):
   print time.asctime(),"Executing:",command
@@ -136,26 +146,8 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
   else:
     execute = True
   # Lets tell gituhb what we're doing
-  data = json.dumps({
-    "os":os.uname()[0],
-    "slave_name": commit["slave_name"],
-    "slave_host": commit["slave_host"],
-    "output":"running...",
-    "error":"cross your fingers...",
-    "code":None,
-    "command":command,
-    "previous":previous_command,
-    "commit":commit,
-    "repository":{"full_name":commit["repo_full_name"]},
-    }
-    )
-  signature = hmac.new(str(project["bot-key"]), data, hashlib.sha1).hexdigest()
-  resp = requests.post(project["master"],
-      data = data,
-      headers={"BOT-Signature":"sha1:%s" % signature,
-        "BOT-Event":"status",
-        }
-      )
+  talk_to_master(project,commit,"running...","cross your fingers...",None,command,previous_command)
+
   if not execute:
     return 0
   ## Execute command
@@ -168,13 +160,18 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
   if p.returncode != 0:
     # Ok something went bad...
     print "Something went bad",out,err
+  talk_to_master(project,commit,out,err,p.returncode,command,previous_command)
+  return -p.returncode
+
+
+def talk_to_master(project,commit,out,err,code,command,previous_command):
   data = json.dumps({
     "os":os.uname()[0],
     "slave_name": commit["slave_name"],
     "slave_host": commit["slave_host"],
     "output":out,
     "error":err,
-    "code":p.returncode,
+    "code":code,
     "command":command,
     "previous":previous_command,
     "commit":commit,
@@ -188,9 +185,7 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
         "BOT-Event":"status",
         }
       )
-  return -p.returncode
-
-
+  return resp
 
 
 def worker():
@@ -199,13 +194,23 @@ def worker():
         tmp = queue.get()
         project,obj = tmp
         print time.asctime(),"STARTING A NEW BUILD ON THIS THREAD"
-        process_commit(project,obj)
+        P = mutliprocessing.Process(target=process_commit,args=obj)
+        P.start()
+        start_time= time.time()
+        while P.is_alive() or time.time()-start_time>project.get("timeout",14400):
+            time.sleep(5)
+        if P.is_alive():  # Ok process is still alive need to kill it
+            P.terminate()
+            commit = obj["head_commit"]
+            talk_to_master(project,commit,"???","Timed out",-1,command,previous_command)
+
         queue.task_done()
         print time.asctime(),"DONE, WAITING FOR A BUILD ON THIS THREAD"
 
-thread = threading.Thread(target=worker)
-thread.daemon = True
-thread.start()
+
+process = multiprocessing.Process(target=worker)
+process.daemon = True
+process.start()
 
 _projects_file = os.path.join(os.path.dirname(__file__), 'projects.json')
 with open(_projects_file) as f:

@@ -96,7 +96,8 @@ contains the following information:
       "build_parallel": 4,
       "ctest_xtra": "",
       "test_parallel": 4,
-      "working_directory": "/Users/doutriaux1/uvcbot"
+      "working_directory": "/Users/doutriaux1/uvcbot",
+      "timeout": 14400
     }
   }
 }
@@ -112,6 +113,8 @@ integration)
 * `ctest_xtra` extra args to pass to ctest
 * `test_parallel` number of processors to use for ctest
 * `working_directory` top directory for cloning and building
+* `timeout` is the maximum time to spend processing a commit, after that it
+  will be considered as hanging and killed.
 
 When that is done, install the requirements listed in [slave/requirements.txt](slave/requirements.txt)
 and run
