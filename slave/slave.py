@@ -10,7 +10,9 @@ import hashlib
 import tangelo
 import requests
 
+import Queue
 import multiprocessing
+import threading
 import subprocess
 import shlex
 import time
@@ -19,7 +21,7 @@ import shutil
 # load a projects file
 # see https://developer.github.com/webhooks/#events
 
-queue = multiprocessing.Queue.Queue()
+queue = Queue.Queue()
 
 
 def process_commit(project,obj):
@@ -128,17 +130,26 @@ def process_commit(project,obj):
    threaded_command(project,commit,cmd,previous,build_dir)
 
 def threaded_command(project,commit,command,previous_command,cwd,never_fails=False):
-    P = mutliprocessing.Pool(processes=1)
-    out = P.apply_async(process_command,
-            (project,commit,command,previous_command,cwd,never_fails))
-    try:
-        ret = comm.get(timeout=project.get("timeout",14400))
-    except:
-        talk_to_master(project,commit,"running...","Timed out",-1,command,previous_command)
-        ret = -1
+    M = multiprocessing.Manager()
+    out = M.dict()
+    P2 = multiprocessing.Process(target=process_command,
+        args = (out,project,commit,command,previous_command,cwd,never_fails))
+    time_start = time.time()
+    P2.start()
+    while P2.is_alive() and time.time()-time_start<project.get("timeout",14400):
+      time.sleep(5)
+    if P2.is_alive():  # timed out
+      print "Process still alive!"
+      print "Timed out job"
+      talk_to_master(project,commit,"running...","Timed out",-1,command,previous_command)
+      P2.terminate()
+      ret = -1
+    else:
+      ret = out["output"]
+    print "SENDING BACK:",ret
     return ret
 
-def process_command(project,commit,command,previous_command,cwd,never_fails=False):
+def process_command(output_dict,project,commit,command,previous_command,cwd,never_fails=False):
   print time.asctime(),"Executing:",command
   if command is None:
     execute = False
@@ -149,6 +160,7 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
   talk_to_master(project,commit,"running...","cross your fingers...",None,command,previous_command)
 
   if not execute:
+    output_dict["output"]=0
     return 0
   ## Execute command
   print "IN PROCESS COMMAND:",os.getcwd()
@@ -161,6 +173,7 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
     # Ok something went bad...
     print "Something went bad",out,err
   talk_to_master(project,commit,out,err,p.returncode,command,previous_command)
+  output_dict["output"]=-p.returncode
   return -p.returncode
 
 
@@ -189,33 +202,29 @@ def talk_to_master(project,commit,out,err,code,command,previous_command):
 
 
 def worker():
+    print "In worker b4 while true"
     while True:
         print "THREAD QSIZE:",queue.qsize()
         tmp = queue.get()
         project,obj = tmp
         print time.asctime(),"STARTING A NEW BUILD ON THIS THREAD"
-        P = mutliprocessing.Process(target=process_commit,args=obj)
+        P = multiprocessing.Process(target=process_commit,args=(project,obj))
         P.start()
         start_time= time.time()
-        while P.is_alive() or time.time()-start_time>project.get("timeout",14400):
+        while P.is_alive():
             time.sleep(5)
-        if P.is_alive():  # Ok process is still alive need to kill it
-            P.terminate()
-            commit = obj["head_commit"]
-            talk_to_master(project,commit,"???","Timed out",-1,command,previous_command)
-
         queue.task_done()
         print time.asctime(),"DONE, WAITING FOR A BUILD ON THIS THREAD"
 
-
-process = multiprocessing.Process(target=worker)
-process.daemon = True
-process.start()
 
 _projects_file = os.path.join(os.path.dirname(__file__), 'projects.json')
 with open(_projects_file) as f:
     projects = json.load(f)['projects']
 
+print "in main area starting worker"
+process = threading.Thread(target=worker)
+process.daemon = True
+process.start()
 
 def authenticate(key, body, received):
     """Authenticate an event from github."""
@@ -322,5 +331,5 @@ def post(*arg, **kwarg):
     commit["original_ref"]=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
-    process_command(project,commit,None,None,None)
+    process_command({},project,commit,None,None,None)
     return "Ok sent commit %s to queue" % commit
