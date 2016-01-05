@@ -161,7 +161,7 @@ def process_command(output_dict,project,commit,command,previous_command,cwd,neve
 
   if not execute:
     output_dict["output"]=0
-    return 0
+    return output_dict
   ## Execute command
   print "IN PROCESS COMMAND:",os.getcwd()
   p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
@@ -174,7 +174,7 @@ def process_command(output_dict,project,commit,command,previous_command,cwd,neve
     print "Something went bad",out,err
   talk_to_master(project,commit,out,err,p.returncode,command,previous_command)
   output_dict["output"]=-p.returncode
-  return -p.returncode
+  return output_dict
 
 
 def talk_to_master(project,commit,out,err,code,command,previous_command):
