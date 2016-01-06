@@ -145,6 +145,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
       P2.terminate()
       ret = -1
     else:
+      print "GOT BACK OUT:",out
       ret = out["output"]
     print "SENDING BACK:",ret
     return ret
