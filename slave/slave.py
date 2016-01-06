@@ -33,6 +33,7 @@ def process_commit(project,obj):
    commit["repo_full_name"]=obj["repository"]["full_name"]
    commit["slave_name"]=project["name"]
    commit["slave_host"]=obj["slave_host"]
+   commit["original_ref"]=obj["ref"]
 
    cmd = None
    # First step go to working directory
