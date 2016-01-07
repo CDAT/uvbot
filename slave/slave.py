@@ -22,6 +22,8 @@ import shutil
 # see https://developer.github.com/webhooks/#events
 
 queue = Queue.Queue()
+M = multiprocessing.Manager()
+output_process_dict = M.dict()
 
 
 def process_commit(project,obj):
@@ -131,10 +133,8 @@ def process_commit(project,obj):
    threaded_command(project,commit,cmd,previous,build_dir)
 
 def threaded_command(project,commit,command,previous_command,cwd,never_fails=False):
-    M = multiprocessing.Manager()
-    out = M.dict()
     P2 = multiprocessing.Process(target=process_command,
-        args = (out,project,commit,command,previous_command,cwd,never_fails))
+        args = (output_process_dict,project,commit,command,previous_command,cwd,never_fails))
     time_start = time.time()
     P2.start()
     while P2.is_alive() and time.time()-time_start<project.get("timeout",14400):
@@ -146,8 +146,8 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
       P2.terminate()
       ret = -1
     else:
-      print "GOT BACK OUT:",out
-      ret = out["output"]
+      print "GOT BACK OUT:",output_process_dict
+      ret = output_process_dict["output_%s"%commit["id"]]
     print "SENDING BACK:",ret
     return ret
 
@@ -162,7 +162,7 @@ def process_command(output_dict,project,commit,command,previous_command,cwd,neve
   talk_to_master(project,commit,"running...","cross your fingers...",None,command,previous_command)
 
   if not execute:
-    output_dict["output"]=0
+    output_dict["output_%s"%commit["id"]]=0
     return output_dict
   ## Execute command
   print "IN PROCESS COMMAND:",os.getcwd()
@@ -175,7 +175,7 @@ def process_command(output_dict,project,commit,command,previous_command,cwd,neve
     # Ok something went bad...
     print "Something went bad",out,err
   talk_to_master(project,commit,out,err,p.returncode,command,previous_command)
-  output_dict["output"]=-p.returncode
+  output_dict["output_%s"%commit["id"]]=-p.returncode
   return output_dict
 
 
@@ -333,5 +333,5 @@ def post(*arg, **kwarg):
     commit["original_ref"]=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
-    process_command({'output':0},project,commit,None,None,None)
+    process_command(output_process_dict,project,commit,None,None,None)
     return "Ok sent commit %s to queue" % commit
