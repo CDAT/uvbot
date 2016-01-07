@@ -146,6 +146,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
     else:
       print "GOT BACK OUT:",output_process_dict
       ret = output_process_dict["output_%s"%commit["id"]]
+      del(output_process_dict["output_%s"%commit["id"]])
     print "SENDING BACK:",ret
     return ret
 
