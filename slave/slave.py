@@ -33,6 +33,7 @@ def process_commit(project,obj):
    commit["repo_full_name"]=obj["repository"]["full_name"]
    commit["slave_name"]=project["name"]
    commit["slave_host"]=obj["slave_host"]
+   commit["original_ref"]=obj["ref"]
 
    cmd = None
    # First step go to working directory
@@ -145,6 +146,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
       P2.terminate()
       ret = -1
     else:
+      print "GOT BACK OUT:",out
       ret = out["output"]
     print "SENDING BACK:",ret
     return ret
@@ -331,5 +333,5 @@ def post(*arg, **kwarg):
     commit["original_ref"]=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
-    process_command({},project,commit,None,None,None)
+    process_command({'output':0},project,commit,None,None,None)
     return "Ok sent commit %s to queue" % commit
