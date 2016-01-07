@@ -333,5 +333,5 @@ def post(*arg, **kwarg):
     commit["original_ref"]=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
-    process_command({},project,commit,None,None,None)
+    process_command({'output':0},project,commit,None,None,None)
     return "Ok sent commit %s to queue" % commit
