@@ -86,9 +86,7 @@ def process_commit(project,obj):
    os.chdir(work_dir)
    build_dir = os.path.join(work_dir,"build")
    if os.path.exists(build_dir):
-     previous = cmd
-     cmd = "rm -rf  %s" % (build_dir)
-     if threaded_command(project,commit,cmd,previous,work_dir)!=0: return
+       shutil.rmtree(build_dir, ignore_errors=True)
    os.makedirs(build_dir)
    os.chdir(build_dir)
    # run cmake
