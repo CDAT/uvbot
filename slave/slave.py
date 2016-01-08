@@ -22,8 +22,6 @@ import shutil
 # see https://developer.github.com/webhooks/#events
 
 queue = Queue.Queue()
-M = multiprocessing.Manager()
-output_process_dict = M.dict()
 
 
 def process_commit(project,obj):
@@ -132,8 +130,11 @@ def process_commit(project,obj):
 
 def threaded_command(project,commit,command,previous_command,cwd,never_fails=False):
     P2 = multiprocessing.Process(target=process_command,
-        args = (output_process_dict,project,commit,command,previous_command,cwd,never_fails))
+        args = (project,commit,command,previous_command,cwd,never_fails))
     time_start = time.time()
+    result_filename = os.path.join(project["working_directory"],"build","output_%i" % commit["id"])
+    if os.path.exists(result_filename):
+        os.remove(result_filename)
     P2.start()
     while P2.is_alive() and time.time()-time_start<project.get("timeout",14400):
       time.sleep(5)
@@ -144,13 +145,21 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
       P2.terminate()
       ret = -1
     else:
-      print "GOT BACK OUT:",output_process_dict
-      ret = output_process_dict["output_%s"%commit["id"]]
-      del(output_process_dict["output_%s"%commit["id"]])
+      if os.path.exists(result_filename):
+          print "result file is here"
+          f=open(result_filename)
+          ret = int(f.read())
+          f.close()
+      else:
+          print "OHOH! No result file, assuming failure"
+          ret = -1
+      print "GOT BACK OUT:",ret
     print "SENDING BACK:",ret
+    if os.path.exists(result_filename):
+        os.remove(result_filename)
     return ret
 
-def process_command(output_dict,project,commit,command,previous_command,cwd,never_fails=False):
+def process_command(project,commit,command,previous_command,cwd,never_fails=False):
   print time.asctime(),"Executing:",command
   if command is None:
     execute = False
@@ -159,10 +168,13 @@ def process_command(output_dict,project,commit,command,previous_command,cwd,neve
     execute = True
   # Lets tell gituhb what we're doing
   talk_to_master(project,commit,"running...","cross your fingers...",None,command,previous_command)
+  result_filename = os.path.join(project["working_directory"],"build","output_%i" % commit["id"])
 
   if not execute:
-    output_dict["output_%s"%commit["id"]]=0
-    return output_dict
+    f=open(result_filename,"w")
+    print >>f, 0
+    f.close()
+    return 0
   ## Execute command
   print "IN PROCESS COMMAND:",os.getcwd()
   p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
@@ -174,8 +186,10 @@ def process_command(output_dict,project,commit,command,previous_command,cwd,neve
     # Ok something went bad...
     print "Something went bad",out,err
   talk_to_master(project,commit,out,err,p.returncode,command,previous_command)
-  output_dict["output_%s"%commit["id"]]=-p.returncode
-  return output_dict
+  f=open(result_filename,"w")
+  print >>f, -p.returncode
+  f.close()
+  return -p.returncode
 
 
 def talk_to_master(project,commit,out,err,code,command,previous_command):
@@ -332,5 +346,5 @@ def post(*arg, **kwarg):
     commit["original_ref"]=obj["ref"]
     commit["slave_name"]=project["name"]
     commit["slave_host"]=obj["slave_host"]
-    process_command(output_process_dict,project,commit,None,None,None)
+    process_command(project,commit,None,None,None)
     return "Ok sent commit %s to queue" % commit
