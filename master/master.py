@@ -235,7 +235,7 @@ def post(*arg, **kwarg):
       data = {
           "state":state,
           "target_url": target,
-          "description": "running '%s' (%s)" % (obj["command"],time.asctime()),
+          "description": "'%s' (%s)" % (obj["command"][:20],time.asctime()),
           "context": context,
           }
       resp = requests.post(
