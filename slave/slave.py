@@ -132,7 +132,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
     P2 = multiprocessing.Process(target=process_command,
         args = (project,commit,command,previous_command,cwd,never_fails))
     time_start = time.time()
-    result_filename = os.path.join(project["working_directory"],"build","output_%i" % commit["id"])
+    result_filename = os.path.join(project["working_directory"],"build","output_%s" % commit["id"])
     if os.path.exists(result_filename):
         os.remove(result_filename)
     P2.start()
@@ -144,6 +144,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
       talk_to_master(project,commit,"running...","Timed out",-1,command,previous_command)
       P2.terminate()
       ret = -1
+      print "killed job"
     else:
       if os.path.exists(result_filename):
           print "result file is here"
@@ -168,7 +169,7 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
     execute = True
   # Lets tell gituhb what we're doing
   talk_to_master(project,commit,"running...","cross your fingers...",None,command,previous_command)
-  result_filename = os.path.join(project["working_directory"],"build","output_%i" % commit["id"])
+  result_filename = os.path.join(project["working_directory"],"build","output_%s" % commit["id"])
 
   if not execute:
     f=open(result_filename,"w")
