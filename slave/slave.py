@@ -130,7 +130,7 @@ def process_commit(project,obj):
    if os.uname()[0] == "Darwin":
        previous = cmd
        cmd = os.path.join(project["working_directory"],"kill_python_died_window.applescript")
-       p = subprocess.Popen(shlex.split(command),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
+       p = subprocess.Popen(shlex.split(cmd),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
        out,err = p.communicate()
 
 def threaded_command(project,commit,command,previous_command,cwd,never_fails=False):
