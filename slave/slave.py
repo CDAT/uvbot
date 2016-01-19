@@ -35,6 +35,10 @@ def process_commit(project,obj):
    commit["slave_host"]=obj["slave_host"]
    commit["original_ref"]=obj["ref"]
 
+   if os.uname()[0] == "Darwin":
+      cmd = os.path.join(project["working_directory"],"kill_python_died_window.applescript")
+      p = subprocess.Popen(shlex.split(cmd),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
+      out,err = p.communicate()
    cmd = None
    # First step go to working directory
    work_dir = os.path.abspath(project["working_directory"])
