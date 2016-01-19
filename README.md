@@ -116,6 +116,9 @@ integration)
 * `timeout` is the maximum time to spend processing a commit, after that it
   will be considered as hanging and killed.
 
+At this point on **Mac only** you need to copy
+[slave/kill_python_died_window.applescript](slave/kill_python_died_window.applescript) into `working_directory`
+
 When that is done, install the requirements listed in [slave/requirements.txt](slave/requirements.txt)
 and run
 ```
