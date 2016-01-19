@@ -159,6 +159,10 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
       else:
           print "OHOH! No result file, assuming failure"
           ret = -1
+          if os.uname()[0] == "Darwin":
+              cmd = os.path.join(project["working_directory"],"kill_python_died_window.applescript")
+              p = subprocess.Popen(shlex.split(cmd),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
+              out,err = p.communicate()
       print "GOT BACK OUT:",ret
     print "SENDING BACK:",ret
     if os.path.exists(result_filename):
