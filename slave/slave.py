@@ -120,7 +120,7 @@ def process_commit(project,obj):
      os.chdir(testdata_dir)
      # CMake does not checkout the whole history, this can lead to conflict
      # with merge command bellow
-     cmd = "git fetch --depth=10"
+     cmd = "git fetch --unshallow"
      if threaded_command(project,commit,cmd,previous,testdata_dir)!=0: return
      previous = cmd
      # for pictures we want ff or it thinks conflicts everywhwrre
