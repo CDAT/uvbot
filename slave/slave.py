@@ -134,6 +134,7 @@ def process_commit(project,obj):
    if os.uname()[0] == "Darwin":
        previous = cmd
        cmd = os.path.join(project["working_directory"],"kill_python_died_window.applescript")
+       cwd = os.getcwd()
        p = subprocess.Popen(shlex.split(cmd),stdout=subprocess.PIPE,stderr=subprocess.PIPE,cwd=cwd)
        out,err = p.communicate()
 
