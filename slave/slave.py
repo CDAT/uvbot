@@ -162,7 +162,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
           ret = int(f.read())
           f.close()
       else:
-          print "OHOH! No result file, assuming failure"
+          print "OHOH! No result file (%s), assuming failure" % result_filename
           ret = -1
           if os.uname()[0] == "Darwin":
               cmd = os.path.join(project["working_directory"],"kill_python_died_window.applescript")
