@@ -185,6 +185,7 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
   # Lets tell gituhb what we're doing
   talk_to_master(project,commit,"running...","cross your fingers...",None,command,previous_command)
   result_filename = os.path.join(project["working_directory"],"build","output_%s" % commit["id"])
+  print "IN PROCESS COMMAND OUTPUT RESULT IS:",result_filename
 
   if not execute:
     f=open(result_filename,"w")
@@ -197,11 +198,16 @@ def process_command(project,commit,command,previous_command,cwd,never_fails=Fals
   out,err = p.communicate()
   print out,err
   if never_fails:
+      print "WRITING NO FAIL RESULT TO:",result_filename
+      f=open(result_filename,"w")
+      print >>f, 0
+      f.close()
     p.return_code=0
   if p.returncode != 0:
     # Ok something went bad...
     print "Something went bad",out,err
   talk_to_master(project,commit,out,err,p.returncode,command,previous_command)
+  print "WRITING RESULT TO:",result_filename
   f=open(result_filename,"w")
   print >>f, -p.returncode
   f.close()
