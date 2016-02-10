@@ -143,6 +143,7 @@ def threaded_command(project,commit,command,previous_command,cwd,never_fails=Fal
         args = (project,commit,command,previous_command,cwd,never_fails))
     time_start = time.time()
     result_filename = os.path.join(project["working_directory"],"build","output_%s" % commit["id"])
+    print "CREATING OUTPUT FILENAME:",result_filename
     if os.path.exists(result_filename):
         os.remove(result_filename)
     P2.start()
